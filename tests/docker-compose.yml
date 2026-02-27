@@ -1,0 +1,25 @@
+services:
+  komodo-core:
+    image: ghcr.io/moghtech/komodo-core:latest
+    ports:
+      - "9120:9120"
+    environment:
+      KOMODO_LOCAL_AUTH: "true"
+      KOMODO_PASSKEY: test-passkey
+      KOMODO_FIRST_SERVER: http://komodo-periphery:8120
+      KOMODO_DATABASE_ADDRESS: komodo-mongo:27017
+    depends_on:
+      - komodo-mongo
+
+  komodo-periphery:
+    image: ghcr.io/moghtech/komodo-periphery:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  komodo-mongo:
+    image: mongo:7
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
