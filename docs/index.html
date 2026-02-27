@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>komodo-mcp — Configuration</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --accent-hover: #79c0ff;
+    --green: #3fb950;
+    --input-bg: #0d1117;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 2rem 1rem;
+  }
+  .container { max-width: 720px; margin: 0 auto; }
+  h1 { font-size: 1.75rem; margin-bottom: 0.25rem; }
+  .subtitle { color: var(--text-muted); margin-bottom: 2rem; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .card h2 { font-size: 1.1rem; margin-bottom: 1rem; }
+  label { display: block; font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  input:focus { outline: none; border-color: var(--accent); }
+  button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-copy { background: var(--surface); color: var(--text); border: 1px solid var(--border); margin-left: 0.5rem; display: none; }
+  .btn-copy:hover { border-color: var(--accent); }
+  .btn-copy.copied { border-color: var(--green); color: var(--green); }
+  pre {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-top: 1rem;
+    display: none;
+  }
+  .template pre { display: block; color: var(--text-muted); }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .footer { text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 2rem; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>komodo-mcp</h1>
+  <p class="subtitle">MCP server for <a href="https://komo.do/">Komodo</a> — 293 tools for full API coverage</p>
+
+  <div class="card template">
+    <h2>Config template</h2>
+    <pre><code>{
+  "mcpServers": {
+    "komodo": {
+      "command": "uvx",
+      "args": ["--refresh", "--extra-index-url",
+        "https://nikitatsym.github.io/komodo-mcp/simple",
+        "komodo-mcp"],
+      "env": {
+        "KOMODO_URL": "https://komodo.example.com",
+        "KOMODO_API_KEY": "your-api-key",
+        "KOMODO_API_SECRET": "your-api-secret"
+      }
+    }
+  }
+}</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>Generate your config</h2>
+    <label for="komodo-url">Komodo URL</label>
+    <input type="text" id="komodo-url" placeholder="https://komodo.example.com">
+    <label for="komodo-key">API Key</label>
+    <input type="text" id="komodo-key" placeholder="your-api-key">
+    <label for="komodo-secret">API Secret</label>
+    <input type="password" id="komodo-secret" placeholder="your-api-secret">
+    <button class="btn-primary" onclick="generate()">Generate</button>
+    <button class="btn-copy" id="btn-copy" onclick="copyConfig()">Copy</button>
+    <pre id="output"></pre>
+  </div>
+
+  <div class="card">
+    <h2>Getting API credentials</h2>
+    <ol style="padding-left:1.25rem; color: var(--text-muted);">
+      <li>Open your Komodo dashboard</li>
+      <li>Go to <strong>Settings → API Keys</strong></li>
+      <li>Create a new API key (or use a Service User)</li>
+      <li>Copy the <strong>Key</strong> and <strong>Secret</strong></li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>Where to put the config</h2>
+    <ul style="padding-left:1.25rem; color: var(--text-muted);">
+      <li><strong>Claude Desktop:</strong> <code>~/.config/claude/claude_desktop_config.json</code></li>
+      <li><strong>Claude Code:</strong> <code>~/.claude/settings.json</code> (mcpServers section)</li>
+    </ul>
+  </div>
+
+  <p class="footer">
+    <a href="https://github.com/nikitatsym/komodo-mcp">GitHub</a> ·
+    <a href="https://komo.do/">Komodo</a> ·
+    MIT License
+  </p>
+
+</div>
+
+<script>
+function generate() {
+  var url    = document.getElementById('komodo-url').value.trim().replace(/\/+$/, '');
+  var key    = document.getElementById('komodo-key').value.trim();
+  var secret = document.getElementById('komodo-secret').value.trim();
+
+  if (!url)    { alert('Please enter your Komodo URL.');  return; }
+  if (!key)    { alert('Please enter your API Key.');     return; }
+  if (!secret) { alert('Please enter your API Secret.');  return; }
+
+  var config = {
+    mcpServers: {
+      komodo: {
+        command: "uvx",
+        args: ["--refresh", "--extra-index-url",
+          "https://nikitatsym.github.io/komodo-mcp/simple",
+          "komodo-mcp"],
+        env: {
+          KOMODO_URL: url,
+          KOMODO_API_KEY: key,
+          KOMODO_API_SECRET: secret
+        }
+      }
+    }
+  };
+
+  var output = document.getElementById('output');
+  var btnCopy = document.getElementById('btn-copy');
+  output.textContent = JSON.stringify(config, null, 2);
+  output.style.display = 'block';
+  btnCopy.style.display = 'inline-block';
+}
+
+function copyConfig() {
+  var text = document.getElementById('output').textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    var btn = document.getElementById('btn-copy');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(function() {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>
