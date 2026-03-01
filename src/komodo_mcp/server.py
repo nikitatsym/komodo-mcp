@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from typing import Optional
 
 from mcp.server.fastmcp import FastMCP
 
@@ -22,6 +21,15 @@ def _ok(data) -> str:
     if data is None:
         return json.dumps({"status": "ok"})
     return json.dumps(data, indent=2, ensure_ascii=False)
+
+
+def _parse_json(value: str | dict | list | None):
+    """Accept a JSON string, dict, or list; return the parsed value as-is."""
+    if value is None:
+        return None
+    if isinstance(value, (dict, list)):
+        return value
+    return json.loads(value)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -47,20 +55,20 @@ def get_core_info() -> str:
 
 
 @mcp.tool()
-def list_servers(query: Optional[str] = None) -> str:
+def list_servers(query: str | dict | None = None) -> str:
     """List servers. Optionally filter by mongo query (JSON string)."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListServers", params or None))
 
 
 @mcp.tool()
-def list_full_servers(query: Optional[str] = None) -> str:
+def list_full_servers(query: str | dict | None = None) -> str:
     """List servers with full config. Optionally filter by mongo query (JSON string)."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListFullServers", params or None))
 
 
@@ -134,20 +142,20 @@ def list_terminals(server: str, fresh: bool = False) -> str:
 
 
 @mcp.tool()
-def list_deployments(query: Optional[str] = None) -> str:
+def list_deployments(query: str | dict | None = None) -> str:
     """List deployments. Optionally filter by mongo query (JSON string)."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListDeployments", params or None))
 
 
 @mcp.tool()
-def list_full_deployments(query: Optional[str] = None) -> str:
+def list_full_deployments(query: str | dict | None = None) -> str:
     """List deployments with full config."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListFullDeployments", params or None))
 
 
@@ -203,20 +211,20 @@ def inspect_deployment_container(deployment: str) -> str:
 
 
 @mcp.tool()
-def list_stacks(query: Optional[str] = None) -> str:
+def list_stacks(query: str | dict | None = None) -> str:
     """List stacks. Optionally filter by mongo query (JSON string)."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListStacks", params or None))
 
 
 @mcp.tool()
-def list_full_stacks(query: Optional[str] = None) -> str:
+def list_full_stacks(query: str | dict | None = None) -> str:
     """List stacks with full config."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListFullStacks", params or None))
 
 
@@ -243,7 +251,7 @@ def get_stack_log(
     stack: str,
     tail: int = 100,
     timestamps: bool = False,
-    services: Optional[str] = None,
+    services: str | None = None,
 ) -> str:
     """Get logs for a stack. Optionally filter by comma-separated service names."""
     params: dict = {"stack": stack, "tail": tail, "timestamps": timestamps, "services": []}
@@ -277,7 +285,7 @@ def search_stack_log(
     combinator: str = "Or",
     invert: bool = False,
     timestamps: bool = False,
-    services: Optional[str] = None,
+    services: str | None = None,
 ) -> str:
     """Search stack logs. terms: comma-separated search terms. combinator: 'And' or 'Or'."""
     params: dict = {
@@ -299,20 +307,20 @@ def search_stack_log(
 
 
 @mcp.tool()
-def list_builds(query: Optional[str] = None) -> str:
+def list_builds(query: str | dict | None = None) -> str:
     """List builds."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListBuilds", params or None))
 
 
 @mcp.tool()
-def list_full_builds(query: Optional[str] = None) -> str:
+def list_full_builds(query: str | dict | None = None) -> str:
     """List builds with full config."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListFullBuilds", params or None))
 
 
@@ -349,10 +357,10 @@ def get_build_webhook_enabled(build: str) -> str:
 @mcp.tool()
 def list_build_versions(
     build: str,
-    major: Optional[int] = None,
-    minor: Optional[int] = None,
-    patch: Optional[int] = None,
-    limit: Optional[int] = None,
+    major: int | None = None,
+    minor: int | None = None,
+    patch: int | None = None,
+    limit: int | None = None,
 ) -> str:
     """List available versions for a build. Optionally filter by version components."""
     params: dict = {"build": build}
@@ -373,20 +381,20 @@ def list_build_versions(
 
 
 @mcp.tool()
-def list_repos(query: Optional[str] = None) -> str:
+def list_repos(query: str | dict | None = None) -> str:
     """List repos."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListRepos", params or None))
 
 
 @mcp.tool()
-def list_full_repos(query: Optional[str] = None) -> str:
+def list_full_repos(query: str | dict | None = None) -> str:
     """List repos with full config."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListFullRepos", params or None))
 
 
@@ -420,20 +428,20 @@ def get_repo_webhooks_enabled(repo: str) -> str:
 
 
 @mcp.tool()
-def list_procedures(query: Optional[str] = None) -> str:
+def list_procedures(query: str | dict | None = None) -> str:
     """List procedures."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListProcedures", params or None))
 
 
 @mcp.tool()
-def list_full_procedures(query: Optional[str] = None) -> str:
+def list_full_procedures(query: str | dict | None = None) -> str:
     """List procedures with full config."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListFullProcedures", params or None))
 
 
@@ -461,20 +469,20 @@ def get_procedure_action_state(procedure: str) -> str:
 
 
 @mcp.tool()
-def list_actions(query: Optional[str] = None) -> str:
+def list_actions(query: str | dict | None = None) -> str:
     """List actions."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListActions", params or None))
 
 
 @mcp.tool()
-def list_full_actions(query: Optional[str] = None) -> str:
+def list_full_actions(query: str | dict | None = None) -> str:
     """List actions with full config."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListFullActions", params or None))
 
 
@@ -502,20 +510,20 @@ def get_action_action_state(action: str) -> str:
 
 
 @mcp.tool()
-def list_resource_syncs(query: Optional[str] = None) -> str:
+def list_resource_syncs(query: str | dict | None = None) -> str:
     """List resource syncs."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListResourceSyncs", params or None))
 
 
 @mcp.tool()
-def list_full_resource_syncs(query: Optional[str] = None) -> str:
+def list_full_resource_syncs(query: str | dict | None = None) -> str:
     """List resource syncs with full config."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListFullResourceSyncs", params or None))
 
 
@@ -549,20 +557,20 @@ def get_sync_webhooks_enabled(sync: str) -> str:
 
 
 @mcp.tool()
-def list_builders(query: Optional[str] = None) -> str:
+def list_builders(query: str | dict | None = None) -> str:
     """List builders."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListBuilders", params or None))
 
 
 @mcp.tool()
-def list_full_builders(query: Optional[str] = None) -> str:
+def list_full_builders(query: str | dict | None = None) -> str:
     """List builders with full config."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListFullBuilders", params or None))
 
 
@@ -584,20 +592,20 @@ def get_builders_summary() -> str:
 
 
 @mcp.tool()
-def list_alerters(query: Optional[str] = None) -> str:
+def list_alerters(query: str | dict | None = None) -> str:
     """List alerters."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListAlerters", params or None))
 
 
 @mcp.tool()
-def list_full_alerters(query: Optional[str] = None) -> str:
+def list_full_alerters(query: str | dict | None = None) -> str:
     """List alerters with full config."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListFullAlerters", params or None))
 
 
@@ -631,7 +639,7 @@ def list_docker_containers(server: str) -> str:
 
 
 @mcp.tool()
-def list_all_docker_containers(servers: Optional[str] = None) -> str:
+def list_all_docker_containers(servers: str | None = None) -> str:
     """List Docker containers across multiple servers. servers: comma-separated server ids/names."""
     params: dict = {"servers": []}
     if servers is not None:
@@ -759,11 +767,11 @@ def list_compose_projects(server: str) -> str:
 
 
 @mcp.tool()
-def list_tags(query: Optional[str] = None) -> str:
+def list_tags(query: str | dict | None = None) -> str:
     """List tags. Optionally filter by mongo query (JSON string)."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListTags", params or None))
 
 
@@ -827,15 +835,15 @@ def list_permissions() -> str:
 
 
 @mcp.tool()
-def list_user_target_permissions(user_target: str) -> str:
+def list_user_target_permissions(user_target: str | dict) -> str:
     """List permissions for a specific user or user group. Pass as JSON: {"type": "User", "id": "..."}."""
-    return _ok(_get_client().read("ListUserTargetPermissions", {"user_target": json.loads(user_target)}))
+    return _ok(_get_client().read("ListUserTargetPermissions", {"user_target": _parse_json(user_target)}))
 
 
 @mcp.tool()
-def get_permission(target: str) -> str:
+def get_permission(target: str | dict) -> str:
     """Get permission on a resource target. Pass target as JSON: {"type": "Server", "id": "..."}."""
-    return _ok(_get_client().read("GetPermission", {"target": json.loads(target)}))
+    return _ok(_get_client().read("GetPermission", {"target": _parse_json(target)}))
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -862,8 +870,8 @@ def list_api_keys_for_service_user(user: str) -> str:
 
 @mcp.tool()
 def list_git_provider_accounts(
-    domain: Optional[str] = None,
-    username: Optional[str] = None,
+    domain: str | None = None,
+    username: str | None = None,
 ) -> str:
     """List git provider accounts. Optionally filter by domain and/or username."""
     params: dict = {}
@@ -881,18 +889,18 @@ def get_git_provider_account(id: str) -> str:
 
 
 @mcp.tool()
-def list_git_providers_from_config(target: Optional[str] = None) -> str:
+def list_git_providers_from_config(target: str | dict | None = None) -> str:
     """List git providers from Core config. Optionally pass target as JSON."""
     params: dict = {}
     if target is not None:
-        params["target"] = json.loads(target)
+        params["target"] = _parse_json(target)
     return _ok(_get_client().read("ListGitProvidersFromConfig", params or None))
 
 
 @mcp.tool()
 def list_docker_registry_accounts(
-    domain: Optional[str] = None,
-    username: Optional[str] = None,
+    domain: str | None = None,
+    username: str | None = None,
 ) -> str:
     """List Docker registry accounts. Optionally filter by domain and/or username."""
     params: dict = {}
@@ -910,11 +918,11 @@ def get_docker_registry_account(id: str) -> str:
 
 
 @mcp.tool()
-def list_docker_registries_from_config(target: Optional[str] = None) -> str:
+def list_docker_registries_from_config(target: str | dict | None = None) -> str:
     """List Docker registries from Core config. Optionally pass target as JSON."""
     params: dict = {}
     if target is not None:
-        params["target"] = json.loads(target)
+        params["target"] = _parse_json(target)
     return _ok(_get_client().read("ListDockerRegistriesFromConfig", params or None))
 
 
@@ -924,11 +932,11 @@ def list_docker_registries_from_config(target: Optional[str] = None) -> str:
 
 
 @mcp.tool()
-def list_updates(page: int = 0, query: Optional[str] = None) -> str:
+def list_updates(page: int = 0, query: str | dict | None = None) -> str:
     """List updates (paginated). Optionally filter by mongo query (JSON string)."""
     params: dict = {"page": page}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListUpdates", params))
 
 
@@ -939,11 +947,11 @@ def get_update(id: str) -> str:
 
 
 @mcp.tool()
-def list_alerts(page: int = 0, query: Optional[str] = None) -> str:
+def list_alerts(page: int = 0, query: str | dict | None = None) -> str:
     """List alerts (paginated). Optionally filter by mongo query (JSON string)."""
     params: dict = {"page": page}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListAlerts", params))
 
 
@@ -953,16 +961,16 @@ def list_alerts(page: int = 0, query: Optional[str] = None) -> str:
 
 
 @mcp.tool()
-def list_secrets(target: Optional[str] = None) -> str:
+def list_secrets(target: str | dict | None = None) -> str:
     """List available secret variable names. Optionally pass target as JSON."""
     params: dict = {}
     if target is not None:
-        params["target"] = json.loads(target)
+        params["target"] = _parse_json(target)
     return _ok(_get_client().read("ListSecrets", params or None))
 
 
 @mcp.tool()
-def list_schedules(tags: Optional[str] = None) -> str:
+def list_schedules(tags: str | None = None) -> str:
     """List scheduled operations. Optionally filter by comma-separated tag ids/names."""
     params: dict = {"tags": [], "tag_behavior": "All"}
     if tags is not None:
@@ -977,38 +985,38 @@ def get_resource_matching_container(server: str, container: str) -> str:
 
 
 @mcp.tool()
-def list_common_deployment_extra_args(query: Optional[str] = None) -> str:
+def list_common_deployment_extra_args(query: str | dict | None = None) -> str:
     """List common extra args used across deployments."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListCommonDeploymentExtraArgs", params or None))
 
 
 @mcp.tool()
-def list_common_build_extra_args(query: Optional[str] = None) -> str:
+def list_common_build_extra_args(query: str | dict | None = None) -> str:
     """List common extra args used across builds."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListCommonBuildExtraArgs", params or None))
 
 
 @mcp.tool()
-def list_common_stack_extra_args(query: Optional[str] = None) -> str:
+def list_common_stack_extra_args(query: str | dict | None = None) -> str:
     """List common extra args used across stacks."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListCommonStackExtraArgs", params or None))
 
 
 @mcp.tool()
-def list_common_stack_build_extra_args(query: Optional[str] = None) -> str:
+def list_common_stack_build_extra_args(query: str | dict | None = None) -> str:
     """List common stack build extra args."""
     params: dict = {}
     if query is not None:
-        params["query"] = json.loads(query)
+        params["query"] = _parse_json(query)
     return _ok(_get_client().read("ListCommonStackBuildExtraArgs", params or None))
 
 
@@ -1022,7 +1030,7 @@ def export_all_resources_to_toml(
     include_resources: bool = True,
     include_variables: bool = True,
     include_user_groups: bool = True,
-    tags: Optional[str] = None,
+    tags: str | None = None,
 ) -> str:
     """Export all resources to TOML format. Optionally filter by comma-separated tag ids."""
     params: dict = {
@@ -1038,13 +1046,13 @@ def export_all_resources_to_toml(
 
 @mcp.tool()
 def export_resources_to_toml(
-    targets: str,
+    targets: str | list,
     include_variables: bool = True,
-    user_groups: Optional[str] = None,
+    user_groups: str | None = None,
 ) -> str:
     """Export specific resources to TOML. targets: JSON array of resource targets. user_groups: comma-separated."""
     params: dict = {
-        "targets": json.loads(targets),
+        "targets": _parse_json(targets),
         "include_variables": include_variables,
         "user_groups": [],
     }
@@ -1059,18 +1067,18 @@ def export_resources_to_toml(
 
 
 @mcp.tool()
-def create_server(name: str, config: Optional[str] = None) -> str:
+def create_server(name: str, config: str | dict | None = None) -> str:
     """Create a new server. config: optional JSON string with server configuration."""
     params: dict = {"name": name, "config": {}}
     if config is not None:
-        params["config"] = json.loads(config)
+        params["config"] = _parse_json(config)
     return _ok(_get_client().write("CreateServer", params))
 
 
 @mcp.tool()
-def update_server(id: str, config: str) -> str:
+def update_server(id: str, config: str | dict) -> str:
     """Update server configuration. config: JSON string with partial server config."""
-    return _ok(_get_client().write("UpdateServer", {"id": id, "config": json.loads(config)}))
+    return _ok(_get_client().write("UpdateServer", {"id": id, "config": _parse_json(config)}))
 
 
 @mcp.tool()
@@ -1126,18 +1134,18 @@ def delete_all_terminals(server: str) -> str:
 
 
 @mcp.tool()
-def create_deployment(name: str, config: Optional[str] = None) -> str:
+def create_deployment(name: str, config: str | dict | None = None) -> str:
     """Create a new deployment. config: optional JSON string with deployment configuration."""
     params: dict = {"name": name, "config": {}}
     if config is not None:
-        params["config"] = json.loads(config)
+        params["config"] = _parse_json(config)
     return _ok(_get_client().write("CreateDeployment", params))
 
 
 @mcp.tool()
-def update_deployment(id: str, config: str) -> str:
+def update_deployment(id: str, config: str | dict) -> str:
     """Update deployment configuration. config: JSON string with partial deployment config."""
-    return _ok(_get_client().write("UpdateDeployment", {"id": id, "config": json.loads(config)}))
+    return _ok(_get_client().write("UpdateDeployment", {"id": id, "config": _parse_json(config)}))
 
 
 @mcp.tool()
@@ -1170,18 +1178,18 @@ def create_deployment_from_container(name: str, server: str) -> str:
 
 
 @mcp.tool()
-def create_stack(name: str, config: Optional[str] = None) -> str:
+def create_stack(name: str, config: str | dict | None = None) -> str:
     """Create a new stack. config: optional JSON string with stack configuration."""
     params: dict = {"name": name, "config": {}}
     if config is not None:
-        params["config"] = json.loads(config)
+        params["config"] = _parse_json(config)
     return _ok(_get_client().write("CreateStack", params))
 
 
 @mcp.tool()
-def update_stack(id: str, config: str) -> str:
+def update_stack(id: str, config: str | dict) -> str:
     """Update stack configuration. config: JSON string with partial stack config."""
-    return _ok(_get_client().write("UpdateStack", {"id": id, "config": json.loads(config)}))
+    return _ok(_get_client().write("UpdateStack", {"id": id, "config": _parse_json(config)}))
 
 
 @mcp.tool()
@@ -1236,18 +1244,18 @@ def delete_stack_webhook(stack: str, action: str = "Deploy") -> str:
 
 
 @mcp.tool()
-def create_build(name: str, config: Optional[str] = None) -> str:
+def create_build(name: str, config: str | dict | None = None) -> str:
     """Create a new build. config: optional JSON string with build configuration."""
     params: dict = {"name": name, "config": {}}
     if config is not None:
-        params["config"] = json.loads(config)
+        params["config"] = _parse_json(config)
     return _ok(_get_client().write("CreateBuild", params))
 
 
 @mcp.tool()
-def update_build(id: str, config: str) -> str:
+def update_build(id: str, config: str | dict) -> str:
     """Update build configuration. config: JSON string with partial build config."""
-    return _ok(_get_client().write("UpdateBuild", {"id": id, "config": json.loads(config)}))
+    return _ok(_get_client().write("UpdateBuild", {"id": id, "config": _parse_json(config)}))
 
 
 @mcp.tool()
@@ -1298,18 +1306,18 @@ def delete_build_webhook(build: str) -> str:
 
 
 @mcp.tool()
-def create_repo(name: str, config: Optional[str] = None) -> str:
+def create_repo(name: str, config: str | dict | None = None) -> str:
     """Create a new repo. config: optional JSON string with repo configuration."""
     params: dict = {"name": name, "config": {}}
     if config is not None:
-        params["config"] = json.loads(config)
+        params["config"] = _parse_json(config)
     return _ok(_get_client().write("CreateRepo", params))
 
 
 @mcp.tool()
-def update_repo(id: str, config: str) -> str:
+def update_repo(id: str, config: str | dict) -> str:
     """Update repo configuration. config: JSON string with partial repo config."""
-    return _ok(_get_client().write("UpdateRepo", {"id": id, "config": json.loads(config)}))
+    return _ok(_get_client().write("UpdateRepo", {"id": id, "config": _parse_json(config)}))
 
 
 @mcp.tool()
@@ -1354,18 +1362,18 @@ def delete_repo_webhook(repo: str, action: str = "Pull") -> str:
 
 
 @mcp.tool()
-def create_procedure(name: str, config: Optional[str] = None) -> str:
+def create_procedure(name: str, config: str | dict | None = None) -> str:
     """Create a new procedure. config: optional JSON string with procedure configuration."""
     params: dict = {"name": name, "config": {}}
     if config is not None:
-        params["config"] = json.loads(config)
+        params["config"] = _parse_json(config)
     return _ok(_get_client().write("CreateProcedure", params))
 
 
 @mcp.tool()
-def update_procedure(id: str, config: str) -> str:
+def update_procedure(id: str, config: str | dict) -> str:
     """Update procedure configuration. config: JSON string with partial procedure config."""
-    return _ok(_get_client().write("UpdateProcedure", {"id": id, "config": json.loads(config)}))
+    return _ok(_get_client().write("UpdateProcedure", {"id": id, "config": _parse_json(config)}))
 
 
 @mcp.tool()
@@ -1392,18 +1400,18 @@ def copy_procedure(id: str, name: str) -> str:
 
 
 @mcp.tool()
-def create_action(name: str, config: Optional[str] = None) -> str:
+def create_action(name: str, config: str | dict | None = None) -> str:
     """Create a new action. config: optional JSON string with action configuration."""
     params: dict = {"name": name, "config": {}}
     if config is not None:
-        params["config"] = json.loads(config)
+        params["config"] = _parse_json(config)
     return _ok(_get_client().write("CreateAction", params))
 
 
 @mcp.tool()
-def update_action(id: str, config: str) -> str:
+def update_action(id: str, config: str | dict) -> str:
     """Update action configuration. config: JSON string with partial action config."""
-    return _ok(_get_client().write("UpdateAction", {"id": id, "config": json.loads(config)}))
+    return _ok(_get_client().write("UpdateAction", {"id": id, "config": _parse_json(config)}))
 
 
 @mcp.tool()
@@ -1442,18 +1450,18 @@ def delete_action_webhook(action: str) -> str:
 
 
 @mcp.tool()
-def create_resource_sync(name: str, config: Optional[str] = None) -> str:
+def create_resource_sync(name: str, config: str | dict | None = None) -> str:
     """Create a new resource sync. config: optional JSON string with sync configuration."""
     params: dict = {"name": name, "config": {}}
     if config is not None:
-        params["config"] = json.loads(config)
+        params["config"] = _parse_json(config)
     return _ok(_get_client().write("CreateResourceSync", params))
 
 
 @mcp.tool()
-def update_resource_sync(id: str, config: str) -> str:
+def update_resource_sync(id: str, config: str | dict) -> str:
     """Update resource sync configuration. config: JSON string with partial sync config."""
-    return _ok(_get_client().write("UpdateResourceSync", {"id": id, "config": json.loads(config)}))
+    return _ok(_get_client().write("UpdateResourceSync", {"id": id, "config": _parse_json(config)}))
 
 
 @mcp.tool()
@@ -1515,18 +1523,18 @@ def delete_sync_webhook(sync: str, action: str = "Sync") -> str:
 
 
 @mcp.tool()
-def create_builder(name: str, config: Optional[str] = None) -> str:
+def create_builder(name: str, config: str | dict | None = None) -> str:
     """Create a new builder. config: optional JSON string with builder configuration."""
     params: dict = {"name": name, "config": {}}
     if config is not None:
-        params["config"] = json.loads(config)
+        params["config"] = _parse_json(config)
     return _ok(_get_client().write("CreateBuilder", params))
 
 
 @mcp.tool()
-def update_builder(id: str, config: str) -> str:
+def update_builder(id: str, config: str | dict) -> str:
     """Update builder configuration. config: JSON string with partial builder config."""
-    return _ok(_get_client().write("UpdateBuilder", {"id": id, "config": json.loads(config)}))
+    return _ok(_get_client().write("UpdateBuilder", {"id": id, "config": _parse_json(config)}))
 
 
 @mcp.tool()
@@ -1553,18 +1561,18 @@ def copy_builder(id: str, name: str) -> str:
 
 
 @mcp.tool()
-def create_alerter(name: str, config: Optional[str] = None) -> str:
+def create_alerter(name: str, config: str | dict | None = None) -> str:
     """Create a new alerter. config: optional JSON string with alerter configuration."""
     params: dict = {"name": name, "config": {}}
     if config is not None:
-        params["config"] = json.loads(config)
+        params["config"] = _parse_json(config)
     return _ok(_get_client().write("CreateAlerter", params))
 
 
 @mcp.tool()
-def update_alerter(id: str, config: str) -> str:
+def update_alerter(id: str, config: str | dict) -> str:
     """Update alerter configuration. config: JSON string with partial alerter config."""
-    return _ok(_get_client().write("UpdateAlerter", {"id": id, "config": json.loads(config)}))
+    return _ok(_get_client().write("UpdateAlerter", {"id": id, "config": _parse_json(config)}))
 
 
 @mcp.tool()
@@ -1591,7 +1599,7 @@ def copy_alerter(id: str, name: str) -> str:
 
 
 @mcp.tool()
-def create_tag(name: str, color: Optional[str] = None) -> str:
+def create_tag(name: str, color: str | None = None) -> str:
     """Create a new tag. color: optional hex color or named color."""
     params: dict = {"name": name}
     if color is not None:
@@ -1706,9 +1714,9 @@ def update_user_username(username: str) -> str:
 @mcp.tool()
 def update_user_base_permissions(
     user_id: str,
-    enabled: Optional[bool] = None,
-    create_servers: Optional[bool] = None,
-    create_builds: Optional[bool] = None,
+    enabled: bool | None = None,
+    create_servers: bool | None = None,
+    create_builds: bool | None = None,
 ) -> str:
     """Update base permissions for a user."""
     params: dict = {"user_id": user_id}
@@ -1803,29 +1811,29 @@ def set_everyone_user_group(user_group: str, everyone: bool) -> str:
 
 @mcp.tool()
 def update_permission_on_resource_type(
-    user_target: str,
+    user_target: str | dict,
     resource_type: str,
-    permission: str,
+    permission: str | dict,
 ) -> str:
     """Update permission on a resource type. user_target/permission: JSON strings."""
     return _ok(_get_client().write("UpdatePermissionOnResourceType", {
-        "user_target": json.loads(user_target),
+        "user_target": _parse_json(user_target),
         "resource_type": resource_type,
-        "permission": json.loads(permission),
+        "permission": _parse_json(permission),
     }))
 
 
 @mcp.tool()
 def update_permission_on_target(
-    user_target: str,
-    resource_target: str,
-    permission: str,
+    user_target: str | dict,
+    resource_target: str | dict,
+    permission: str | dict,
 ) -> str:
     """Update permission on a specific resource. user_target/resource_target/permission: JSON strings."""
     return _ok(_get_client().write("UpdatePermissionOnTarget", {
-        "user_target": json.loads(user_target),
-        "resource_target": json.loads(resource_target),
-        "permission": json.loads(permission),
+        "user_target": _parse_json(user_target),
+        "resource_target": _parse_json(resource_target),
+        "permission": _parse_json(permission),
     }))
 
 
@@ -1835,15 +1843,15 @@ def update_permission_on_target(
 
 
 @mcp.tool()
-def create_git_provider_account(account: str) -> str:
+def create_git_provider_account(account: str | dict) -> str:
     """Create a git provider account. account: JSON string with account config."""
-    return _ok(_get_client().write("CreateGitProviderAccount", {"account": json.loads(account)}))
+    return _ok(_get_client().write("CreateGitProviderAccount", {"account": _parse_json(account)}))
 
 
 @mcp.tool()
-def update_git_provider_account(id: str, account: str) -> str:
+def update_git_provider_account(id: str, account: str | dict) -> str:
     """Update a git provider account. account: JSON string with partial account config."""
-    return _ok(_get_client().write("UpdateGitProviderAccount", {"id": id, "account": json.loads(account)}))
+    return _ok(_get_client().write("UpdateGitProviderAccount", {"id": id, "account": _parse_json(account)}))
 
 
 @mcp.tool()
@@ -1853,15 +1861,15 @@ def delete_git_provider_account(id: str) -> str:
 
 
 @mcp.tool()
-def create_docker_registry_account(account: str) -> str:
+def create_docker_registry_account(account: str | dict) -> str:
     """Create a Docker registry account. account: JSON string with account config."""
-    return _ok(_get_client().write("CreateDockerRegistryAccount", {"account": json.loads(account)}))
+    return _ok(_get_client().write("CreateDockerRegistryAccount", {"account": _parse_json(account)}))
 
 
 @mcp.tool()
-def update_docker_registry_account(id: str, account: str) -> str:
+def update_docker_registry_account(id: str, account: str | dict) -> str:
     """Update a Docker registry account. account: JSON string with partial account config."""
-    return _ok(_get_client().write("UpdateDockerRegistryAccount", {"id": id, "account": json.loads(account)}))
+    return _ok(_get_client().write("UpdateDockerRegistryAccount", {"id": id, "account": _parse_json(account)}))
 
 
 @mcp.tool()
@@ -1877,13 +1885,13 @@ def delete_docker_registry_account(id: str) -> str:
 
 @mcp.tool()
 def update_resource_meta(
-    target: str,
-    description: Optional[str] = None,
-    template: Optional[bool] = None,
-    tags: Optional[str] = None,
+    target: str | dict,
+    description: str | None = None,
+    template: bool | None = None,
+    tags: str | None = None,
 ) -> str:
     """Update resource metadata. target: JSON string. tags: comma-separated tag ids."""
-    params: dict = {"target": json.loads(target)}
+    params: dict = {"target": _parse_json(target)}
     if description is not None:
         params["description"] = description
     if template is not None:
@@ -1901,8 +1909,8 @@ def update_resource_meta(
 @mcp.tool()
 def deploy(
     deployment: str,
-    stop_signal: Optional[str] = None,
-    stop_time: Optional[int] = None,
+    stop_signal: str | None = None,
+    stop_time: int | None = None,
 ) -> str:
     """Deploy a deployment (pull image + recreate container)."""
     params: dict = {"deployment": deployment}
@@ -1928,8 +1936,8 @@ def start_deployment(deployment: str) -> str:
 @mcp.tool()
 def stop_deployment(
     deployment: str,
-    signal: Optional[str] = None,
-    time: Optional[int] = None,
+    signal: str | None = None,
+    time: int | None = None,
 ) -> str:
     """Stop a running deployment."""
     params: dict = {"deployment": deployment}
@@ -1961,8 +1969,8 @@ def unpause_deployment(deployment: str) -> str:
 @mcp.tool()
 def destroy_deployment(
     deployment: str,
-    signal: Optional[str] = None,
-    time: Optional[int] = None,
+    signal: str | None = None,
+    time: int | None = None,
 ) -> str:
     """Destroy a deployment (stop and remove container)."""
     params: dict = {"deployment": deployment}
@@ -1981,8 +1989,8 @@ def destroy_deployment(
 @mcp.tool()
 def deploy_stack(
     stack: str,
-    services: Optional[str] = None,
-    stop_time: Optional[int] = None,
+    services: str | None = None,
+    stop_time: int | None = None,
 ) -> str:
     """Deploy a stack. services: optional comma-separated service names."""
     params: dict = {"stack": stack, "services": []}
@@ -1994,7 +2002,7 @@ def deploy_stack(
 
 
 @mcp.tool()
-def deploy_stack_if_changed(stack: str, stop_time: Optional[int] = None) -> str:
+def deploy_stack_if_changed(stack: str, stop_time: int | None = None) -> str:
     """Deploy a stack only if its compose file has changed."""
     params: dict = {"stack": stack}
     if stop_time is not None:
@@ -2003,7 +2011,7 @@ def deploy_stack_if_changed(stack: str, stop_time: Optional[int] = None) -> str:
 
 
 @mcp.tool()
-def pull_stack(stack: str, services: Optional[str] = None) -> str:
+def pull_stack(stack: str, services: str | None = None) -> str:
     """Pull latest images for a stack. services: optional comma-separated service names."""
     params: dict = {"stack": stack, "services": []}
     if services is not None:
@@ -2012,7 +2020,7 @@ def pull_stack(stack: str, services: Optional[str] = None) -> str:
 
 
 @mcp.tool()
-def start_stack(stack: str, services: Optional[str] = None) -> str:
+def start_stack(stack: str, services: str | None = None) -> str:
     """Start a stopped stack. services: optional comma-separated service names."""
     params: dict = {"stack": stack, "services": []}
     if services is not None:
@@ -2023,8 +2031,8 @@ def start_stack(stack: str, services: Optional[str] = None) -> str:
 @mcp.tool()
 def stop_stack(
     stack: str,
-    services: Optional[str] = None,
-    stop_time: Optional[int] = None,
+    services: str | None = None,
+    stop_time: int | None = None,
 ) -> str:
     """Stop a running stack. services: optional comma-separated service names."""
     params: dict = {"stack": stack, "services": []}
@@ -2036,7 +2044,7 @@ def stop_stack(
 
 
 @mcp.tool()
-def restart_stack(stack: str, services: Optional[str] = None) -> str:
+def restart_stack(stack: str, services: str | None = None) -> str:
     """Restart a stack. services: optional comma-separated service names."""
     params: dict = {"stack": stack, "services": []}
     if services is not None:
@@ -2045,7 +2053,7 @@ def restart_stack(stack: str, services: Optional[str] = None) -> str:
 
 
 @mcp.tool()
-def pause_stack(stack: str, services: Optional[str] = None) -> str:
+def pause_stack(stack: str, services: str | None = None) -> str:
     """Pause a running stack. services: optional comma-separated service names."""
     params: dict = {"stack": stack, "services": []}
     if services is not None:
@@ -2054,7 +2062,7 @@ def pause_stack(stack: str, services: Optional[str] = None) -> str:
 
 
 @mcp.tool()
-def unpause_stack(stack: str, services: Optional[str] = None) -> str:
+def unpause_stack(stack: str, services: str | None = None) -> str:
     """Unpause a paused stack. services: optional comma-separated service names."""
     params: dict = {"stack": stack, "services": []}
     if services is not None:
@@ -2065,9 +2073,9 @@ def unpause_stack(stack: str, services: Optional[str] = None) -> str:
 @mcp.tool()
 def destroy_stack(
     stack: str,
-    services: Optional[str] = None,
+    services: str | None = None,
     remove_orphans: bool = False,
-    stop_time: Optional[int] = None,
+    stop_time: int | None = None,
 ) -> str:
     """Destroy a stack (stop and remove containers). services: optional comma-separated service names."""
     params: dict = {"stack": stack, "services": [], "remove_orphans": remove_orphans}
@@ -2082,8 +2090,8 @@ def destroy_stack(
 def run_stack_service(
     stack: str,
     service: str,
-    command: Optional[str] = None,
-    detach: Optional[bool] = None,
+    command: str | None = None,
+    detach: bool | None = None,
 ) -> str:
     """Run a one-off command in a stack service. command: optional shell command."""
     params: dict = {"stack": stack, "service": service}
@@ -2109,8 +2117,8 @@ def start_container(server: str, container: str) -> str:
 def stop_container(
     server: str,
     container: str,
-    signal: Optional[str] = None,
-    time: Optional[int] = None,
+    signal: str | None = None,
+    time: int | None = None,
 ) -> str:
     """Stop a Docker container on a server."""
     params: dict = {"server": server, "container": container}
@@ -2143,8 +2151,8 @@ def unpause_container(server: str, container: str) -> str:
 def destroy_container(
     server: str,
     container: str,
-    signal: Optional[str] = None,
-    time: Optional[int] = None,
+    signal: str | None = None,
+    time: int | None = None,
 ) -> str:
     """Destroy a Docker container on a server (stop and remove)."""
     params: dict = {"server": server, "container": container}
@@ -2243,11 +2251,11 @@ def run_procedure(procedure: str) -> str:
 
 
 @mcp.tool()
-def run_action(action: str, args: Optional[str] = None) -> str:
+def run_action(action: str, args: str | dict | None = None) -> str:
     """Run an action. args: optional JSON object with arguments."""
     params: dict = {"action": action}
     if args is not None:
-        params["args"] = json.loads(args)
+        params["args"] = _parse_json(args)
     return _ok(_get_client().execute("RunAction", params))
 
 
@@ -2259,8 +2267,8 @@ def run_action(action: str, args: Optional[str] = None) -> str:
 @mcp.tool()
 def run_sync(
     sync: str,
-    resource_type: Optional[str] = None,
-    resources: Optional[str] = None,
+    resource_type: str | None = None,
+    resources: str | None = None,
 ) -> str:
     """Run a resource sync. resource_type: optional type filter. resources: optional comma-separated ids/names."""
     params: dict = {"sync": sync}
@@ -2423,7 +2431,7 @@ def send_alert(
     level: str,
     message: str,
     details: str = "",
-    alerters: Optional[str] = None,
+    alerters: str | None = None,
 ) -> str:
     """Send a custom alert. level: Ok, Warning, or Critical. alerters: comma-separated alerter ids/names."""
     params: dict = {
