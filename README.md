@@ -43,6 +43,30 @@ Or use the [interactive config generator](https://nikitatsym.github.io/komodo-mc
 3. Create a new API key (or create a Service User first)
 4. Copy the **Key** and **Secret**
 
+## Compact Mode
+
+If you have many MCP servers and want to reduce total tool count, use `--compact` mode. Instead of 293 individual tools, it exposes just 3 meta-tools (`komodo_read`, `komodo_write`, `komodo_execute`) with built-in help discovery.
+
+```json
+{
+  "mcpServers": {
+    "komodo": {
+      "command": "uvx",
+      "args": ["--refresh", "--extra-index-url",
+        "https://nikitatsym.github.io/komodo-mcp/simple",
+        "komodo-mcp", "--compact"],
+      "env": {
+        "KOMODO_URL": "https://komodo.example.com",
+        "KOMODO_API_KEY": "your-api-key",
+        "KOMODO_API_SECRET": "your-api-secret"
+      }
+    }
+  }
+}
+```
+
+The LLM calls `komodo_read(operation="help")` to discover available operations, then calls with the specific operation name and params JSON.
+
 ## Tools Overview
 
 ### Read (119 tools)
