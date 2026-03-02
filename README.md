@@ -35,6 +35,7 @@ Or use the [interactive config generator](https://nikitatsym.github.io/komodo-mc
 | `KOMODO_URL` | Base URL of your Komodo Core instance |
 | `KOMODO_API_KEY` | API key for authentication |
 | `KOMODO_API_SECRET` | API secret for authentication |
+| `KOMODO_COMPACT` | Set to `true` for compact mode (3 meta-tools instead of 293) |
 
 ## Getting API Credentials
 
@@ -45,7 +46,7 @@ Or use the [interactive config generator](https://nikitatsym.github.io/komodo-mc
 
 ## Compact Mode
 
-If you have many MCP servers and want to reduce total tool count, use `--compact` mode. Instead of 293 individual tools, it exposes just 3 meta-tools (`komodo_read`, `komodo_write`, `komodo_execute`) with built-in help discovery.
+If you have many MCP servers and want to reduce total tool count, set `KOMODO_COMPACT=true`. Instead of 293 individual tools, it exposes just 3 meta-tools (`komodo_read`, `komodo_write`, `komodo_execute`) with built-in help discovery.
 
 ```json
 {
@@ -54,11 +55,12 @@ If you have many MCP servers and want to reduce total tool count, use `--compact
       "command": "uvx",
       "args": ["--refresh", "--extra-index-url",
         "https://nikitatsym.github.io/komodo-mcp/simple",
-        "komodo-mcp", "--compact"],
+        "komodo-mcp"],
       "env": {
         "KOMODO_URL": "https://komodo.example.com",
         "KOMODO_API_KEY": "your-api-key",
-        "KOMODO_API_SECRET": "your-api-secret"
+        "KOMODO_API_SECRET": "your-api-secret",
+        "KOMODO_COMPACT": "true"
       }
     }
   }
