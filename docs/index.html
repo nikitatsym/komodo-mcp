@@ -47,6 +47,30 @@
     margin-bottom: 1rem;
   }
   input:focus { outline: none; border-color: var(--accent); }
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .checkbox-row input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .checkbox-row label {
+    display: inline;
+    margin-bottom: 0;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 0.9rem;
+  }
+  .checkbox-row .hint {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-left: 0.25rem;
+  }
   button {
     padding: 0.5rem 1rem;
     border: none;
@@ -110,6 +134,11 @@
     <input type="text" id="komodo-key" placeholder="your-api-key">
     <label for="komodo-secret">API Secret</label>
     <input type="password" id="komodo-secret" placeholder="your-api-secret">
+    <div class="checkbox-row">
+      <input type="checkbox" id="compact-mode">
+      <label for="compact-mode">Compact mode</label>
+      <span class="hint">— 3 meta-tools instead of 293, useful with many MCP servers</span>
+    </div>
     <button class="btn-primary" onclick="generate()">Generate</button>
     <button class="btn-copy" id="btn-copy" onclick="copyConfig()">Copy</button>
     <pre id="output"></pre>
@@ -151,6 +180,17 @@ function generate() {
   if (!key)    { alert('Please enter your API Key.');     return; }
   if (!secret) { alert('Please enter your API Secret.');  return; }
 
+  var compact = document.getElementById('compact-mode').checked;
+
+  var env = {
+    KOMODO_URL: url,
+    KOMODO_API_KEY: key,
+    KOMODO_API_SECRET: secret
+  };
+  if (compact) {
+    env.KOMODO_COMPACT = "true";
+  }
+
   var config = {
     mcpServers: {
       komodo: {
@@ -158,11 +198,7 @@ function generate() {
         args: ["--refresh", "--extra-index-url",
           "https://nikitatsym.github.io/komodo-mcp/simple",
           "komodo-mcp"],
-        env: {
-          KOMODO_URL: url,
-          KOMODO_API_KEY: key,
-          KOMODO_API_SECRET: secret
-        }
+        env: env
       }
     }
   };
