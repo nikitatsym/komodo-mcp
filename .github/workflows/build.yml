@@ -57,7 +57,16 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           PKG="komodo-mcp"
+          VERSION="${{ steps.version.outputs.version }}"
           mkdir -p _site/simple/${PKG}
+          # Wait for the release API to return the new version
+          for i in 1 2 3 4 5; do
+            if gh api repos/${{ github.repository }}/releases --paginate -q '.[].assets[].browser_download_url' | grep -q "${VERSION}"; then
+              break
+            fi
+            echo "Waiting for release v${VERSION} to appear in API... (attempt $i)"
+            sleep 3
+          done
           echo "<!DOCTYPE html><html><body>" > _site/simple/${PKG}/index.html
           gh api repos/${{ github.repository }}/releases --paginate -q '.[].assets[].browser_download_url' | while read URL; do
             FNAME=$(basename "$URL")
