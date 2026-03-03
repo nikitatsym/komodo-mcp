@@ -2,7 +2,7 @@
 
 MCP server for [Komodo](https://komo.do/) — full API coverage for autonomous AI agents.
 
-**293 tools** covering every Komodo Core operation: servers, deployments, stacks, builds, repos, procedures, actions, resource syncs, Docker management, users, permissions, and more.
+**293 tools** covering every Komodo Core operation: servers, deployments, stacks, builds, repos, procedures, actions, resource syncs, Docker management, users, permissions, and more. Compact mode available (6 meta-tools).
 
 ## Quick Start
 
@@ -46,7 +46,16 @@ Or use the [interactive config generator](https://nikitatsym.github.io/komodo-mc
 
 ## Compact Mode
 
-If you have many MCP servers and want to reduce total tool count, set `KOMODO_COMPACT=true`. Instead of 293 individual tools, it exposes just 3 meta-tools (`komodo_read`, `komodo_write`, `komodo_execute`) with built-in help discovery.
+If you have many MCP servers and want to reduce total tool count, set `KOMODO_COMPACT=true`. Instead of 293 individual tools, it exposes 6 meta-tools split by risk level, with built-in help discovery:
+
+| Tool | Scope | Ops |
+|------|-------|-----|
+| `komodo_read` | Safe resource queries | 109 |
+| `komodo_write` | Create/update/rename/copy (non-destructive) | 68 |
+| `komodo_execute` | Deploy, start/stop, build (actions) | 48 |
+| `komodo_delete` | Delete, destroy, prune (destructive) | 36 |
+| `komodo_admin_read` | User/permission queries | 10 |
+| `komodo_admin_write` | User/permission management, admin-only | 22 |
 
 ```json
 {
@@ -67,7 +76,7 @@ If you have many MCP servers and want to reduce total tool count, set `KOMODO_CO
 }
 ```
 
-The LLM calls `komodo_read(operation="help")` to discover available operations, then calls with the specific operation name and params JSON.
+The LLM calls any tool with `operation="help"` to discover available operations, then calls with the specific operation name and params JSON. Users can selectively allow safe tools (read) while blocking destructive ones (delete, admin).
 
 ## Tools Overview
 
