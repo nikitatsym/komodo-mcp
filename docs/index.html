@@ -109,21 +109,12 @@
 
   <div class="card template">
     <h2>Config template</h2>
-    <pre><code>{
-  "mcpServers": {
-    "komodo": {
-      "command": "uvx",
-      "args": ["--refresh", "--extra-index-url",
-        "https://nikitatsym.github.io/komodo-mcp/simple",
-        "komodo-mcp"],
-      "env": {
-        "KOMODO_URL": "https://komodo.example.com",
-        "KOMODO_API_KEY": "your-api-key",
-        "KOMODO_API_SECRET": "your-api-secret"
-      }
-    }
-  }
-}</code></pre>
+    <div class="checkbox-row">
+      <input type="checkbox" id="template-compact" onchange="updateTemplate()">
+      <label for="template-compact">Compact mode</label>
+      <span class="hint">— 3 meta-tools instead of 293, useful with many MCP servers</span>
+    </div>
+    <pre id="template-pre"><code id="template-code"></code></pre>
   </div>
 
   <div class="card">
@@ -171,6 +162,41 @@
 </div>
 
 <script>
+function updateTemplate() {
+  var compact = document.getElementById('template-compact').checked;
+  var env = {
+    "KOMODO_URL": "https://komodo.example.com",
+    "KOMODO_API_KEY": "your-api-key",
+    "KOMODO_API_SECRET": "your-api-secret"
+  };
+  if (compact) {
+    env["KOMODO_COMPACT"] = "true";
+  }
+  var tpl = {
+    mcpServers: {
+      komodo: {
+        command: "uvx",
+        args: ["--refresh", "--extra-index-url",
+          "https://nikitatsym.github.io/komodo-mcp/simple",
+          "komodo-mcp"],
+        env: env
+      }
+    }
+  };
+  document.getElementById('template-code').textContent = JSON.stringify(tpl, null, 2);
+  // sync the generate form checkbox
+  document.getElementById('compact-mode').checked = compact;
+}
+
+// also sync the other way
+document.addEventListener('DOMContentLoaded', function() {
+  updateTemplate();
+  document.getElementById('compact-mode').addEventListener('change', function() {
+    document.getElementById('template-compact').checked = this.checked;
+    updateTemplate();
+  });
+});
+
 function generate() {
   var url    = document.getElementById('komodo-url').value.trim().replace(/\/+$/, '');
   var key    = document.getElementById('komodo-key').value.trim();
