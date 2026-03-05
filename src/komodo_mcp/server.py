@@ -941,9 +941,23 @@ def list_updates(page: int = 0, query: str | dict | None = None) -> str:
 
 
 @mcp.tool()
-def get_update(id: str) -> str:
-    """Get a specific update by id."""
-    return _ok(_get_client().read("GetUpdate", {"id": id}))
+def get_update(id: str, failed_only: bool = False, tail: int = 0) -> str:
+    """Get a specific update by id. failed_only: only show failed stages. tail: limit stdout/stderr to last N lines per stage (0=full)."""
+    data = _get_client().read("GetUpdate", {"id": id})
+    if failed_only or tail:
+        logs = data.get("logs", [])
+        if failed_only:
+            logs = [s for s in logs if not s.get("success", True)]
+        if tail and tail > 0:
+            for stage in logs:
+                for field in ("stdout", "stderr"):
+                    text = stage.get(field, "")
+                    if text:
+                        lines = text.splitlines()
+                        if len(lines) > tail:
+                            stage[field] = f"... ({len(lines) - tail} lines truncated)\n" + "\n".join(lines[-tail:])
+        data["logs"] = logs
+    return _ok(data)
 
 
 @mcp.tool()

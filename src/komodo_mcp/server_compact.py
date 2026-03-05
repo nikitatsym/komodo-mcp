@@ -157,7 +157,7 @@ _OPERATIONS: dict[str, tuple[str, str, list[str], str]] = {
     "ListDockerRegistriesFromConfig": ("read", "read", ["target"], "List Docker registries from Core config."),
     # ── read — Updates & Alerts ────────────────────────────────
     "ListUpdates": ("read", "read", ["query", "page"], "List updates (paginated)."),
-    "GetUpdate": ("read", "read", ["id"], "Get a specific update by id."),
+    "GetUpdate": ("read", "read", ["id", "failed_only", "tail"], "Get update by id. failed_only: only failed stages. tail: limit stdout/stderr lines per stage."),
     "ListAlerts": ("read", "read", ["query", "page"], "List alerts (paginated)."),
     # ── read — Misc ────────────────────────────────────────────
     "ListSecrets": ("read", "read", ["target"], "List available secret variable names."),
@@ -444,8 +444,32 @@ def _dispatch(operation: str, scope: str, params_str: str) -> str:
         })
 
     parsed = json.loads(params_str) if isinstance(params_str, str) else params_str
+
+    # GetUpdate: pop client-side filter params before API call
+    failed_only = False
+    tail = 0
+    if operation == "GetUpdate" and parsed:
+        failed_only = parsed.pop("failed_only", False)
+        tail = parsed.pop("tail", 0)
+
     client = _get_client()
     result = getattr(client, api_endpoint)(operation, parsed or None)
+
+    # Post-process GetUpdate logs
+    if operation == "GetUpdate" and (failed_only or tail) and isinstance(result, dict):
+        logs = result.get("logs", [])
+        if failed_only:
+            logs = [s for s in logs if not s.get("success", True)]
+        if tail and tail > 0:
+            for stage in logs:
+                for field in ("stdout", "stderr"):
+                    text = stage.get(field, "")
+                    if text:
+                        lines = text.splitlines()
+                        if len(lines) > tail:
+                            stage[field] = f"... ({len(lines) - tail} lines truncated)\n" + "\n".join(lines[-tail:])
+        result["logs"] = logs
+
     return _ok(result)
 
 
