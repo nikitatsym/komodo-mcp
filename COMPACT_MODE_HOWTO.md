@@ -87,10 +87,18 @@ _HELP_DELETE = _build_help("svc_delete -- DELETE endpoints", lambda m, p: m == "
 # ... 4 more
 ```
 
-**Shared dispatch** -- all request logic in one place, tools are thin wrappers:
+**Shared dispatch** -- all request logic in one place, tools are thin wrappers. Must handle query params in path -- LLMs often put query params directly in the path string (`/repos/o/r/issues?state=open`) instead of in `params`. Split before processing, otherwise path-based matching (brief rules, text patterns, validations) will fail silently:
 ```python
+from urllib.parse import urlparse, parse_qs
+
 def _dispatch(method, path, params_str):
     p = json.loads(params_str) if params_str.strip() else {}
+    # LLMs often pass query params in path -- split and merge
+    if "?" in path:
+        parsed = urlparse(path)
+        path = parsed.path
+        for k, v in parse_qs(parsed.query).items():
+            p.setdefault(k, v[0] if len(v) == 1 else v)
     if method == "GET":    return _ok(client.get(path, params=p or None))
     if method == "POST":   return _ok(client.post(path, json=p))
     if method == "DELETE":  return _ok(client.delete(path))
