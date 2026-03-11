@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import os
-
 import httpx
+
+from .config import get_settings
 
 
 class KomodoError(Exception):
@@ -34,11 +34,12 @@ class KomodoClient:
         api_key: str | None = None,
         api_secret: str | None = None,
     ):
-        self._base = (base_url or os.environ["KOMODO_URL"]).rstrip("/")
+        s = get_settings()
+        self._base = (base_url or s.komodo_url).rstrip("/")
         self._http = httpx.Client(
             headers={
-                "X-Api-Key": api_key or os.environ["KOMODO_API_KEY"],
-                "X-Api-Secret": api_secret or os.environ["KOMODO_API_SECRET"],
+                "X-Api-Key": api_key or s.komodo_api_key,
+                "X-Api-Secret": api_secret or s.komodo_api_secret,
             },
             timeout=30.0,
         )

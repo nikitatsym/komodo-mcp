@@ -184,10 +184,13 @@ def configure_env(komodo_instance, api_credentials):
     """Set environment variables for KomodoClient."""
     import os
 
+    from komodo_mcp.config import _reset_settings
+
     api_key, api_secret = api_credentials
     os.environ["KOMODO_URL"] = komodo_instance
     os.environ["KOMODO_API_KEY"] = api_key
     os.environ["KOMODO_API_SECRET"] = api_secret
+    _reset_settings()
 
     import komodo_mcp.server as srv
     srv._client = None
