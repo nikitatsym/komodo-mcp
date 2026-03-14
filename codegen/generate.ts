@@ -256,8 +256,8 @@ for (const [opName, endpoint] of sortedOps) {
 
   const sig =
     params.length > 0
-      ? `def ${fnName}(${params.join(", ")}) -> str:`
-      : `def ${fnName}() -> str:`;
+      ? `def ${fnName}(${params.join(", ")}):`
+      : `def ${fnName}():`;
 
   // Build docstring
   let doc = iface.doc || `${opName}.`;
