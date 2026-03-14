@@ -5,7 +5,6 @@ class Settings(BaseSettings):
     komodo_url: str = ""
     komodo_api_key: str = ""
     komodo_api_secret: str = ""
-    komodo_compact: bool = False
 
 
 _settings: Settings | None = None

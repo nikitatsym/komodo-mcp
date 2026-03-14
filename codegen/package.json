@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "komodo_client": "^1.19.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  }
+}

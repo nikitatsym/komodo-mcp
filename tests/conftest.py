@@ -109,13 +109,24 @@ def _create_api_key() -> tuple[str, str]:
 
 
 class AgentSimulator:
-    """Simulates an MCP agent calling tools by name."""
+    """Simulates an MCP agent calling tools by name.
+
+    Supports both MCP meta-tool names (komodo_read, etc.) and direct
+    operation names (get_server, list_stacks, etc.) for convenience.
+    """
 
     def __init__(self):
         self.call_log: list[dict] = []
         self._tools: dict[str, Any] = {}
+        # Register MCP-level tools (meta-tools + ROOT standalone)
         for tool in mcp._tool_manager._tools.values():
             self._tools[tool.name] = tool.fn
+        # Also expose individual operation functions for direct calls
+        import inspect
+        from komodo_mcp import tools as tools_module
+        for name, fn in inspect.getmembers(tools_module, inspect.isfunction):
+            if hasattr(fn, "_mcp_group") and name not in self._tools:
+                self._tools[name] = fn
 
     def call(self, tool_name: str, **kwargs) -> Any:
         """Call an MCP tool by name and return parsed result."""
@@ -192,10 +203,10 @@ def configure_env(komodo_instance, api_credentials):
     os.environ["KOMODO_API_SECRET"] = api_secret
     _reset_settings()
 
-    import komodo_mcp.server as srv
-    srv._client = None
+    import komodo_mcp._helpers as helpers
+    helpers._client = None
     yield
-    srv._client = None
+    helpers._client = None
 
 
 @pytest.fixture(scope="session")
