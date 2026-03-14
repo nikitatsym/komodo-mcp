@@ -6,7 +6,7 @@ from ._helpers import _ok, _get_client
 
 # ── read ────────────────────────────────────────────────────────────────
 
-def export_all_resources_to_toml(include_resources: bool, tags: list[str] | None = None, include_variables: bool | None = None, include_user_groups: bool | None = None) -> str:
+def export_all_resources_to_toml(include_resources: bool, tags: list[str] | None = None, include_variables: bool | None = None, include_user_groups: bool | None = None):
     """ExportAllResourcesToToml.
 
     include_resources: Whether to include any resources (servers, stacks, etc.)
@@ -24,7 +24,7 @@ def export_all_resources_to_toml(include_resources: bool, tags: list[str] | None
     return _ok(_get_client().read("ExportAllResourcesToToml", params))
 
 
-def export_resources_to_toml(targets: list[dict] | None = None, user_groups: list[str] | None = None, include_variables: bool | None = None) -> str:
+def export_resources_to_toml(targets: list[dict] | None = None, user_groups: list[str] | None = None, include_variables: bool | None = None):
     """ExportResourcesToToml.
 
     targets: The targets to include in the export.
@@ -41,7 +41,7 @@ def export_resources_to_toml(targets: list[dict] | None = None, user_groups: lis
     return _ok(_get_client().read("ExportResourcesToToml", params or None))
 
 
-def find_user(user: str) -> str:
+def find_user(user: str):
     """FindUser.
 
     user: Id or username
@@ -49,7 +49,7 @@ def find_user(user: str) -> str:
     return _ok(_get_client().read("FindUser", {"user": user}))
 
 
-def get_action(action: str) -> str:
+def get_action(action: str):
     """GetAction.
 
     action: Id or name
@@ -57,7 +57,7 @@ def get_action(action: str) -> str:
     return _ok(_get_client().read("GetAction", {"action": action}))
 
 
-def get_action_action_state(action: str) -> str:
+def get_action_action_state(action: str):
     """GetActionActionState.
 
     action: Id or name
@@ -65,17 +65,17 @@ def get_action_action_state(action: str) -> str:
     return _ok(_get_client().read("GetActionActionState", {"action": action}))
 
 
-def get_actions_summary() -> str:
+def get_actions_summary():
     """GetActionsSummary."""
     return _ok(_get_client().read("GetActionsSummary"))
 
 
-def get_alert(id: str) -> str:
+def get_alert(id: str):
     """GetAlert."""
     return _ok(_get_client().read("GetAlert", {"id": id}))
 
 
-def get_alerter(alerter: str) -> str:
+def get_alerter(alerter: str):
     """GetAlerter.
 
     alerter: Id or name
@@ -83,12 +83,12 @@ def get_alerter(alerter: str) -> str:
     return _ok(_get_client().read("GetAlerter", {"alerter": alerter}))
 
 
-def get_alerters_summary() -> str:
+def get_alerters_summary():
     """GetAlertersSummary."""
     return _ok(_get_client().read("GetAlertersSummary"))
 
 
-def get_build(build: str) -> str:
+def get_build(build: str):
     """GetBuild.
 
     build: Id or name
@@ -96,7 +96,7 @@ def get_build(build: str) -> str:
     return _ok(_get_client().read("GetBuild", {"build": build}))
 
 
-def get_build_action_state(build: str) -> str:
+def get_build_action_state(build: str):
     """GetBuildActionState.
 
     build: Id or name
@@ -104,7 +104,7 @@ def get_build_action_state(build: str) -> str:
     return _ok(_get_client().read("GetBuildActionState", {"build": build}))
 
 
-def get_builder(builder: str) -> str:
+def get_builder(builder: str):
     """GetBuilder.
 
     builder: Id or name
@@ -112,12 +112,12 @@ def get_builder(builder: str) -> str:
     return _ok(_get_client().read("GetBuilder", {"builder": builder}))
 
 
-def get_builders_summary() -> str:
+def get_builders_summary():
     """GetBuildersSummary."""
     return _ok(_get_client().read("GetBuildersSummary"))
 
 
-def get_build_monthly_stats(page: int | None = None) -> str:
+def get_build_monthly_stats(page: int | None = None):
     """GetBuildMonthlyStats.
 
     page: Query for older data by incrementing the page.
@@ -128,12 +128,12 @@ def get_build_monthly_stats(page: int | None = None) -> str:
     return _ok(_get_client().read("GetBuildMonthlyStats", params or None))
 
 
-def get_builds_summary() -> str:
+def get_builds_summary():
     """GetBuildsSummary."""
     return _ok(_get_client().read("GetBuildsSummary"))
 
 
-def get_build_webhook_enabled(build: str) -> str:
+def get_build_webhook_enabled(build: str):
     """GetBuildWebhookEnabled.
 
     build: Id or name
@@ -141,7 +141,7 @@ def get_build_webhook_enabled(build: str) -> str:
     return _ok(_get_client().read("GetBuildWebhookEnabled", {"build": build}))
 
 
-def get_container_log(server: str, container: str, tail: dict, timestamps: bool | None = None) -> str:
+def get_container_log(server: str, container: str, tail: dict, timestamps: bool | None = None):
     """GetContainerLog.
 
     server: Id or name
@@ -155,12 +155,12 @@ def get_container_log(server: str, container: str, tail: dict, timestamps: bool 
     return _ok(_get_client().read("GetContainerLog", params))
 
 
-def get_core_info() -> str:
+def get_core_info():
     """GetCoreInfo."""
     return _ok(_get_client().read("GetCoreInfo"))
 
 
-def get_deployment(deployment: str) -> str:
+def get_deployment(deployment: str):
     """GetDeployment.
 
     deployment: Id or name
@@ -168,7 +168,7 @@ def get_deployment(deployment: str) -> str:
     return _ok(_get_client().read("GetDeployment", {"deployment": deployment}))
 
 
-def get_deployment_action_state(deployment: str) -> str:
+def get_deployment_action_state(deployment: str):
     """GetDeploymentActionState.
 
     deployment: Id or name
@@ -176,7 +176,7 @@ def get_deployment_action_state(deployment: str) -> str:
     return _ok(_get_client().read("GetDeploymentActionState", {"deployment": deployment}))
 
 
-def get_deployment_container(deployment: str) -> str:
+def get_deployment_container(deployment: str):
     """GetDeploymentContainer.
 
     deployment: Id or name
@@ -184,7 +184,7 @@ def get_deployment_container(deployment: str) -> str:
     return _ok(_get_client().read("GetDeploymentContainer", {"deployment": deployment}))
 
 
-def get_deployment_log(deployment: str, tail: dict, timestamps: bool | None = None) -> str:
+def get_deployment_log(deployment: str, tail: dict, timestamps: bool | None = None):
     """GetDeploymentLog.
 
     deployment: Id or name
@@ -197,12 +197,12 @@ def get_deployment_log(deployment: str, tail: dict, timestamps: bool | None = No
     return _ok(_get_client().read("GetDeploymentLog", params))
 
 
-def get_deployments_summary() -> str:
+def get_deployments_summary():
     """GetDeploymentsSummary."""
     return _ok(_get_client().read("GetDeploymentsSummary"))
 
 
-def get_deployment_stats(deployment: str) -> str:
+def get_deployment_stats(deployment: str):
     """GetDeploymentStats.
 
     deployment: Id or name
@@ -210,22 +210,22 @@ def get_deployment_stats(deployment: str) -> str:
     return _ok(_get_client().read("GetDeploymentStats", {"deployment": deployment}))
 
 
-def get_docker_containers_summary() -> str:
+def get_docker_containers_summary():
     """GetDockerContainersSummary."""
     return _ok(_get_client().read("GetDockerContainersSummary"))
 
 
-def get_docker_registry_account(id: str) -> str:
+def get_docker_registry_account(id: str):
     """GetDockerRegistryAccount."""
     return _ok(_get_client().read("GetDockerRegistryAccount", {"id": id}))
 
 
-def get_git_provider_account(id: str) -> str:
+def get_git_provider_account(id: str):
     """GetGitProviderAccount."""
     return _ok(_get_client().read("GetGitProviderAccount", {"id": id}))
 
 
-def get_historical_server_stats(server: str, granularity: str, page: int | None = None) -> str:
+def get_historical_server_stats(server: str, granularity: str, page: int | None = None):
     """GetHistoricalServerStats.
 
     server: Id or name
@@ -238,7 +238,7 @@ def get_historical_server_stats(server: str, granularity: str, page: int | None 
     return _ok(_get_client().read("GetHistoricalServerStats", params))
 
 
-def get_periphery_version(server: str) -> str:
+def get_periphery_version(server: str):
     """GetPeripheryVersion.
 
     server: Id or name
@@ -246,7 +246,7 @@ def get_periphery_version(server: str) -> str:
     return _ok(_get_client().read("GetPeripheryVersion", {"server": server}))
 
 
-def get_permission(target: dict) -> str:
+def get_permission(target: dict):
     """GetPermission.
 
     target: The target to get user permission on.
@@ -254,7 +254,7 @@ def get_permission(target: dict) -> str:
     return _ok(_get_client().read("GetPermission", {"target": target}))
 
 
-def get_procedure(procedure: str) -> str:
+def get_procedure(procedure: str):
     """GetProcedure.
 
     procedure: Id or name
@@ -262,7 +262,7 @@ def get_procedure(procedure: str) -> str:
     return _ok(_get_client().read("GetProcedure", {"procedure": procedure}))
 
 
-def get_procedure_action_state(procedure: str) -> str:
+def get_procedure_action_state(procedure: str):
     """GetProcedureActionState.
 
     procedure: Id or name
@@ -270,12 +270,12 @@ def get_procedure_action_state(procedure: str) -> str:
     return _ok(_get_client().read("GetProcedureActionState", {"procedure": procedure}))
 
 
-def get_procedures_summary() -> str:
+def get_procedures_summary():
     """GetProceduresSummary."""
     return _ok(_get_client().read("GetProceduresSummary"))
 
 
-def get_repo(repo: str) -> str:
+def get_repo(repo: str):
     """GetRepo.
 
     repo: Id or name
@@ -283,7 +283,7 @@ def get_repo(repo: str) -> str:
     return _ok(_get_client().read("GetRepo", {"repo": repo}))
 
 
-def get_repo_action_state(repo: str) -> str:
+def get_repo_action_state(repo: str):
     """GetRepoActionState.
 
     repo: Id or name
@@ -291,12 +291,12 @@ def get_repo_action_state(repo: str) -> str:
     return _ok(_get_client().read("GetRepoActionState", {"repo": repo}))
 
 
-def get_repos_summary() -> str:
+def get_repos_summary():
     """GetReposSummary."""
     return _ok(_get_client().read("GetReposSummary"))
 
 
-def get_repo_webhooks_enabled(repo: str) -> str:
+def get_repo_webhooks_enabled(repo: str):
     """GetRepoWebhooksEnabled.
 
     repo: Id or name
@@ -304,7 +304,7 @@ def get_repo_webhooks_enabled(repo: str) -> str:
     return _ok(_get_client().read("GetRepoWebhooksEnabled", {"repo": repo}))
 
 
-def get_resource_matching_container(server: str, container: str) -> str:
+def get_resource_matching_container(server: str, container: str):
     """GetResourceMatchingContainer.
 
     server: Id or name
@@ -313,7 +313,7 @@ def get_resource_matching_container(server: str, container: str) -> str:
     return _ok(_get_client().read("GetResourceMatchingContainer", {"server": server, "container": container}))
 
 
-def get_resource_sync(sync: str) -> str:
+def get_resource_sync(sync: str):
     """GetResourceSync.
 
     sync: Id or name
@@ -321,7 +321,7 @@ def get_resource_sync(sync: str) -> str:
     return _ok(_get_client().read("GetResourceSync", {"sync": sync}))
 
 
-def get_resource_sync_action_state(sync: str) -> str:
+def get_resource_sync_action_state(sync: str):
     """GetResourceSyncActionState.
 
     sync: Id or name
@@ -329,12 +329,12 @@ def get_resource_sync_action_state(sync: str) -> str:
     return _ok(_get_client().read("GetResourceSyncActionState", {"sync": sync}))
 
 
-def get_resource_syncs_summary() -> str:
+def get_resource_syncs_summary():
     """GetResourceSyncsSummary."""
     return _ok(_get_client().read("GetResourceSyncsSummary"))
 
 
-def get_server(server: str) -> str:
+def get_server(server: str):
     """GetServer.
 
     server: Id or name
@@ -342,7 +342,7 @@ def get_server(server: str) -> str:
     return _ok(_get_client().read("GetServer", {"server": server}))
 
 
-def get_server_action_state(server: str) -> str:
+def get_server_action_state(server: str):
     """GetServerActionState.
 
     server: Id or name
@@ -350,12 +350,12 @@ def get_server_action_state(server: str) -> str:
     return _ok(_get_client().read("GetServerActionState", {"server": server}))
 
 
-def get_servers_summary() -> str:
+def get_servers_summary():
     """GetServersSummary."""
     return _ok(_get_client().read("GetServersSummary"))
 
 
-def get_server_state(server: str) -> str:
+def get_server_state(server: str):
     """GetServerState.
 
     server: Id or name
@@ -363,7 +363,7 @@ def get_server_state(server: str) -> str:
     return _ok(_get_client().read("GetServerState", {"server": server}))
 
 
-def get_stack(stack: str) -> str:
+def get_stack(stack: str):
     """GetStack.
 
     stack: Id or name
@@ -371,7 +371,7 @@ def get_stack(stack: str) -> str:
     return _ok(_get_client().read("GetStack", {"stack": stack}))
 
 
-def get_stack_action_state(stack: str) -> str:
+def get_stack_action_state(stack: str):
     """GetStackActionState.
 
     stack: Id or name
@@ -379,7 +379,7 @@ def get_stack_action_state(stack: str) -> str:
     return _ok(_get_client().read("GetStackActionState", {"stack": stack}))
 
 
-def get_stack_log(stack: str, services: list[str], tail: dict, timestamps: bool | None = None) -> str:
+def get_stack_log(stack: str, services: list[str], tail: dict, timestamps: bool | None = None):
     """GetStackLog.
 
     stack: Id or name
@@ -393,12 +393,12 @@ def get_stack_log(stack: str, services: list[str], tail: dict, timestamps: bool 
     return _ok(_get_client().read("GetStackLog", params))
 
 
-def get_stacks_summary() -> str:
+def get_stacks_summary():
     """GetStacksSummary."""
     return _ok(_get_client().read("GetStacksSummary"))
 
 
-def get_stack_webhooks_enabled(stack: str) -> str:
+def get_stack_webhooks_enabled(stack: str):
     """GetStackWebhooksEnabled.
 
     stack: Id or name
@@ -406,7 +406,7 @@ def get_stack_webhooks_enabled(stack: str) -> str:
     return _ok(_get_client().read("GetStackWebhooksEnabled", {"stack": stack}))
 
 
-def get_sync_webhooks_enabled(sync: str) -> str:
+def get_sync_webhooks_enabled(sync: str):
     """GetSyncWebhooksEnabled.
 
     sync: Id or name
@@ -414,7 +414,7 @@ def get_sync_webhooks_enabled(sync: str) -> str:
     return _ok(_get_client().read("GetSyncWebhooksEnabled", {"sync": sync}))
 
 
-def get_system_information(server: str) -> str:
+def get_system_information(server: str):
     """GetSystemInformation.
 
     server: Id or name
@@ -422,7 +422,7 @@ def get_system_information(server: str) -> str:
     return _ok(_get_client().read("GetSystemInformation", {"server": server}))
 
 
-def get_system_stats(server: str) -> str:
+def get_system_stats(server: str):
     """GetSystemStats.
 
     server: Id or name
@@ -430,7 +430,7 @@ def get_system_stats(server: str) -> str:
     return _ok(_get_client().read("GetSystemStats", {"server": server}))
 
 
-def get_tag(tag: str) -> str:
+def get_tag(tag: str):
     """GetTag.
 
     tag: Id or name
@@ -438,7 +438,7 @@ def get_tag(tag: str) -> str:
     return _ok(_get_client().read("GetTag", {"tag": tag}))
 
 
-def get_update(id: str) -> str:
+def get_update(id: str):
     """GetUpdate.
 
     id: The update id.
@@ -446,7 +446,7 @@ def get_update(id: str) -> str:
     return _ok(_get_client().read("GetUpdate", {"id": id}))
 
 
-def get_user_group(user_group: str) -> str:
+def get_user_group(user_group: str):
     """GetUserGroup.
 
     user_group: Name or Id
@@ -454,7 +454,7 @@ def get_user_group(user_group: str) -> str:
     return _ok(_get_client().read("GetUserGroup", {"user_group": user_group}))
 
 
-def get_username(user_id: str) -> str:
+def get_username(user_id: str):
     """GetUsername.
 
     user_id: The id of the user.
@@ -462,7 +462,7 @@ def get_username(user_id: str) -> str:
     return _ok(_get_client().read("GetUsername", {"user_id": user_id}))
 
 
-def get_variable(name: str) -> str:
+def get_variable(name: str):
     """GetVariable.
 
     name: The name of the variable to get.
@@ -470,12 +470,12 @@ def get_variable(name: str) -> str:
     return _ok(_get_client().read("GetVariable", {"name": name}))
 
 
-def get_version() -> str:
+def get_version():
     """GetVersion."""
     return _ok(_get_client().read("GetVersion"))
 
 
-def inspect_deployment_container(deployment: str) -> str:
+def inspect_deployment_container(deployment: str):
     """InspectDeploymentContainer.
 
     deployment: Id or name
@@ -483,7 +483,7 @@ def inspect_deployment_container(deployment: str) -> str:
     return _ok(_get_client().read("InspectDeploymentContainer", {"deployment": deployment}))
 
 
-def inspect_docker_container(server: str, container: str) -> str:
+def inspect_docker_container(server: str, container: str):
     """InspectDockerContainer.
 
     server: Id or name
@@ -492,7 +492,7 @@ def inspect_docker_container(server: str, container: str) -> str:
     return _ok(_get_client().read("InspectDockerContainer", {"server": server, "container": container}))
 
 
-def inspect_docker_image(server: str, image: str) -> str:
+def inspect_docker_image(server: str, image: str):
     """InspectDockerImage.
 
     server: Id or name
@@ -501,7 +501,7 @@ def inspect_docker_image(server: str, image: str) -> str:
     return _ok(_get_client().read("InspectDockerImage", {"server": server, "image": image}))
 
 
-def inspect_docker_network(server: str, network: str) -> str:
+def inspect_docker_network(server: str, network: str):
     """InspectDockerNetwork.
 
     server: Id or name
@@ -510,7 +510,7 @@ def inspect_docker_network(server: str, network: str) -> str:
     return _ok(_get_client().read("InspectDockerNetwork", {"server": server, "network": network}))
 
 
-def inspect_docker_volume(server: str, volume: str) -> str:
+def inspect_docker_volume(server: str, volume: str):
     """InspectDockerVolume.
 
     server: Id or name
@@ -519,7 +519,7 @@ def inspect_docker_volume(server: str, volume: str) -> str:
     return _ok(_get_client().read("InspectDockerVolume", {"server": server, "volume": volume}))
 
 
-def inspect_stack_container(stack: str, service: str) -> str:
+def inspect_stack_container(stack: str, service: str):
     """InspectStackContainer.
 
     stack: Id or name
@@ -528,7 +528,7 @@ def inspect_stack_container(stack: str, service: str) -> str:
     return _ok(_get_client().read("InspectStackContainer", {"stack": stack, "service": service}))
 
 
-def list_actions(query: dict | None = None) -> str:
+def list_actions(query: dict | None = None):
     """ListActions.
 
     query: optional structured query to filter actions.
@@ -539,7 +539,7 @@ def list_actions(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListActions", params or None))
 
 
-def list_alerters(query: dict | None = None) -> str:
+def list_alerters(query: dict | None = None):
     """ListAlerters.
 
     query: Structured query to filter alerters.
@@ -550,7 +550,7 @@ def list_alerters(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListAlerters", params or None))
 
 
-def list_alerts(query: dict | None = None, page: dict | None = None) -> str:
+def list_alerts(query: dict | None = None, page: dict | None = None):
     """ListAlerts.
 
     query: Pass a custom mongo query to filter the alerts.
@@ -564,7 +564,7 @@ def list_alerts(query: dict | None = None, page: dict | None = None) -> str:
     return _ok(_get_client().read("ListAlerts", params or None))
 
 
-def list_all_docker_containers(servers: list[str] | None = None) -> str:
+def list_all_docker_containers(servers: list[str] | None = None):
     """ListAllDockerContainers.
 
     servers: Filter by server id or name.
@@ -575,12 +575,12 @@ def list_all_docker_containers(servers: list[str] | None = None) -> str:
     return _ok(_get_client().read("ListAllDockerContainers", params or None))
 
 
-def list_api_keys() -> str:
+def list_api_keys():
     """ListApiKeys."""
     return _ok(_get_client().read("ListApiKeys"))
 
 
-def list_api_keys_for_service_user(user: str) -> str:
+def list_api_keys_for_service_user(user: str):
     """ListApiKeysForServiceUser.
 
     user: Id or username
@@ -588,7 +588,7 @@ def list_api_keys_for_service_user(user: str) -> str:
     return _ok(_get_client().read("ListApiKeysForServiceUser", {"user": user}))
 
 
-def list_builders(query: dict | None = None) -> str:
+def list_builders(query: dict | None = None):
     """ListBuilders."""
     params: dict = {}
     if query is not None:
@@ -596,7 +596,7 @@ def list_builders(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListBuilders", params or None))
 
 
-def list_builds(query: dict | None = None) -> str:
+def list_builds(query: dict | None = None):
     """ListBuilds.
 
     query: optional structured query to filter builds.
@@ -607,7 +607,7 @@ def list_builds(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListBuilds", params or None))
 
 
-def list_build_versions(build: str, major: int | None = None, minor: int | None = None, patch: int | None = None, limit: int | None = None) -> str:
+def list_build_versions(build: str, major: int | None = None, minor: int | None = None, patch: int | None = None, limit: int | None = None):
     """ListBuildVersions.
 
     build: Id or name
@@ -628,7 +628,7 @@ def list_build_versions(build: str, major: int | None = None, minor: int | None 
     return _ok(_get_client().read("ListBuildVersions", params))
 
 
-def list_common_build_extra_args(query: dict | None = None) -> str:
+def list_common_build_extra_args(query: dict | None = None):
     """ListCommonBuildExtraArgs.
 
     query: optional structured query to filter builds.
@@ -639,7 +639,7 @@ def list_common_build_extra_args(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListCommonBuildExtraArgs", params or None))
 
 
-def list_common_deployment_extra_args(query: dict | None = None) -> str:
+def list_common_deployment_extra_args(query: dict | None = None):
     """ListCommonDeploymentExtraArgs.
 
     query: optional structured query to filter deployments.
@@ -650,7 +650,7 @@ def list_common_deployment_extra_args(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListCommonDeploymentExtraArgs", params or None))
 
 
-def list_common_stack_build_extra_args(query: dict | None = None) -> str:
+def list_common_stack_build_extra_args(query: dict | None = None):
     """ListCommonStackBuildExtraArgs.
 
     query: optional structured query to filter stacks.
@@ -661,7 +661,7 @@ def list_common_stack_build_extra_args(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListCommonStackBuildExtraArgs", params or None))
 
 
-def list_common_stack_extra_args(query: dict | None = None) -> str:
+def list_common_stack_extra_args(query: dict | None = None):
     """ListCommonStackExtraArgs.
 
     query: optional structured query to filter stacks.
@@ -672,7 +672,7 @@ def list_common_stack_extra_args(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListCommonStackExtraArgs", params or None))
 
 
-def list_compose_projects(server: str) -> str:
+def list_compose_projects(server: str):
     """ListComposeProjects.
 
     server: Id or name
@@ -680,7 +680,7 @@ def list_compose_projects(server: str) -> str:
     return _ok(_get_client().read("ListComposeProjects", {"server": server}))
 
 
-def list_deployments(query: dict | None = None) -> str:
+def list_deployments(query: dict | None = None):
     """ListDeployments.
 
     query: optional structured query to filter deployments.
@@ -691,7 +691,7 @@ def list_deployments(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListDeployments", params or None))
 
 
-def list_docker_containers(server: str) -> str:
+def list_docker_containers(server: str):
     """ListDockerContainers.
 
     server: Id or name
@@ -699,7 +699,7 @@ def list_docker_containers(server: str) -> str:
     return _ok(_get_client().read("ListDockerContainers", {"server": server}))
 
 
-def list_docker_image_history(server: str, image: str) -> str:
+def list_docker_image_history(server: str, image: str):
     """ListDockerImageHistory.
 
     server: Id or name
@@ -708,7 +708,7 @@ def list_docker_image_history(server: str, image: str) -> str:
     return _ok(_get_client().read("ListDockerImageHistory", {"server": server, "image": image}))
 
 
-def list_docker_images(server: str) -> str:
+def list_docker_images(server: str):
     """ListDockerImages.
 
     server: Id or name
@@ -716,7 +716,7 @@ def list_docker_images(server: str) -> str:
     return _ok(_get_client().read("ListDockerImages", {"server": server}))
 
 
-def list_docker_networks(server: str) -> str:
+def list_docker_networks(server: str):
     """ListDockerNetworks.
 
     server: Id or name
@@ -724,7 +724,7 @@ def list_docker_networks(server: str) -> str:
     return _ok(_get_client().read("ListDockerNetworks", {"server": server}))
 
 
-def list_docker_registries_from_config(target: dict | None = None) -> str:
+def list_docker_registries_from_config(target: dict | None = None):
     """ListDockerRegistriesFromConfig.
 
     target: Accepts an optional Server or Builder target to expand the core list with
@@ -735,7 +735,7 @@ def list_docker_registries_from_config(target: dict | None = None) -> str:
     return _ok(_get_client().read("ListDockerRegistriesFromConfig", params or None))
 
 
-def list_docker_registry_accounts(domain: str | None = None, username: str | None = None) -> str:
+def list_docker_registry_accounts(domain: str | None = None, username: str | None = None):
     """ListDockerRegistryAccounts.
 
     domain: Optionally filter by accounts with a specific domain.
@@ -749,7 +749,7 @@ def list_docker_registry_accounts(domain: str | None = None, username: str | Non
     return _ok(_get_client().read("ListDockerRegistryAccounts", params or None))
 
 
-def list_docker_volumes(server: str) -> str:
+def list_docker_volumes(server: str):
     """ListDockerVolumes.
 
     server: Id or name
@@ -757,7 +757,7 @@ def list_docker_volumes(server: str) -> str:
     return _ok(_get_client().read("ListDockerVolumes", {"server": server}))
 
 
-def list_full_actions(query: dict | None = None) -> str:
+def list_full_actions(query: dict | None = None):
     """ListFullActions.
 
     query: optional structured query to filter actions.
@@ -768,7 +768,7 @@ def list_full_actions(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListFullActions", params or None))
 
 
-def list_full_alerters(query: dict | None = None) -> str:
+def list_full_alerters(query: dict | None = None):
     """ListFullAlerters.
 
     query: Structured query to filter alerters.
@@ -779,7 +779,7 @@ def list_full_alerters(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListFullAlerters", params or None))
 
 
-def list_full_builders(query: dict | None = None) -> str:
+def list_full_builders(query: dict | None = None):
     """ListFullBuilders."""
     params: dict = {}
     if query is not None:
@@ -787,7 +787,7 @@ def list_full_builders(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListFullBuilders", params or None))
 
 
-def list_full_builds(query: dict | None = None) -> str:
+def list_full_builds(query: dict | None = None):
     """ListFullBuilds.
 
     query: optional structured query to filter builds.
@@ -798,7 +798,7 @@ def list_full_builds(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListFullBuilds", params or None))
 
 
-def list_full_deployments(query: dict | None = None) -> str:
+def list_full_deployments(query: dict | None = None):
     """ListFullDeployments.
 
     query: optional structured query to filter deployments.
@@ -809,7 +809,7 @@ def list_full_deployments(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListFullDeployments", params or None))
 
 
-def list_full_procedures(query: dict | None = None) -> str:
+def list_full_procedures(query: dict | None = None):
     """ListFullProcedures.
 
     query: optional structured query to filter procedures.
@@ -820,7 +820,7 @@ def list_full_procedures(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListFullProcedures", params or None))
 
 
-def list_full_repos(query: dict | None = None) -> str:
+def list_full_repos(query: dict | None = None):
     """ListFullRepos.
 
     query: optional structured query to filter repos.
@@ -831,7 +831,7 @@ def list_full_repos(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListFullRepos", params or None))
 
 
-def list_full_resource_syncs(query: dict | None = None) -> str:
+def list_full_resource_syncs(query: dict | None = None):
     """ListFullResourceSyncs.
 
     query: optional structured query to filter syncs.
@@ -842,7 +842,7 @@ def list_full_resource_syncs(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListFullResourceSyncs", params or None))
 
 
-def list_full_servers(query: dict | None = None) -> str:
+def list_full_servers(query: dict | None = None):
     """ListFullServers.
 
     query: optional structured query to filter servers.
@@ -853,7 +853,7 @@ def list_full_servers(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListFullServers", params or None))
 
 
-def list_full_stacks(query: dict | None = None) -> str:
+def list_full_stacks(query: dict | None = None):
     """ListFullStacks.
 
     query: optional structured query to filter stacks.
@@ -864,7 +864,7 @@ def list_full_stacks(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListFullStacks", params or None))
 
 
-def list_git_provider_accounts(domain: str | None = None, username: str | None = None) -> str:
+def list_git_provider_accounts(domain: str | None = None, username: str | None = None):
     """ListGitProviderAccounts.
 
     domain: Optionally filter by accounts with a specific domain.
@@ -878,7 +878,7 @@ def list_git_provider_accounts(domain: str | None = None, username: str | None =
     return _ok(_get_client().read("ListGitProviderAccounts", params or None))
 
 
-def list_git_providers_from_config(target: dict | None = None) -> str:
+def list_git_providers_from_config(target: dict | None = None):
     """ListGitProvidersFromConfig.
 
     target: Accepts an optional Server or Builder target to expand the core list with
@@ -889,12 +889,12 @@ def list_git_providers_from_config(target: dict | None = None) -> str:
     return _ok(_get_client().read("ListGitProvidersFromConfig", params or None))
 
 
-def list_permissions() -> str:
+def list_permissions():
     """ListPermissions."""
     return _ok(_get_client().read("ListPermissions"))
 
 
-def list_procedures(query: dict | None = None) -> str:
+def list_procedures(query: dict | None = None):
     """ListProcedures.
 
     query: optional structured query to filter procedures.
@@ -905,7 +905,7 @@ def list_procedures(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListProcedures", params or None))
 
 
-def list_repos(query: dict | None = None) -> str:
+def list_repos(query: dict | None = None):
     """ListRepos.
 
     query: optional structured query to filter repos.
@@ -916,7 +916,7 @@ def list_repos(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListRepos", params or None))
 
 
-def list_resource_syncs(query: dict | None = None) -> str:
+def list_resource_syncs(query: dict | None = None):
     """ListResourceSyncs.
 
     query: optional structured query to filter syncs.
@@ -927,7 +927,7 @@ def list_resource_syncs(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListResourceSyncs", params or None))
 
 
-def list_schedules(tags: list[str] | None = None, tag_behavior: str | None = None) -> str:
+def list_schedules(tags: list[str] | None = None, tag_behavior: str | None = None):
     """ListSchedules.
 
     tags: Pass Vec of tag ids or tag names
@@ -941,7 +941,7 @@ def list_schedules(tags: list[str] | None = None, tag_behavior: str | None = Non
     return _ok(_get_client().read("ListSchedules", params or None))
 
 
-def list_secrets(target: dict | None = None) -> str:
+def list_secrets(target: dict | None = None):
     """ListSecrets.
 
     target: Accepts an optional Server or Builder target to expand the core list with
@@ -952,7 +952,7 @@ def list_secrets(target: dict | None = None) -> str:
     return _ok(_get_client().read("ListSecrets", params or None))
 
 
-def list_servers(query: dict | None = None) -> str:
+def list_servers(query: dict | None = None):
     """ListServers.
 
     query: optional structured query to filter servers.
@@ -963,7 +963,7 @@ def list_servers(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListServers", params or None))
 
 
-def list_stacks(query: dict | None = None) -> str:
+def list_stacks(query: dict | None = None):
     """ListStacks.
 
     query: optional structured query to filter stacks.
@@ -974,7 +974,7 @@ def list_stacks(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListStacks", params or None))
 
 
-def list_stack_services(stack: str) -> str:
+def list_stack_services(stack: str):
     """ListStackServices.
 
     stack: Id or name
@@ -982,7 +982,7 @@ def list_stack_services(stack: str) -> str:
     return _ok(_get_client().read("ListStackServices", {"stack": stack}))
 
 
-def list_system_processes(server: str) -> str:
+def list_system_processes(server: str):
     """ListSystemProcesses.
 
     server: Id or name
@@ -990,7 +990,7 @@ def list_system_processes(server: str) -> str:
     return _ok(_get_client().read("ListSystemProcesses", {"server": server}))
 
 
-def list_tags(query: dict | None = None) -> str:
+def list_tags(query: dict | None = None):
     """ListTags."""
     params: dict = {}
     if query is not None:
@@ -998,7 +998,7 @@ def list_tags(query: dict | None = None) -> str:
     return _ok(_get_client().read("ListTags", params or None))
 
 
-def list_terminals(server: str, fresh: bool | None = None) -> str:
+def list_terminals(server: str, fresh: bool | None = None):
     """ListTerminals.
 
     server: Id or name
@@ -1010,7 +1010,7 @@ def list_terminals(server: str, fresh: bool | None = None) -> str:
     return _ok(_get_client().read("ListTerminals", params))
 
 
-def list_updates(query: dict | None = None, page: int | None = None) -> str:
+def list_updates(query: dict | None = None, page: int | None = None):
     """ListUpdates.
 
     query: An optional mongo query to filter the updates.
@@ -1024,17 +1024,17 @@ def list_updates(query: dict | None = None, page: int | None = None) -> str:
     return _ok(_get_client().read("ListUpdates", params or None))
 
 
-def list_user_groups() -> str:
+def list_user_groups():
     """ListUserGroups."""
     return _ok(_get_client().read("ListUserGroups"))
 
 
-def list_users() -> str:
+def list_users():
     """ListUsers."""
     return _ok(_get_client().read("ListUsers"))
 
 
-def list_user_target_permissions(user_target: dict) -> str:
+def list_user_target_permissions(user_target: dict):
     """ListUserTargetPermissions.
 
     user_target: Specify either a user or a user group.
@@ -1042,12 +1042,12 @@ def list_user_target_permissions(user_target: dict) -> str:
     return _ok(_get_client().read("ListUserTargetPermissions", {"user_target": user_target}))
 
 
-def list_variables() -> str:
+def list_variables():
     """ListVariables."""
     return _ok(_get_client().read("ListVariables"))
 
 
-def search_container_log(server: str, container: str, terms: list[str], combinator: str | None = None, invert: bool | None = None, timestamps: bool | None = None) -> str:
+def search_container_log(server: str, container: str, terms: list[str], combinator: str | None = None, invert: bool | None = None, timestamps: bool | None = None):
     """SearchContainerLog.
 
     server: Id or name
@@ -1067,7 +1067,7 @@ def search_container_log(server: str, container: str, terms: list[str], combinat
     return _ok(_get_client().read("SearchContainerLog", params))
 
 
-def search_deployment_log(deployment: str, terms: list[str], combinator: str | None = None, invert: bool | None = None, timestamps: bool | None = None) -> str:
+def search_deployment_log(deployment: str, terms: list[str], combinator: str | None = None, invert: bool | None = None, timestamps: bool | None = None):
     """SearchDeploymentLog.
 
     deployment: Id or name
@@ -1086,7 +1086,7 @@ def search_deployment_log(deployment: str, terms: list[str], combinator: str | N
     return _ok(_get_client().read("SearchDeploymentLog", params))
 
 
-def search_stack_log(stack: str, services: list[str], terms: list[str], combinator: str | None = None, invert: bool | None = None, timestamps: bool | None = None) -> str:
+def search_stack_log(stack: str, services: list[str], terms: list[str], combinator: str | None = None, invert: bool | None = None, timestamps: bool | None = None):
     """SearchStackLog.
 
     stack: Id or name
@@ -1108,7 +1108,7 @@ def search_stack_log(stack: str, services: list[str], terms: list[str], combinat
 
 # ── write ───────────────────────────────────────────────────────────────
 
-def add_user_to_user_group(user_group: str, user: str) -> str:
+def add_user_to_user_group(user_group: str, user: str):
     """AddUserToUserGroup.
 
     user_group: The name or id of UserGroup that user should be added to.
@@ -1117,7 +1117,7 @@ def add_user_to_user_group(user_group: str, user: str) -> str:
     return _ok(_get_client().write("AddUserToUserGroup", {"user_group": user_group, "user": user}))
 
 
-def commit_sync(sync: str) -> str:
+def commit_sync(sync: str):
     """CommitSync.
 
     sync: Id or name
@@ -1125,7 +1125,7 @@ def commit_sync(sync: str) -> str:
     return _ok(_get_client().write("CommitSync", {"sync": sync}))
 
 
-def copy_action(name: str, id: str) -> str:
+def copy_action(name: str, id: str):
     """CopyAction.
 
     name: The name of the new action.
@@ -1134,7 +1134,7 @@ def copy_action(name: str, id: str) -> str:
     return _ok(_get_client().write("CopyAction", {"name": name, "id": id}))
 
 
-def copy_alerter(name: str, id: str) -> str:
+def copy_alerter(name: str, id: str):
     """CopyAlerter.
 
     name: The name of the new alerter.
@@ -1143,7 +1143,7 @@ def copy_alerter(name: str, id: str) -> str:
     return _ok(_get_client().write("CopyAlerter", {"name": name, "id": id}))
 
 
-def copy_build(name: str, id: str) -> str:
+def copy_build(name: str, id: str):
     """CopyBuild.
 
     name: The name of the new build.
@@ -1152,7 +1152,7 @@ def copy_build(name: str, id: str) -> str:
     return _ok(_get_client().write("CopyBuild", {"name": name, "id": id}))
 
 
-def copy_builder(name: str, id: str) -> str:
+def copy_builder(name: str, id: str):
     """CopyBuilder.
 
     name: The name of the new builder.
@@ -1161,7 +1161,7 @@ def copy_builder(name: str, id: str) -> str:
     return _ok(_get_client().write("CopyBuilder", {"name": name, "id": id}))
 
 
-def copy_deployment(name: str, id: str) -> str:
+def copy_deployment(name: str, id: str):
     """CopyDeployment.
 
     name: The name of the new deployment.
@@ -1170,7 +1170,7 @@ def copy_deployment(name: str, id: str) -> str:
     return _ok(_get_client().write("CopyDeployment", {"name": name, "id": id}))
 
 
-def copy_procedure(name: str, id: str) -> str:
+def copy_procedure(name: str, id: str):
     """CopyProcedure.
 
     name: The name of the new procedure.
@@ -1179,7 +1179,7 @@ def copy_procedure(name: str, id: str) -> str:
     return _ok(_get_client().write("CopyProcedure", {"name": name, "id": id}))
 
 
-def copy_repo(name: str, id: str) -> str:
+def copy_repo(name: str, id: str):
     """CopyRepo.
 
     name: The name of the new repo.
@@ -1188,7 +1188,7 @@ def copy_repo(name: str, id: str) -> str:
     return _ok(_get_client().write("CopyRepo", {"name": name, "id": id}))
 
 
-def copy_resource_sync(name: str, id: str) -> str:
+def copy_resource_sync(name: str, id: str):
     """CopyResourceSync.
 
     name: The name of the new sync.
@@ -1197,7 +1197,7 @@ def copy_resource_sync(name: str, id: str) -> str:
     return _ok(_get_client().write("CopyResourceSync", {"name": name, "id": id}))
 
 
-def copy_server(name: str, id: str) -> str:
+def copy_server(name: str, id: str):
     """CopyServer.
 
     name: The name of the new server.
@@ -1206,7 +1206,7 @@ def copy_server(name: str, id: str) -> str:
     return _ok(_get_client().write("CopyServer", {"name": name, "id": id}))
 
 
-def copy_stack(name: str, id: str) -> str:
+def copy_stack(name: str, id: str):
     """CopyStack.
 
     name: The name of the new stack.
@@ -1215,7 +1215,7 @@ def copy_stack(name: str, id: str) -> str:
     return _ok(_get_client().write("CopyStack", {"name": name, "id": id}))
 
 
-def create_action(name: str, config: dict | None = None) -> str:
+def create_action(name: str, config: dict | None = None):
     """CreateAction.
 
     name: The name given to newly created action.
@@ -1227,7 +1227,7 @@ def create_action(name: str, config: dict | None = None) -> str:
     return _ok(_get_client().write("CreateAction", params))
 
 
-def create_alerter(name: str, config: dict | None = None) -> str:
+def create_alerter(name: str, config: dict | None = None):
     """CreateAlerter.
 
     name: The name given to newly created alerter.
@@ -1239,7 +1239,7 @@ def create_alerter(name: str, config: dict | None = None) -> str:
     return _ok(_get_client().write("CreateAlerter", params))
 
 
-def create_api_key_for_service_user(user_id: str, name: str, expires: int | None = None) -> str:
+def create_api_key_for_service_user(user_id: str, name: str, expires: int | None = None):
     """CreateApiKeyForServiceUser.
 
     user_id: Must be service user
@@ -1252,7 +1252,7 @@ def create_api_key_for_service_user(user_id: str, name: str, expires: int | None
     return _ok(_get_client().write("CreateApiKeyForServiceUser", params))
 
 
-def create_build(name: str, config: dict | None = None) -> str:
+def create_build(name: str, config: dict | None = None):
     """CreateBuild.
 
     name: The name given to newly created build.
@@ -1264,7 +1264,7 @@ def create_build(name: str, config: dict | None = None) -> str:
     return _ok(_get_client().write("CreateBuild", params))
 
 
-def create_builder(name: str, config: dict | None = None) -> str:
+def create_builder(name: str, config: dict | None = None):
     """CreateBuilder.
 
     name: The name given to newly created builder.
@@ -1276,7 +1276,7 @@ def create_builder(name: str, config: dict | None = None) -> str:
     return _ok(_get_client().write("CreateBuilder", params))
 
 
-def create_build_webhook(build: str) -> str:
+def create_build_webhook(build: str):
     """CreateBuildWebhook.
 
     build: Id or name
@@ -1284,7 +1284,7 @@ def create_build_webhook(build: str) -> str:
     return _ok(_get_client().write("CreateBuildWebhook", {"build": build}))
 
 
-def create_deployment(name: str, config: dict | None = None) -> str:
+def create_deployment(name: str, config: dict | None = None):
     """CreateDeployment.
 
     name: The name given to newly created deployment.
@@ -1296,7 +1296,7 @@ def create_deployment(name: str, config: dict | None = None) -> str:
     return _ok(_get_client().write("CreateDeployment", params))
 
 
-def create_deployment_from_container(name: str, server: str) -> str:
+def create_deployment_from_container(name: str, server: str):
     """CreateDeploymentFromContainer.
 
     name: The name or id of the existing container.
@@ -1305,12 +1305,12 @@ def create_deployment_from_container(name: str, server: str) -> str:
     return _ok(_get_client().write("CreateDeploymentFromContainer", {"name": name, "server": server}))
 
 
-def create_docker_registry_account(account: dict) -> str:
+def create_docker_registry_account(account: dict):
     """CreateDockerRegistryAccount."""
     return _ok(_get_client().write("CreateDockerRegistryAccount", {"account": account}))
 
 
-def create_git_provider_account(account: dict) -> str:
+def create_git_provider_account(account: dict):
     """CreateGitProviderAccount.
 
     account: The initial account config. Anything in the _id field will be ignored,
@@ -1318,7 +1318,7 @@ def create_git_provider_account(account: dict) -> str:
     return _ok(_get_client().write("CreateGitProviderAccount", {"account": account}))
 
 
-def create_local_user(username: str, password: str) -> str:
+def create_local_user(username: str, password: str):
     """CreateLocalUser.
 
     username: The username for the local user.
@@ -1327,7 +1327,7 @@ def create_local_user(username: str, password: str) -> str:
     return _ok(_get_client().write("CreateLocalUser", {"username": username, "password": password}))
 
 
-def create_network(server: str, name: str) -> str:
+def create_network(server: str, name: str):
     """CreateNetwork.
 
     server: Server Id or name
@@ -1336,7 +1336,7 @@ def create_network(server: str, name: str) -> str:
     return _ok(_get_client().write("CreateNetwork", {"server": server, "name": name}))
 
 
-def create_procedure(name: str, config: dict | None = None) -> str:
+def create_procedure(name: str, config: dict | None = None):
     """CreateProcedure.
 
     name: The name given to newly created build.
@@ -1348,7 +1348,7 @@ def create_procedure(name: str, config: dict | None = None) -> str:
     return _ok(_get_client().write("CreateProcedure", params))
 
 
-def create_repo(name: str, config: dict | None = None) -> str:
+def create_repo(name: str, config: dict | None = None):
     """CreateRepo.
 
     name: The name given to newly created repo.
@@ -1360,7 +1360,7 @@ def create_repo(name: str, config: dict | None = None) -> str:
     return _ok(_get_client().write("CreateRepo", params))
 
 
-def create_repo_webhook(repo: str, action: dict) -> str:
+def create_repo_webhook(repo: str, action: dict):
     """CreateRepoWebhook.
 
     repo: Id or name
@@ -1369,7 +1369,7 @@ def create_repo_webhook(repo: str, action: dict) -> str:
     return _ok(_get_client().write("CreateRepoWebhook", {"repo": repo, "action": action}))
 
 
-def create_resource_sync(name: str, config: dict | None = None) -> str:
+def create_resource_sync(name: str, config: dict | None = None):
     """CreateResourceSync.
 
     name: The name given to newly created sync.
@@ -1381,7 +1381,7 @@ def create_resource_sync(name: str, config: dict | None = None) -> str:
     return _ok(_get_client().write("CreateResourceSync", params))
 
 
-def create_server(name: str, config: dict | None = None) -> str:
+def create_server(name: str, config: dict | None = None):
     """CreateServer.
 
     name: The name given to newly created server.
@@ -1393,7 +1393,7 @@ def create_server(name: str, config: dict | None = None) -> str:
     return _ok(_get_client().write("CreateServer", params))
 
 
-def create_service_user(username: str, description: str) -> str:
+def create_service_user(username: str, description: str):
     """CreateServiceUser.
 
     username: The username for the service user.
@@ -1402,7 +1402,7 @@ def create_service_user(username: str, description: str) -> str:
     return _ok(_get_client().write("CreateServiceUser", {"username": username, "description": description}))
 
 
-def create_stack(name: str, config: dict | None = None) -> str:
+def create_stack(name: str, config: dict | None = None):
     """CreateStack.
 
     name: The name given to newly created stack.
@@ -1414,7 +1414,7 @@ def create_stack(name: str, config: dict | None = None) -> str:
     return _ok(_get_client().write("CreateStack", params))
 
 
-def create_stack_webhook(stack: str, action: dict) -> str:
+def create_stack_webhook(stack: str, action: dict):
     """CreateStackWebhook.
 
     stack: Id or name
@@ -1423,7 +1423,7 @@ def create_stack_webhook(stack: str, action: dict) -> str:
     return _ok(_get_client().write("CreateStackWebhook", {"stack": stack, "action": action}))
 
 
-def create_sync_webhook(sync: str, action: dict) -> str:
+def create_sync_webhook(sync: str, action: dict):
     """CreateSyncWebhook.
 
     sync: Id or name
@@ -1432,7 +1432,7 @@ def create_sync_webhook(sync: str, action: dict) -> str:
     return _ok(_get_client().write("CreateSyncWebhook", {"sync": sync, "action": action}))
 
 
-def create_tag(name: str, color: dict | None = None) -> str:
+def create_tag(name: str, color: dict | None = None):
     """CreateTag.
 
     name: The name of the tag.
@@ -1444,7 +1444,7 @@ def create_tag(name: str, color: dict | None = None) -> str:
     return _ok(_get_client().write("CreateTag", params))
 
 
-def create_terminal(server: str, name: str, command: str, recreate: str | None = None) -> str:
+def create_terminal(server: str, name: str, command: str, recreate: str | None = None):
     """CreateTerminal.
 
     server: Server Id or name
@@ -1458,7 +1458,7 @@ def create_terminal(server: str, name: str, command: str, recreate: str | None =
     return _ok(_get_client().write("CreateTerminal", params))
 
 
-def create_user_group(name: str) -> str:
+def create_user_group(name: str):
     """CreateUserGroup.
 
     name: The name to assign to the new UserGroup
@@ -1466,7 +1466,7 @@ def create_user_group(name: str) -> str:
     return _ok(_get_client().write("CreateUserGroup", {"name": name}))
 
 
-def create_variable(name: str, value: str | None = None, description: str | None = None, is_secret: bool | None = None) -> str:
+def create_variable(name: str, value: str | None = None, description: str | None = None, is_secret: bool | None = None):
     """CreateVariable.
 
     name: The name of the variable to create.
@@ -1484,7 +1484,7 @@ def create_variable(name: str, value: str | None = None, description: str | None
     return _ok(_get_client().write("CreateVariable", params))
 
 
-def delete_action(id: str) -> str:
+def delete_action(id: str):
     """DeleteAction.
 
     id: The id or name of the action to delete.
@@ -1492,7 +1492,7 @@ def delete_action(id: str) -> str:
     return _ok(_get_client().write("DeleteAction", {"id": id}))
 
 
-def delete_alerter(id: str) -> str:
+def delete_alerter(id: str):
     """DeleteAlerter.
 
     id: The id or name of the alerter to delete.
@@ -1500,7 +1500,7 @@ def delete_alerter(id: str) -> str:
     return _ok(_get_client().write("DeleteAlerter", {"id": id}))
 
 
-def delete_all_terminals(server: str) -> str:
+def delete_all_terminals(server: str):
     """DeleteAllTerminals.
 
     server: Server Id or name
@@ -1508,12 +1508,12 @@ def delete_all_terminals(server: str) -> str:
     return _ok(_get_client().write("DeleteAllTerminals", {"server": server}))
 
 
-def delete_api_key_for_service_user(key: str) -> str:
+def delete_api_key_for_service_user(key: str):
     """DeleteApiKeyForServiceUser."""
     return _ok(_get_client().write("DeleteApiKeyForServiceUser", {"key": key}))
 
 
-def delete_build(id: str) -> str:
+def delete_build(id: str):
     """DeleteBuild.
 
     id: The id or name of the build to delete.
@@ -1521,7 +1521,7 @@ def delete_build(id: str) -> str:
     return _ok(_get_client().write("DeleteBuild", {"id": id}))
 
 
-def delete_builder(id: str) -> str:
+def delete_builder(id: str):
     """DeleteBuilder.
 
     id: The id or name of the builder to delete.
@@ -1529,7 +1529,7 @@ def delete_builder(id: str) -> str:
     return _ok(_get_client().write("DeleteBuilder", {"id": id}))
 
 
-def delete_build_webhook(build: str) -> str:
+def delete_build_webhook(build: str):
     """DeleteBuildWebhook.
 
     build: Id or name
@@ -1537,7 +1537,7 @@ def delete_build_webhook(build: str) -> str:
     return _ok(_get_client().write("DeleteBuildWebhook", {"build": build}))
 
 
-def delete_deployment(id: str) -> str:
+def delete_deployment(id: str):
     """DeleteDeployment.
 
     id: The id or name of the deployment to delete.
@@ -1545,7 +1545,7 @@ def delete_deployment(id: str) -> str:
     return _ok(_get_client().write("DeleteDeployment", {"id": id}))
 
 
-def delete_docker_registry_account(id: str) -> str:
+def delete_docker_registry_account(id: str):
     """DeleteDockerRegistryAccount.
 
     id: The id of the docker registry account to delete
@@ -1553,7 +1553,7 @@ def delete_docker_registry_account(id: str) -> str:
     return _ok(_get_client().write("DeleteDockerRegistryAccount", {"id": id}))
 
 
-def delete_git_provider_account(id: str) -> str:
+def delete_git_provider_account(id: str):
     """DeleteGitProviderAccount.
 
     id: The id of the git provider to delete
@@ -1561,7 +1561,7 @@ def delete_git_provider_account(id: str) -> str:
     return _ok(_get_client().write("DeleteGitProviderAccount", {"id": id}))
 
 
-def delete_procedure(id: str) -> str:
+def delete_procedure(id: str):
     """DeleteProcedure.
 
     id: The id or name of the procedure to delete.
@@ -1569,7 +1569,7 @@ def delete_procedure(id: str) -> str:
     return _ok(_get_client().write("DeleteProcedure", {"id": id}))
 
 
-def delete_repo(id: str) -> str:
+def delete_repo(id: str):
     """DeleteRepo.
 
     id: The id or name of the repo to delete.
@@ -1577,7 +1577,7 @@ def delete_repo(id: str) -> str:
     return _ok(_get_client().write("DeleteRepo", {"id": id}))
 
 
-def delete_repo_webhook(repo: str, action: dict) -> str:
+def delete_repo_webhook(repo: str, action: dict):
     """DeleteRepoWebhook.
 
     repo: Id or name
@@ -1586,7 +1586,7 @@ def delete_repo_webhook(repo: str, action: dict) -> str:
     return _ok(_get_client().write("DeleteRepoWebhook", {"repo": repo, "action": action}))
 
 
-def delete_resource_sync(id: str) -> str:
+def delete_resource_sync(id: str):
     """DeleteResourceSync.
 
     id: The id or name of the sync to delete.
@@ -1594,7 +1594,7 @@ def delete_resource_sync(id: str) -> str:
     return _ok(_get_client().write("DeleteResourceSync", {"id": id}))
 
 
-def delete_server(id: str) -> str:
+def delete_server(id: str):
     """DeleteServer.
 
     id: The id or name of the server to delete.
@@ -1602,7 +1602,7 @@ def delete_server(id: str) -> str:
     return _ok(_get_client().write("DeleteServer", {"id": id}))
 
 
-def delete_stack(id: str) -> str:
+def delete_stack(id: str):
     """DeleteStack.
 
     id: The id or name of the stack to delete.
@@ -1610,7 +1610,7 @@ def delete_stack(id: str) -> str:
     return _ok(_get_client().write("DeleteStack", {"id": id}))
 
 
-def delete_stack_webhook(stack: str, action: dict) -> str:
+def delete_stack_webhook(stack: str, action: dict):
     """DeleteStackWebhook.
 
     stack: Id or name
@@ -1619,7 +1619,7 @@ def delete_stack_webhook(stack: str, action: dict) -> str:
     return _ok(_get_client().write("DeleteStackWebhook", {"stack": stack, "action": action}))
 
 
-def delete_sync_webhook(sync: str, action: dict) -> str:
+def delete_sync_webhook(sync: str, action: dict):
     """DeleteSyncWebhook.
 
     sync: Id or name
@@ -1628,7 +1628,7 @@ def delete_sync_webhook(sync: str, action: dict) -> str:
     return _ok(_get_client().write("DeleteSyncWebhook", {"sync": sync, "action": action}))
 
 
-def delete_tag(id: str) -> str:
+def delete_tag(id: str):
     """DeleteTag.
 
     id: The id of the tag to delete.
@@ -1636,7 +1636,7 @@ def delete_tag(id: str) -> str:
     return _ok(_get_client().write("DeleteTag", {"id": id}))
 
 
-def delete_terminal(server: str, terminal: str) -> str:
+def delete_terminal(server: str, terminal: str):
     """DeleteTerminal.
 
     server: Server Id or name
@@ -1645,7 +1645,7 @@ def delete_terminal(server: str, terminal: str) -> str:
     return _ok(_get_client().write("DeleteTerminal", {"server": server, "terminal": terminal}))
 
 
-def delete_user(user: str) -> str:
+def delete_user(user: str):
     """DeleteUser.
 
     user: User id or username
@@ -1653,7 +1653,7 @@ def delete_user(user: str) -> str:
     return _ok(_get_client().write("DeleteUser", {"user": user}))
 
 
-def delete_user_group(id: str) -> str:
+def delete_user_group(id: str):
     """DeleteUserGroup.
 
     id: The id of the UserGroup
@@ -1661,12 +1661,12 @@ def delete_user_group(id: str) -> str:
     return _ok(_get_client().write("DeleteUserGroup", {"id": id}))
 
 
-def delete_variable(name: str) -> str:
+def delete_variable(name: str):
     """DeleteVariable."""
     return _ok(_get_client().write("DeleteVariable", {"name": name}))
 
 
-def refresh_build_cache(build: str) -> str:
+def refresh_build_cache(build: str):
     """RefreshBuildCache.
 
     build: Id or name
@@ -1674,7 +1674,7 @@ def refresh_build_cache(build: str) -> str:
     return _ok(_get_client().write("RefreshBuildCache", {"build": build}))
 
 
-def refresh_repo_cache(repo: str) -> str:
+def refresh_repo_cache(repo: str):
     """RefreshRepoCache.
 
     repo: Id or name
@@ -1682,7 +1682,7 @@ def refresh_repo_cache(repo: str) -> str:
     return _ok(_get_client().write("RefreshRepoCache", {"repo": repo}))
 
 
-def refresh_resource_sync_pending(sync: str) -> str:
+def refresh_resource_sync_pending(sync: str):
     """RefreshResourceSyncPending.
 
     sync: Id or name
@@ -1690,7 +1690,7 @@ def refresh_resource_sync_pending(sync: str) -> str:
     return _ok(_get_client().write("RefreshResourceSyncPending", {"sync": sync}))
 
 
-def refresh_stack_cache(stack: str) -> str:
+def refresh_stack_cache(stack: str):
     """RefreshStackCache.
 
     stack: Id or name
@@ -1698,7 +1698,7 @@ def refresh_stack_cache(stack: str) -> str:
     return _ok(_get_client().write("RefreshStackCache", {"stack": stack}))
 
 
-def remove_user_from_user_group(user_group: str, user: str) -> str:
+def remove_user_from_user_group(user_group: str, user: str):
     """RemoveUserFromUserGroup.
 
     user_group: The name or id of UserGroup that user should be removed from.
@@ -1707,7 +1707,7 @@ def remove_user_from_user_group(user_group: str, user: str) -> str:
     return _ok(_get_client().write("RemoveUserFromUserGroup", {"user_group": user_group, "user": user}))
 
 
-def rename_action(id: str, name: str) -> str:
+def rename_action(id: str, name: str):
     """RenameAction.
 
     id: The id or name of the Action to rename.
@@ -1716,7 +1716,7 @@ def rename_action(id: str, name: str) -> str:
     return _ok(_get_client().write("RenameAction", {"id": id, "name": name}))
 
 
-def rename_alerter(id: str, name: str) -> str:
+def rename_alerter(id: str, name: str):
     """RenameAlerter.
 
     id: The id or name of the Alerter to rename.
@@ -1725,7 +1725,7 @@ def rename_alerter(id: str, name: str) -> str:
     return _ok(_get_client().write("RenameAlerter", {"id": id, "name": name}))
 
 
-def rename_build(id: str, name: str) -> str:
+def rename_build(id: str, name: str):
     """RenameBuild.
 
     id: The id or name of the Build to rename.
@@ -1734,7 +1734,7 @@ def rename_build(id: str, name: str) -> str:
     return _ok(_get_client().write("RenameBuild", {"id": id, "name": name}))
 
 
-def rename_builder(id: str, name: str) -> str:
+def rename_builder(id: str, name: str):
     """RenameBuilder.
 
     id: The id or name of the Builder to rename.
@@ -1743,7 +1743,7 @@ def rename_builder(id: str, name: str) -> str:
     return _ok(_get_client().write("RenameBuilder", {"id": id, "name": name}))
 
 
-def rename_deployment(id: str, name: str) -> str:
+def rename_deployment(id: str, name: str):
     """RenameDeployment.
 
     id: The id of the deployment to rename.
@@ -1752,7 +1752,7 @@ def rename_deployment(id: str, name: str) -> str:
     return _ok(_get_client().write("RenameDeployment", {"id": id, "name": name}))
 
 
-def rename_procedure(id: str, name: str) -> str:
+def rename_procedure(id: str, name: str):
     """RenameProcedure.
 
     id: The id or name of the Procedure to rename.
@@ -1761,7 +1761,7 @@ def rename_procedure(id: str, name: str) -> str:
     return _ok(_get_client().write("RenameProcedure", {"id": id, "name": name}))
 
 
-def rename_repo(id: str, name: str) -> str:
+def rename_repo(id: str, name: str):
     """RenameRepo.
 
     id: The id or name of the Repo to rename.
@@ -1770,7 +1770,7 @@ def rename_repo(id: str, name: str) -> str:
     return _ok(_get_client().write("RenameRepo", {"id": id, "name": name}))
 
 
-def rename_resource_sync(id: str, name: str) -> str:
+def rename_resource_sync(id: str, name: str):
     """RenameResourceSync.
 
     id: The id or name of the ResourceSync to rename.
@@ -1779,7 +1779,7 @@ def rename_resource_sync(id: str, name: str) -> str:
     return _ok(_get_client().write("RenameResourceSync", {"id": id, "name": name}))
 
 
-def rename_server(id: str, name: str) -> str:
+def rename_server(id: str, name: str):
     """RenameServer.
 
     id: The id or name of the Server to rename.
@@ -1788,7 +1788,7 @@ def rename_server(id: str, name: str) -> str:
     return _ok(_get_client().write("RenameServer", {"id": id, "name": name}))
 
 
-def rename_stack(id: str, name: str) -> str:
+def rename_stack(id: str, name: str):
     """RenameStack.
 
     id: The id of the stack to rename.
@@ -1797,7 +1797,7 @@ def rename_stack(id: str, name: str) -> str:
     return _ok(_get_client().write("RenameStack", {"id": id, "name": name}))
 
 
-def rename_tag(id: str, name: str) -> str:
+def rename_tag(id: str, name: str):
     """RenameTag.
 
     id: The id of the tag to rename.
@@ -1806,7 +1806,7 @@ def rename_tag(id: str, name: str) -> str:
     return _ok(_get_client().write("RenameTag", {"id": id, "name": name}))
 
 
-def rename_user_group(id: str, name: str) -> str:
+def rename_user_group(id: str, name: str):
     """RenameUserGroup.
 
     id: The id of the UserGroup
@@ -1815,7 +1815,7 @@ def rename_user_group(id: str, name: str) -> str:
     return _ok(_get_client().write("RenameUserGroup", {"id": id, "name": name}))
 
 
-def set_everyone_user_group(user_group: str, everyone: bool) -> str:
+def set_everyone_user_group(user_group: str, everyone: bool):
     """SetEveryoneUserGroup.
 
     user_group: Id or name.
@@ -1824,7 +1824,7 @@ def set_everyone_user_group(user_group: str, everyone: bool) -> str:
     return _ok(_get_client().write("SetEveryoneUserGroup", {"user_group": user_group, "everyone": everyone}))
 
 
-def set_users_in_user_group(user_group: str, users: list[str]) -> str:
+def set_users_in_user_group(user_group: str, users: list[str]):
     """SetUsersInUserGroup.
 
     user_group: Id or name.
@@ -1833,7 +1833,7 @@ def set_users_in_user_group(user_group: str, users: list[str]) -> str:
     return _ok(_get_client().write("SetUsersInUserGroup", {"user_group": user_group, "users": users}))
 
 
-def update_action(id: str, config: dict) -> str:
+def update_action(id: str, config: dict):
     """UpdateAction.
 
     id: The id of the action to update.
@@ -1842,7 +1842,7 @@ def update_action(id: str, config: dict) -> str:
     return _ok(_get_client().write("UpdateAction", {"id": id, "config": config}))
 
 
-def update_alerter(id: str, config: dict) -> str:
+def update_alerter(id: str, config: dict):
     """UpdateAlerter.
 
     id: The id of the alerter to update.
@@ -1851,7 +1851,7 @@ def update_alerter(id: str, config: dict) -> str:
     return _ok(_get_client().write("UpdateAlerter", {"id": id, "config": config}))
 
 
-def update_build(id: str, config: dict) -> str:
+def update_build(id: str, config: dict):
     """UpdateBuild.
 
     id: The id or name of the build to update.
@@ -1860,7 +1860,7 @@ def update_build(id: str, config: dict) -> str:
     return _ok(_get_client().write("UpdateBuild", {"id": id, "config": config}))
 
 
-def update_builder(id: str, config: dict) -> str:
+def update_builder(id: str, config: dict):
     """UpdateBuilder.
 
     id: The id of the builder to update.
@@ -1869,7 +1869,7 @@ def update_builder(id: str, config: dict) -> str:
     return _ok(_get_client().write("UpdateBuilder", {"id": id, "config": config}))
 
 
-def update_deployment(id: str, config: dict) -> str:
+def update_deployment(id: str, config: dict):
     """UpdateDeployment.
 
     id: The deployment id to update.
@@ -1878,7 +1878,7 @@ def update_deployment(id: str, config: dict) -> str:
     return _ok(_get_client().write("UpdateDeployment", {"id": id, "config": config}))
 
 
-def update_docker_registry_account(id: str, account: dict) -> str:
+def update_docker_registry_account(id: str, account: dict):
     """UpdateDockerRegistryAccount.
 
     id: The id of the docker registry to update
@@ -1887,7 +1887,7 @@ def update_docker_registry_account(id: str, account: dict) -> str:
     return _ok(_get_client().write("UpdateDockerRegistryAccount", {"id": id, "account": account}))
 
 
-def update_git_provider_account(id: str, account: dict) -> str:
+def update_git_provider_account(id: str, account: dict):
     """UpdateGitProviderAccount.
 
     id: The id of the git provider account to update.
@@ -1896,7 +1896,7 @@ def update_git_provider_account(id: str, account: dict) -> str:
     return _ok(_get_client().write("UpdateGitProviderAccount", {"id": id, "account": account}))
 
 
-def update_permission_on_resource_type(user_target: dict, resource_type: str, permission: dict) -> str:
+def update_permission_on_resource_type(user_target: dict, resource_type: str, permission: dict):
     """UpdatePermissionOnResourceType.
 
     user_target: Specify the user or user group.
@@ -1906,7 +1906,7 @@ def update_permission_on_resource_type(user_target: dict, resource_type: str, pe
     return _ok(_get_client().write("UpdatePermissionOnResourceType", {"user_target": user_target, "resource_type": resource_type, "permission": permission}))
 
 
-def update_permission_on_target(user_target: dict, resource_target: dict, permission: dict) -> str:
+def update_permission_on_target(user_target: dict, resource_target: dict, permission: dict):
     """UpdatePermissionOnTarget.
 
     user_target: Specify the user or user group.
@@ -1916,7 +1916,7 @@ def update_permission_on_target(user_target: dict, resource_target: dict, permis
     return _ok(_get_client().write("UpdatePermissionOnTarget", {"user_target": user_target, "resource_target": resource_target, "permission": permission}))
 
 
-def update_procedure(id: str, config: dict) -> str:
+def update_procedure(id: str, config: dict):
     """UpdateProcedure.
 
     id: The id of the procedure to update.
@@ -1925,7 +1925,7 @@ def update_procedure(id: str, config: dict) -> str:
     return _ok(_get_client().write("UpdateProcedure", {"id": id, "config": config}))
 
 
-def update_repo(id: str, config: dict) -> str:
+def update_repo(id: str, config: dict):
     """UpdateRepo.
 
     id: The id of the repo to update.
@@ -1934,7 +1934,7 @@ def update_repo(id: str, config: dict) -> str:
     return _ok(_get_client().write("UpdateRepo", {"id": id, "config": config}))
 
 
-def update_resource_meta(target: dict, description: str | None = None, template: bool | None = None, tags: list[str] | None = None) -> str:
+def update_resource_meta(target: dict, description: str | None = None, template: bool | None = None, tags: list[str] | None = None):
     """UpdateResourceMeta.
 
     target: The target resource to set update meta.
@@ -1952,7 +1952,7 @@ def update_resource_meta(target: dict, description: str | None = None, template:
     return _ok(_get_client().write("UpdateResourceMeta", params))
 
 
-def update_resource_sync(id: str, config: dict) -> str:
+def update_resource_sync(id: str, config: dict):
     """UpdateResourceSync.
 
     id: The id of the sync to update.
@@ -1961,7 +1961,7 @@ def update_resource_sync(id: str, config: dict) -> str:
     return _ok(_get_client().write("UpdateResourceSync", {"id": id, "config": config}))
 
 
-def update_server(id: str, config: dict) -> str:
+def update_server(id: str, config: dict):
     """UpdateServer.
 
     id: The id or name of the server to update.
@@ -1970,7 +1970,7 @@ def update_server(id: str, config: dict) -> str:
     return _ok(_get_client().write("UpdateServer", {"id": id, "config": config}))
 
 
-def update_service_user_description(username: str, description: str) -> str:
+def update_service_user_description(username: str, description: str):
     """UpdateServiceUserDescription.
 
     username: The service user's username
@@ -1979,7 +1979,7 @@ def update_service_user_description(username: str, description: str) -> str:
     return _ok(_get_client().write("UpdateServiceUserDescription", {"username": username, "description": description}))
 
 
-def update_stack(id: str, config: dict) -> str:
+def update_stack(id: str, config: dict):
     """UpdateStack.
 
     id: The id of the Stack to update.
@@ -1988,7 +1988,7 @@ def update_stack(id: str, config: dict) -> str:
     return _ok(_get_client().write("UpdateStack", {"id": id, "config": config}))
 
 
-def update_tag_color(tag: str, color: dict) -> str:
+def update_tag_color(tag: str, color: dict):
     """UpdateTagColor.
 
     tag: The name or id of the tag to update.
@@ -1997,7 +1997,7 @@ def update_tag_color(tag: str, color: dict) -> str:
     return _ok(_get_client().write("UpdateTagColor", {"tag": tag, "color": color}))
 
 
-def update_user_admin(user_id: str, admin: bool) -> str:
+def update_user_admin(user_id: str, admin: bool):
     """UpdateUserAdmin.
 
     user_id: The target user.
@@ -2006,7 +2006,7 @@ def update_user_admin(user_id: str, admin: bool) -> str:
     return _ok(_get_client().write("UpdateUserAdmin", {"user_id": user_id, "admin": admin}))
 
 
-def update_user_base_permissions(user_id: str, enabled: bool | None = None, create_servers: bool | None = None, create_builds: bool | None = None) -> str:
+def update_user_base_permissions(user_id: str, enabled: bool | None = None, create_servers: bool | None = None, create_builds: bool | None = None):
     """UpdateUserBasePermissions.
 
     user_id: The target user.
@@ -2024,17 +2024,17 @@ def update_user_base_permissions(user_id: str, enabled: bool | None = None, crea
     return _ok(_get_client().write("UpdateUserBasePermissions", params))
 
 
-def update_user_password(password: str) -> str:
+def update_user_password(password: str):
     """UpdateUserPassword."""
     return _ok(_get_client().write("UpdateUserPassword", {"password": password}))
 
 
-def update_user_username(username: str) -> str:
+def update_user_username(username: str):
     """UpdateUserUsername."""
     return _ok(_get_client().write("UpdateUserUsername", {"username": username}))
 
 
-def update_variable_description(name: str, description: str) -> str:
+def update_variable_description(name: str, description: str):
     """UpdateVariableDescription.
 
     name: The name of the variable to update.
@@ -2043,7 +2043,7 @@ def update_variable_description(name: str, description: str) -> str:
     return _ok(_get_client().write("UpdateVariableDescription", {"name": name, "description": description}))
 
 
-def update_variable_is_secret(name: str, is_secret: bool) -> str:
+def update_variable_is_secret(name: str, is_secret: bool):
     """UpdateVariableIsSecret.
 
     name: The name of the variable to update.
@@ -2052,7 +2052,7 @@ def update_variable_is_secret(name: str, is_secret: bool) -> str:
     return _ok(_get_client().write("UpdateVariableIsSecret", {"name": name, "is_secret": is_secret}))
 
 
-def update_variable_value(name: str, value: str) -> str:
+def update_variable_value(name: str, value: str):
     """UpdateVariableValue.
 
     name: The name of the variable to update.
@@ -2061,7 +2061,7 @@ def update_variable_value(name: str, value: str) -> str:
     return _ok(_get_client().write("UpdateVariableValue", {"name": name, "value": value}))
 
 
-def write_build_file_contents(build: str, contents: str) -> str:
+def write_build_file_contents(build: str, contents: str):
     """WriteBuildFileContents.
 
     build: The name or id of the target Build.
@@ -2070,7 +2070,7 @@ def write_build_file_contents(build: str, contents: str) -> str:
     return _ok(_get_client().write("WriteBuildFileContents", {"build": build, "contents": contents}))
 
 
-def write_stack_file_contents(stack: str, file_path: str, contents: str) -> str:
+def write_stack_file_contents(stack: str, file_path: str, contents: str):
     """WriteStackFileContents.
 
     stack: The name or id of the target Stack.
@@ -2080,7 +2080,7 @@ def write_stack_file_contents(stack: str, file_path: str, contents: str) -> str:
     return _ok(_get_client().write("WriteStackFileContents", {"stack": stack, "file_path": file_path, "contents": contents}))
 
 
-def write_sync_file_contents(sync: str, resource_path: str, file_path: str, contents: str) -> str:
+def write_sync_file_contents(sync: str, resource_path: str, file_path: str, contents: str):
     """WriteSyncFileContents.
 
     sync: The name or id of the target Sync.
@@ -2093,12 +2093,12 @@ def write_sync_file_contents(sync: str, resource_path: str, file_path: str, cont
 
 # ── execute ─────────────────────────────────────────────────────────────
 
-def backup_core_database() -> str:
+def backup_core_database():
     """BackupCoreDatabase."""
     return _ok(_get_client().execute("BackupCoreDatabase"))
 
 
-def batch_build_repo(pattern: str) -> str:
+def batch_build_repo(pattern: str):
     """BatchBuildRepo.
 
     pattern: Id or name or wildcard pattern or regex.
@@ -2106,7 +2106,7 @@ def batch_build_repo(pattern: str) -> str:
     return _ok(_get_client().execute("BatchBuildRepo", {"pattern": pattern}))
 
 
-def batch_clone_repo(pattern: str) -> str:
+def batch_clone_repo(pattern: str):
     """BatchCloneRepo.
 
     pattern: Id or name or wildcard pattern or regex.
@@ -2114,7 +2114,7 @@ def batch_clone_repo(pattern: str) -> str:
     return _ok(_get_client().execute("BatchCloneRepo", {"pattern": pattern}))
 
 
-def batch_deploy(pattern: str) -> str:
+def batch_deploy(pattern: str):
     """BatchDeploy.
 
     pattern: Id or name or wildcard pattern or regex.
@@ -2122,7 +2122,7 @@ def batch_deploy(pattern: str) -> str:
     return _ok(_get_client().execute("BatchDeploy", {"pattern": pattern}))
 
 
-def batch_deploy_stack(pattern: str) -> str:
+def batch_deploy_stack(pattern: str):
     """BatchDeployStack.
 
     pattern: Id or name or wildcard pattern or regex.
@@ -2130,7 +2130,7 @@ def batch_deploy_stack(pattern: str) -> str:
     return _ok(_get_client().execute("BatchDeployStack", {"pattern": pattern}))
 
 
-def batch_deploy_stack_if_changed(pattern: str) -> str:
+def batch_deploy_stack_if_changed(pattern: str):
     """BatchDeployStackIfChanged.
 
     pattern: Id or name or wildcard pattern or regex.
@@ -2138,7 +2138,7 @@ def batch_deploy_stack_if_changed(pattern: str) -> str:
     return _ok(_get_client().execute("BatchDeployStackIfChanged", {"pattern": pattern}))
 
 
-def batch_destroy_deployment(pattern: str) -> str:
+def batch_destroy_deployment(pattern: str):
     """BatchDestroyDeployment.
 
     pattern: Id or name or wildcard pattern or regex.
@@ -2146,7 +2146,7 @@ def batch_destroy_deployment(pattern: str) -> str:
     return _ok(_get_client().execute("BatchDestroyDeployment", {"pattern": pattern}))
 
 
-def batch_destroy_stack(pattern: str) -> str:
+def batch_destroy_stack(pattern: str):
     """BatchDestroyStack.
 
     pattern: Id or name or wildcard pattern or regex.
@@ -2154,7 +2154,7 @@ def batch_destroy_stack(pattern: str) -> str:
     return _ok(_get_client().execute("BatchDestroyStack", {"pattern": pattern}))
 
 
-def batch_pull_repo(pattern: str) -> str:
+def batch_pull_repo(pattern: str):
     """BatchPullRepo.
 
     pattern: Id or name or wildcard pattern or regex.
@@ -2162,7 +2162,7 @@ def batch_pull_repo(pattern: str) -> str:
     return _ok(_get_client().execute("BatchPullRepo", {"pattern": pattern}))
 
 
-def batch_pull_stack(pattern: str) -> str:
+def batch_pull_stack(pattern: str):
     """BatchPullStack.
 
     pattern: Id or name or wildcard pattern or regex.
@@ -2170,7 +2170,7 @@ def batch_pull_stack(pattern: str) -> str:
     return _ok(_get_client().execute("BatchPullStack", {"pattern": pattern}))
 
 
-def batch_run_action(pattern: str) -> str:
+def batch_run_action(pattern: str):
     """BatchRunAction.
 
     pattern: Id or name or wildcard pattern or regex.
@@ -2178,7 +2178,7 @@ def batch_run_action(pattern: str) -> str:
     return _ok(_get_client().execute("BatchRunAction", {"pattern": pattern}))
 
 
-def batch_run_build(pattern: str) -> str:
+def batch_run_build(pattern: str):
     """BatchRunBuild.
 
     pattern: Id or name or wildcard pattern or regex.
@@ -2186,7 +2186,7 @@ def batch_run_build(pattern: str) -> str:
     return _ok(_get_client().execute("BatchRunBuild", {"pattern": pattern}))
 
 
-def batch_run_procedure(pattern: str) -> str:
+def batch_run_procedure(pattern: str):
     """BatchRunProcedure.
 
     pattern: Id or name or wildcard pattern or regex.
@@ -2194,7 +2194,7 @@ def batch_run_procedure(pattern: str) -> str:
     return _ok(_get_client().execute("BatchRunProcedure", {"pattern": pattern}))
 
 
-def build_repo(repo: str) -> str:
+def build_repo(repo: str):
     """BuildRepo.
 
     repo: Id or name
@@ -2202,7 +2202,7 @@ def build_repo(repo: str) -> str:
     return _ok(_get_client().execute("BuildRepo", {"repo": repo}))
 
 
-def cancel_build(build: str) -> str:
+def cancel_build(build: str):
     """CancelBuild.
 
     build: Can be id or name
@@ -2210,7 +2210,7 @@ def cancel_build(build: str) -> str:
     return _ok(_get_client().execute("CancelBuild", {"build": build}))
 
 
-def cancel_repo_build(repo: str) -> str:
+def cancel_repo_build(repo: str):
     """CancelRepoBuild.
 
     repo: Can be id or name
@@ -2218,12 +2218,12 @@ def cancel_repo_build(repo: str) -> str:
     return _ok(_get_client().execute("CancelRepoBuild", {"repo": repo}))
 
 
-def clear_repo_cache() -> str:
+def clear_repo_cache():
     """ClearRepoCache."""
     return _ok(_get_client().execute("ClearRepoCache"))
 
 
-def clone_repo(repo: str) -> str:
+def clone_repo(repo: str):
     """CloneRepo.
 
     repo: Id or name
@@ -2231,7 +2231,7 @@ def clone_repo(repo: str) -> str:
     return _ok(_get_client().execute("CloneRepo", {"repo": repo}))
 
 
-def delete_image(server: str, name: str) -> str:
+def delete_image(server: str, name: str):
     """DeleteImage.
 
     server: Id or name.
@@ -2240,7 +2240,7 @@ def delete_image(server: str, name: str) -> str:
     return _ok(_get_client().execute("DeleteImage", {"server": server, "name": name}))
 
 
-def delete_network(server: str, name: str) -> str:
+def delete_network(server: str, name: str):
     """DeleteNetwork.
 
     server: Id or name.
@@ -2249,7 +2249,7 @@ def delete_network(server: str, name: str) -> str:
     return _ok(_get_client().execute("DeleteNetwork", {"server": server, "name": name}))
 
 
-def delete_volume(server: str, name: str) -> str:
+def delete_volume(server: str, name: str):
     """DeleteVolume.
 
     server: Id or name.
@@ -2258,7 +2258,7 @@ def delete_volume(server: str, name: str) -> str:
     return _ok(_get_client().execute("DeleteVolume", {"server": server, "name": name}))
 
 
-def deploy(deployment: str, stop_signal: str | None = None, stop_time: int | None = None) -> str:
+def deploy(deployment: str, stop_signal: str | None = None, stop_time: int | None = None):
     """Deploy.
 
     deployment: Name or id
@@ -2273,7 +2273,7 @@ def deploy(deployment: str, stop_signal: str | None = None, stop_time: int | Non
     return _ok(_get_client().execute("Deploy", params))
 
 
-def deploy_stack(stack: str, services: list[str] | None = None, stop_time: int | None = None) -> str:
+def deploy_stack(stack: str, services: list[str] | None = None, stop_time: int | None = None):
     """DeployStack.
 
     stack: Id or name
@@ -2288,7 +2288,7 @@ def deploy_stack(stack: str, services: list[str] | None = None, stop_time: int |
     return _ok(_get_client().execute("DeployStack", params))
 
 
-def deploy_stack_if_changed(stack: str, stop_time: int | None = None) -> str:
+def deploy_stack_if_changed(stack: str, stop_time: int | None = None):
     """DeployStackIfChanged.
 
     stack: Id or name
@@ -2300,7 +2300,7 @@ def deploy_stack_if_changed(stack: str, stop_time: int | None = None) -> str:
     return _ok(_get_client().execute("DeployStackIfChanged", params))
 
 
-def destroy_container(server: str, container: str, signal: str | None = None, time: int | None = None) -> str:
+def destroy_container(server: str, container: str, signal: str | None = None, time: int | None = None):
     """DestroyContainer.
 
     server: Name or id
@@ -2316,7 +2316,7 @@ def destroy_container(server: str, container: str, signal: str | None = None, ti
     return _ok(_get_client().execute("DestroyContainer", params))
 
 
-def destroy_deployment(deployment: str, signal: str | None = None, time: int | None = None) -> str:
+def destroy_deployment(deployment: str, signal: str | None = None, time: int | None = None):
     """DestroyDeployment.
 
     deployment: Name or id.
@@ -2331,7 +2331,7 @@ def destroy_deployment(deployment: str, signal: str | None = None, time: int | N
     return _ok(_get_client().execute("DestroyDeployment", params))
 
 
-def destroy_stack(stack: str, services: list[str] | None = None, remove_orphans: bool | None = None, stop_time: int | None = None) -> str:
+def destroy_stack(stack: str, services: list[str] | None = None, remove_orphans: bool | None = None, stop_time: int | None = None):
     """DestroyStack.
 
     stack: Id or name
@@ -2349,12 +2349,12 @@ def destroy_stack(stack: str, services: list[str] | None = None, remove_orphans:
     return _ok(_get_client().execute("DestroyStack", params))
 
 
-def global_auto_update() -> str:
+def global_auto_update():
     """GlobalAutoUpdate."""
     return _ok(_get_client().execute("GlobalAutoUpdate"))
 
 
-def pause_all_containers(server: str) -> str:
+def pause_all_containers(server: str):
     """PauseAllContainers.
 
     server: Name or id
@@ -2362,7 +2362,7 @@ def pause_all_containers(server: str) -> str:
     return _ok(_get_client().execute("PauseAllContainers", {"server": server}))
 
 
-def pause_container(server: str, container: str) -> str:
+def pause_container(server: str, container: str):
     """PauseContainer.
 
     server: Name or id
@@ -2371,7 +2371,7 @@ def pause_container(server: str, container: str) -> str:
     return _ok(_get_client().execute("PauseContainer", {"server": server, "container": container}))
 
 
-def pause_deployment(deployment: str) -> str:
+def pause_deployment(deployment: str):
     """PauseDeployment.
 
     deployment: Name or id
@@ -2379,7 +2379,7 @@ def pause_deployment(deployment: str) -> str:
     return _ok(_get_client().execute("PauseDeployment", {"deployment": deployment}))
 
 
-def pause_stack(stack: str, services: list[str] | None = None) -> str:
+def pause_stack(stack: str, services: list[str] | None = None):
     """PauseStack.
 
     stack: Id or name
@@ -2391,7 +2391,7 @@ def pause_stack(stack: str, services: list[str] | None = None) -> str:
     return _ok(_get_client().execute("PauseStack", params))
 
 
-def prune_buildx(server: str) -> str:
+def prune_buildx(server: str):
     """PruneBuildx.
 
     server: Id or name
@@ -2399,7 +2399,7 @@ def prune_buildx(server: str) -> str:
     return _ok(_get_client().execute("PruneBuildx", {"server": server}))
 
 
-def prune_containers(server: str) -> str:
+def prune_containers(server: str):
     """PruneContainers.
 
     server: Id or name
@@ -2407,7 +2407,7 @@ def prune_containers(server: str) -> str:
     return _ok(_get_client().execute("PruneContainers", {"server": server}))
 
 
-def prune_docker_builders(server: str) -> str:
+def prune_docker_builders(server: str):
     """PruneDockerBuilders.
 
     server: Id or name
@@ -2415,7 +2415,7 @@ def prune_docker_builders(server: str) -> str:
     return _ok(_get_client().execute("PruneDockerBuilders", {"server": server}))
 
 
-def prune_images(server: str) -> str:
+def prune_images(server: str):
     """PruneImages.
 
     server: Id or name
@@ -2423,7 +2423,7 @@ def prune_images(server: str) -> str:
     return _ok(_get_client().execute("PruneImages", {"server": server}))
 
 
-def prune_networks(server: str) -> str:
+def prune_networks(server: str):
     """PruneNetworks.
 
     server: Id or name
@@ -2431,7 +2431,7 @@ def prune_networks(server: str) -> str:
     return _ok(_get_client().execute("PruneNetworks", {"server": server}))
 
 
-def prune_system(server: str) -> str:
+def prune_system(server: str):
     """PruneSystem.
 
     server: Id or name
@@ -2439,7 +2439,7 @@ def prune_system(server: str) -> str:
     return _ok(_get_client().execute("PruneSystem", {"server": server}))
 
 
-def prune_volumes(server: str) -> str:
+def prune_volumes(server: str):
     """PruneVolumes.
 
     server: Id or name
@@ -2447,7 +2447,7 @@ def prune_volumes(server: str) -> str:
     return _ok(_get_client().execute("PruneVolumes", {"server": server}))
 
 
-def pull_deployment(deployment: str) -> str:
+def pull_deployment(deployment: str):
     """PullDeployment.
 
     deployment: Name or id
@@ -2455,7 +2455,7 @@ def pull_deployment(deployment: str) -> str:
     return _ok(_get_client().execute("PullDeployment", {"deployment": deployment}))
 
 
-def pull_repo(repo: str) -> str:
+def pull_repo(repo: str):
     """PullRepo.
 
     repo: Id or name
@@ -2463,7 +2463,7 @@ def pull_repo(repo: str) -> str:
     return _ok(_get_client().execute("PullRepo", {"repo": repo}))
 
 
-def pull_stack(stack: str, services: list[str] | None = None) -> str:
+def pull_stack(stack: str, services: list[str] | None = None):
     """PullStack.
 
     stack: Id or name
@@ -2475,7 +2475,7 @@ def pull_stack(stack: str, services: list[str] | None = None) -> str:
     return _ok(_get_client().execute("PullStack", params))
 
 
-def restart_all_containers(server: str) -> str:
+def restart_all_containers(server: str):
     """RestartAllContainers.
 
     server: Name or id
@@ -2483,7 +2483,7 @@ def restart_all_containers(server: str) -> str:
     return _ok(_get_client().execute("RestartAllContainers", {"server": server}))
 
 
-def restart_container(server: str, container: str) -> str:
+def restart_container(server: str, container: str):
     """RestartContainer.
 
     server: Name or id
@@ -2492,7 +2492,7 @@ def restart_container(server: str, container: str) -> str:
     return _ok(_get_client().execute("RestartContainer", {"server": server, "container": container}))
 
 
-def restart_deployment(deployment: str) -> str:
+def restart_deployment(deployment: str):
     """RestartDeployment.
 
     deployment: Name or id
@@ -2500,7 +2500,7 @@ def restart_deployment(deployment: str) -> str:
     return _ok(_get_client().execute("RestartDeployment", {"deployment": deployment}))
 
 
-def restart_stack(stack: str, services: list[str] | None = None) -> str:
+def restart_stack(stack: str, services: list[str] | None = None):
     """RestartStack.
 
     stack: Id or name
@@ -2512,7 +2512,7 @@ def restart_stack(stack: str, services: list[str] | None = None) -> str:
     return _ok(_get_client().execute("RestartStack", params))
 
 
-def run_action(action: str, args: dict | None = None) -> str:
+def run_action(action: str, args: dict | None = None):
     """RunAction.
 
     action: Id or name
@@ -2524,7 +2524,7 @@ def run_action(action: str, args: dict | None = None) -> str:
     return _ok(_get_client().execute("RunAction", params))
 
 
-def run_build(build: str) -> str:
+def run_build(build: str):
     """RunBuild.
 
     build: Can be build id or name
@@ -2532,7 +2532,7 @@ def run_build(build: str) -> str:
     return _ok(_get_client().execute("RunBuild", {"build": build}))
 
 
-def run_procedure(procedure: str) -> str:
+def run_procedure(procedure: str):
     """RunProcedure.
 
     procedure: Id or name
@@ -2540,7 +2540,7 @@ def run_procedure(procedure: str) -> str:
     return _ok(_get_client().execute("RunProcedure", {"procedure": procedure}))
 
 
-def run_stack_service(stack: str, service: str, command: list[str] | None = None, no_tty: bool | None = None, no_deps: bool | None = None, detach: bool | None = None, service_ports: bool | None = None, env: dict | None = None, workdir: str | None = None, user: str | None = None, entrypoint: str | None = None, pull: bool | None = None) -> str:
+def run_stack_service(stack: str, service: str, command: list[str] | None = None, no_tty: bool | None = None, no_deps: bool | None = None, detach: bool | None = None, service_ports: bool | None = None, env: dict | None = None, workdir: str | None = None, user: str | None = None, entrypoint: str | None = None, pull: bool | None = None):
     """RunStackService.
 
     stack: Id or name
@@ -2580,7 +2580,7 @@ def run_stack_service(stack: str, service: str, command: list[str] | None = None
     return _ok(_get_client().execute("RunStackService", params))
 
 
-def run_sync(sync: str, resource_type: str | None = None, resources: list[str] | None = None) -> str:
+def run_sync(sync: str, resource_type: str | None = None, resources: list[str] | None = None):
     """RunSync.
 
     sync: Id or name
@@ -2595,7 +2595,7 @@ def run_sync(sync: str, resource_type: str | None = None, resources: list[str] |
     return _ok(_get_client().execute("RunSync", params))
 
 
-def send_alert(message: str, level: str | None = None, details: str | None = None, alerters: list[str] | None = None) -> str:
+def send_alert(message: str, level: str | None = None, details: str | None = None, alerters: list[str] | None = None):
     """SendAlert.
 
     level: The alert level.
@@ -2613,7 +2613,7 @@ def send_alert(message: str, level: str | None = None, details: str | None = Non
     return _ok(_get_client().execute("SendAlert", params))
 
 
-def start_all_containers(server: str) -> str:
+def start_all_containers(server: str):
     """StartAllContainers.
 
     server: Name or id
@@ -2621,7 +2621,7 @@ def start_all_containers(server: str) -> str:
     return _ok(_get_client().execute("StartAllContainers", {"server": server}))
 
 
-def start_container(server: str, container: str) -> str:
+def start_container(server: str, container: str):
     """StartContainer.
 
     server: Name or id
@@ -2630,7 +2630,7 @@ def start_container(server: str, container: str) -> str:
     return _ok(_get_client().execute("StartContainer", {"server": server, "container": container}))
 
 
-def start_deployment(deployment: str) -> str:
+def start_deployment(deployment: str):
     """StartDeployment.
 
     deployment: Name or id
@@ -2638,7 +2638,7 @@ def start_deployment(deployment: str) -> str:
     return _ok(_get_client().execute("StartDeployment", {"deployment": deployment}))
 
 
-def start_stack(stack: str, services: list[str] | None = None) -> str:
+def start_stack(stack: str, services: list[str] | None = None):
     """StartStack.
 
     stack: Id or name
@@ -2650,7 +2650,7 @@ def start_stack(stack: str, services: list[str] | None = None) -> str:
     return _ok(_get_client().execute("StartStack", params))
 
 
-def stop_all_containers(server: str) -> str:
+def stop_all_containers(server: str):
     """StopAllContainers.
 
     server: Name or id
@@ -2658,7 +2658,7 @@ def stop_all_containers(server: str) -> str:
     return _ok(_get_client().execute("StopAllContainers", {"server": server}))
 
 
-def stop_container(server: str, container: str, signal: str | None = None, time: int | None = None) -> str:
+def stop_container(server: str, container: str, signal: str | None = None, time: int | None = None):
     """StopContainer.
 
     server: Name or id
@@ -2674,7 +2674,7 @@ def stop_container(server: str, container: str, signal: str | None = None, time:
     return _ok(_get_client().execute("StopContainer", params))
 
 
-def stop_deployment(deployment: str, signal: str | None = None, time: int | None = None) -> str:
+def stop_deployment(deployment: str, signal: str | None = None, time: int | None = None):
     """StopDeployment.
 
     deployment: Name or id
@@ -2689,7 +2689,7 @@ def stop_deployment(deployment: str, signal: str | None = None, time: int | None
     return _ok(_get_client().execute("StopDeployment", params))
 
 
-def stop_stack(stack: str, stop_time: int | None = None, services: list[str] | None = None) -> str:
+def stop_stack(stack: str, stop_time: int | None = None, services: list[str] | None = None):
     """StopStack.
 
     stack: Id or name
@@ -2704,7 +2704,7 @@ def stop_stack(stack: str, stop_time: int | None = None, services: list[str] | N
     return _ok(_get_client().execute("StopStack", params))
 
 
-def test_alerter(alerter: str) -> str:
+def test_alerter(alerter: str):
     """TestAlerter.
 
     alerter: Name or id
@@ -2712,7 +2712,7 @@ def test_alerter(alerter: str) -> str:
     return _ok(_get_client().execute("TestAlerter", {"alerter": alerter}))
 
 
-def unpause_all_containers(server: str) -> str:
+def unpause_all_containers(server: str):
     """UnpauseAllContainers.
 
     server: Name or id
@@ -2720,7 +2720,7 @@ def unpause_all_containers(server: str) -> str:
     return _ok(_get_client().execute("UnpauseAllContainers", {"server": server}))
 
 
-def unpause_container(server: str, container: str) -> str:
+def unpause_container(server: str, container: str):
     """UnpauseContainer.
 
     server: Name or id
@@ -2729,7 +2729,7 @@ def unpause_container(server: str, container: str) -> str:
     return _ok(_get_client().execute("UnpauseContainer", {"server": server, "container": container}))
 
 
-def unpause_deployment(deployment: str) -> str:
+def unpause_deployment(deployment: str):
     """UnpauseDeployment.
 
     deployment: Name or id
@@ -2737,7 +2737,7 @@ def unpause_deployment(deployment: str) -> str:
     return _ok(_get_client().execute("UnpauseDeployment", {"deployment": deployment}))
 
 
-def unpause_stack(stack: str, services: list[str] | None = None) -> str:
+def unpause_stack(stack: str, services: list[str] | None = None):
     """UnpauseStack.
 
     stack: Id or name

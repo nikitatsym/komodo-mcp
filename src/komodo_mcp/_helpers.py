@@ -1,4 +1,3 @@
-import json
 from .client import KomodoClient
 
 _client: KomodoClient | None = None
@@ -11,7 +10,7 @@ def _get_client() -> KomodoClient:
     return _client
 
 
-def _ok(data) -> str:
+def _ok(data):
     if data is None:
-        return json.dumps({"status": "ok"})
-    return json.dumps(data, indent=2, ensure_ascii=False)
+        return {"status": "ok"}
+    return data

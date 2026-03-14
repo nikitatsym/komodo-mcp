@@ -293,7 +293,7 @@ for _group, _op_names in _SCOPE_GROUPS.items():
 # ── Custom overrides ────────────────────────────────────────────────────────
 
 # GetUpdate with client-side post-processing (replaces generated version)
-def get_update(id: str, failed_only: bool = False, tail: int = 0) -> str:
+def get_update(id: str, failed_only: bool = False, tail: int = 0):
     """Get update by id. failed_only: only failed stages. tail: limit lines."""
     result = _get_client().read("GetUpdate", {"id": id})
     if (failed_only or tail) and isinstance(result, dict):
