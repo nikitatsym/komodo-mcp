@@ -47,30 +47,6 @@
     margin-bottom: 1rem;
   }
   input:focus { outline: none; border-color: var(--accent); }
-  .checkbox-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-  }
-  .checkbox-row input[type="checkbox"] {
-    width: 1rem;
-    height: 1rem;
-    accent-color: var(--accent);
-    cursor: pointer;
-  }
-  .checkbox-row label {
-    display: inline;
-    margin-bottom: 0;
-    cursor: pointer;
-    color: var(--text);
-    font-size: 0.9rem;
-  }
-  .checkbox-row .hint {
-    color: var(--text-muted);
-    font-size: 0.8rem;
-    margin-left: 0.25rem;
-  }
   button {
     padding: 0.5rem 1rem;
     border: none;
@@ -105,15 +81,10 @@
 <div class="container">
 
   <h1>komodo-mcp</h1>
-  <p class="subtitle">MCP server for <a href="https://komo.do/">Komodo</a> — 293 tools for full API coverage</p>
+  <p class="subtitle">MCP server for <a href="https://komo.do/">Komodo</a> — 6 meta-tools covering the full API, split by risk level</p>
 
   <div class="card template">
     <h2>Config template</h2>
-    <div class="checkbox-row">
-      <input type="checkbox" id="template-compact" onchange="updateTemplate()">
-      <label for="template-compact">Compact mode</label>
-      <span class="hint">— 6 meta-tools instead of 293, split by risk level</span>
-    </div>
     <pre id="template-pre"><code id="template-code"></code></pre>
   </div>
 
@@ -125,11 +96,6 @@
     <input type="text" id="komodo-key" placeholder="your-api-key">
     <label for="komodo-secret">API Secret</label>
     <input type="password" id="komodo-secret" placeholder="your-api-secret">
-    <div class="checkbox-row">
-      <input type="checkbox" id="compact-mode">
-      <label for="compact-mode">Compact mode</label>
-      <span class="hint">— 6 meta-tools instead of 293, split by risk level</span>
-    </div>
     <button class="btn-primary" onclick="generate()">Generate</button>
     <button class="btn-copy" id="btn-copy" onclick="copyConfig()">Copy</button>
     <pre id="output"></pre>
@@ -163,15 +129,6 @@
 
 <script>
 function updateTemplate() {
-  var compact = document.getElementById('template-compact').checked;
-  var env = {
-    "KOMODO_URL": "https://komodo.example.com",
-    "KOMODO_API_KEY": "your-api-key",
-    "KOMODO_API_SECRET": "your-api-secret"
-  };
-  if (compact) {
-    env["KOMODO_COMPACT"] = "true";
-  }
   var tpl = {
     mcpServers: {
       komodo: {
@@ -179,23 +136,18 @@ function updateTemplate() {
         args: ["--refresh", "--extra-index-url",
           "https://nikitatsym.github.io/komodo-mcp/simple",
           "komodo-mcp"],
-        env: env
+        env: {
+          "KOMODO_URL": "https://komodo.example.com",
+          "KOMODO_API_KEY": "your-api-key",
+          "KOMODO_API_SECRET": "your-api-secret"
+        }
       }
     }
   };
   document.getElementById('template-code').textContent = JSON.stringify(tpl, null, 2);
-  // sync the generate form checkbox
-  document.getElementById('compact-mode').checked = compact;
 }
 
-// also sync the other way
-document.addEventListener('DOMContentLoaded', function() {
-  updateTemplate();
-  document.getElementById('compact-mode').addEventListener('change', function() {
-    document.getElementById('template-compact').checked = this.checked;
-    updateTemplate();
-  });
-});
+document.addEventListener('DOMContentLoaded', updateTemplate);
 
 function generate() {
   var url    = document.getElementById('komodo-url').value.trim().replace(/\/+$/, '');
@@ -206,17 +158,6 @@ function generate() {
   if (!key)    { alert('Please enter your API Key.');     return; }
   if (!secret) { alert('Please enter your API Secret.');  return; }
 
-  var compact = document.getElementById('compact-mode').checked;
-
-  var env = {
-    KOMODO_URL: url,
-    KOMODO_API_KEY: key,
-    KOMODO_API_SECRET: secret
-  };
-  if (compact) {
-    env.KOMODO_COMPACT = "true";
-  }
-
   var config = {
     mcpServers: {
       komodo: {
@@ -224,7 +165,11 @@ function generate() {
         args: ["--refresh", "--extra-index-url",
           "https://nikitatsym.github.io/komodo-mcp/simple",
           "komodo-mcp"],
-        env: env
+        env: {
+          KOMODO_URL: url,
+          KOMODO_API_KEY: key,
+          KOMODO_API_SECRET: secret
+        }
       }
     }
   };

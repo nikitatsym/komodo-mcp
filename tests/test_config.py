@@ -21,27 +21,15 @@ class TestSettings:
         assert s.komodo_url == ""
         assert s.komodo_api_key == ""
         assert s.komodo_api_secret == ""
-        assert s.komodo_compact is False
 
     def test_from_env(self, monkeypatch):
         monkeypatch.setenv("KOMODO_URL", "https://komodo.example.com")
         monkeypatch.setenv("KOMODO_API_KEY", "key123")
         monkeypatch.setenv("KOMODO_API_SECRET", "secret456")
-        monkeypatch.setenv("KOMODO_COMPACT", "true")
         s = Settings()
         assert s.komodo_url == "https://komodo.example.com"
         assert s.komodo_api_key == "key123"
         assert s.komodo_api_secret == "secret456"
-        assert s.komodo_compact is True
-
-    def test_compact_bool_parsing(self, monkeypatch):
-        for val in ("1", "True", "YES", "true"):
-            monkeypatch.setenv("KOMODO_COMPACT", val)
-            assert Settings().komodo_compact is True
-
-        for val in ("0", "False", "no", "false"):
-            monkeypatch.setenv("KOMODO_COMPACT", val)
-            assert Settings().komodo_compact is False
 
 
 class TestGetSettings:
