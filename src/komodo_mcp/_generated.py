@@ -471,8 +471,9 @@ def get_variable(name: str):
 
 
 def get_version():
-    """GetVersion."""
-    return _ok(_get_client().read("GetVersion"))
+    """GetVersion. Returns MCP package version and Komodo service version."""
+    from importlib.metadata import version
+    return {"mcp": version("komodo-mcp"), "service": _get_client().read("GetVersion")}
 
 
 def inspect_deployment_container(deployment: str):
