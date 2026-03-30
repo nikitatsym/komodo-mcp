@@ -280,14 +280,19 @@ _SCOPE_GROUPS: dict[Group, list[str]] = {
 
 _grouped: set[str] = set()
 
-for _group, _op_names in _SCOPE_GROUPS.items():
-    for _pascal in _op_names:
-        _snake = _to_snake(_pascal)
-        _fn = getattr(_generated, _snake, None)
-        if _fn is None:
-            continue
-        _op(_group)(_fn)
-        _grouped.add(_snake)
+
+def _register_groups():
+    for group, op_names in _SCOPE_GROUPS.items():
+        for pascal in op_names:
+            snake = _to_snake(pascal)
+            fn = getattr(_generated, snake, None)
+            if fn is None:
+                continue
+            _op(group)(fn)
+            _grouped.add(snake)
+
+
+_register_groups()
 
 
 # ── Custom overrides ────────────────────────────────────────────────────────
@@ -317,6 +322,85 @@ def get_update(id: str, failed_only: bool = False, tail: int = 0):
 
 _op(komodo_read)(get_update)
 _grouped.add("get_update")
+
+
+# ListTags — flatten MongoDocument query into explicit Tag fields
+def list_tags(name: str | None = None, color: str | None = None, owner: str | None = None):
+    """List tags. Filter by name, color (e.g. Red, Blue, Green, Slate), or owner."""
+    query: dict = {}
+    if name is not None:
+        query["name"] = name
+    if color is not None:
+        query["color"] = color
+    if owner is not None:
+        query["owner"] = owner
+    params: dict = {}
+    if query:
+        params["query"] = query
+    return _ok(_get_client().read("ListTags", params or None))
+
+
+_op(komodo_read)(list_tags)
+_grouped.add("list_tags")
+
+
+# ListAlerts — flatten MongoDocument query into explicit Alert fields
+def list_alerts(
+    resolved: bool | None = None,
+    level: str | None = None,
+    target_type: str | None = None,
+    target_id: str | None = None,
+    page: int | None = None,
+):
+    """List alerts. level: OK, WARNING, CRITICAL. target_type: Server, Stack, Deployment, etc."""
+    query: dict = {}
+    if resolved is not None:
+        query["resolved"] = resolved
+    if level is not None:
+        query["level"] = level
+    if target_type is not None and target_id is not None:
+        query["target"] = {"type": target_type, "id": target_id}
+    params: dict = {}
+    if query:
+        params["query"] = query
+    if page is not None:
+        params["page"] = page
+    return _ok(_get_client().read("ListAlerts", params or None))
+
+
+_op(komodo_read)(list_alerts)
+_grouped.add("list_alerts")
+
+
+# ListUpdates — flatten MongoDocument query into explicit Update fields
+def list_updates(
+    operation: str | None = None,
+    success: bool | None = None,
+    operator: str | None = None,
+    target_type: str | None = None,
+    target_id: str | None = None,
+    page: int | None = None,
+):
+    """List updates. Filter by operation, success, operator, or target resource."""
+    query: dict = {}
+    if operation is not None:
+        query["operation"] = operation
+    if success is not None:
+        query["success"] = success
+    if operator is not None:
+        query["operator"] = operator
+    if target_type is not None and target_id is not None:
+        query["target"] = {"type": target_type, "id": target_id}
+    params: dict = {}
+    if query:
+        params["query"] = query
+    if page is not None:
+        params["page"] = page
+    return _ok(_get_client().read("ListUpdates", params or None))
+
+
+_op(komodo_read)(list_updates)
+_grouped.add("list_updates")
 
 
 # ── Auto-ROOT for ungrouped functions ────────────────────────────────────────

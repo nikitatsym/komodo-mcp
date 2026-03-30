@@ -28,16 +28,21 @@ def _compose(*args: str):
     )
 
 
+def _auth_rpc(req_type: str, params: dict) -> httpx.Response:
+    """Call the Komodo auth RPC endpoint."""
+    return httpx.post(
+        f"{KOMODO_URL}/auth",
+        json={"type": req_type, "params": params},
+        timeout=10,
+    )
+
+
 def _wait_for_komodo(timeout: int = 120):
     """Poll Komodo Core until it's ready."""
     deadline = time.time() + timeout
     while time.time() < deadline:
         try:
-            r = httpx.post(
-                f"{KOMODO_URL}/auth/local/login",
-                json={"username": "admin", "password": PASSKEY},
-                timeout=5,
-            )
+            r = _auth_rpc("GetLoginOptions", {})
             if r.status_code < 500:
                 return
         except Exception:
@@ -47,18 +52,15 @@ def _wait_for_komodo(timeout: int = 120):
 
 
 def _create_api_key() -> tuple[str, str]:
-    """Login and create an API key, return (key, secret)."""
-    # Login with local auth
-    r = httpx.post(
-        f"{KOMODO_URL}/auth/local/login",
-        json={"username": "admin", "password": PASSKEY},
-        timeout=10,
-    )
+    """Sign up / login and create an API key, return (key, secret)."""
+    # Sign up (first user becomes admin), then login
+    _auth_rpc("SignUpLocalUser", {"username": "admin", "password": PASSKEY})
+    r = _auth_rpc("LoginLocalUser", {"username": "admin", "password": PASSKEY})
     r.raise_for_status()
-    token = r.json().get("token") or r.cookies.get("komodo_token")
+    token = r.json().get("jwt")
 
     # Create a service user + API key via the write endpoint
-    headers = {"Authorization": f"Bearer {token}"}
+    headers = {"Authorization": token}
 
     # First try to create a service user
     r = httpx.post(
@@ -79,7 +81,10 @@ def _create_api_key() -> tuple[str, str]:
         timeout=10,
     )
     r.raise_for_status()
-    user_id = r.json().get("id", "")
+    data = r.json()
+    # _id is {"$oid": "..."} in mongo format
+    raw_id = data.get("_id", data.get("id", ""))
+    user_id = raw_id.get("$oid", raw_id) if isinstance(raw_id, dict) else raw_id
 
     # Make the service user an admin
     httpx.post(

@@ -1,14 +1,14 @@
 /**
- * Codegen: parse komodo_client TypeScript types and generate _generated.py.
+ * Codegen: generate _generated.py from komodo_client TypeScript types.
  *
- * Reads the discriminated unions (ReadRequest, WriteRequest, ExecuteRequest)
- * and corresponding param interfaces from komodo_client/src/types.ts,
- * then outputs Python functions that call the Komodo API via _helpers.
+ * Uses the TypeScript Compiler API for reliable type resolution —
+ * no regex parsing of interfaces, generics, or JSDoc.
  *
  * Usage: npx tsx generate.ts
  */
 
-import { readFileSync, writeFileSync } from "fs";
+import * as ts from "typescript";
+import { writeFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -19,306 +19,540 @@ const TYPES_PATH = join(
 );
 const OUT_PATH = join(__dirname, "../src/komodo_mcp/_generated.py");
 
-const src = readFileSync(TYPES_PATH, "utf-8");
+// ── Load program ─────────────────────────────────────────────────────────
+
+const program = ts.createProgram([TYPES_PATH], {
+  target: ts.ScriptTarget.ESNext,
+  module: ts.ModuleKind.ESNext,
+  strict: true,
+});
+const sourceFile = program.getSourceFile(TYPES_PATH)!;
+const checker = program.getTypeChecker();
 
 // ── Step 1: Extract operations from discriminated unions ─────────────────
 
 type Endpoint = "read" | "write" | "execute";
 
-const ops: Map<string, Endpoint> = new Map();
+const ops: Map<string, { endpoint: Endpoint; iface: ts.InterfaceType }> =
+  new Map();
 
-function extractUnion(name: string, endpoint: Endpoint) {
-  // Match: export type ReadRequest = \n\t| { type: "OpName", params: OpName }\n...;
-  const re = new RegExp(
-    `export type ${name} =\\s*([\\s\\S]*?);`,
-    "m"
-  );
-  const m = src.match(re);
-  if (!m) throw new Error(`Union ${name} not found`);
-  const body = m[1];
-  for (const line of body.split("\n")) {
-    const lm = line.match(/\{ type: "(\w+)", params: \w+ \}/);
-    if (lm) ops.set(lm[1], endpoint);
+function extractOps(unionName: string, endpoint: Endpoint) {
+  const sym = checker.getSymbolsInScope(
+    sourceFile,
+    ts.SymbolFlags.TypeAlias
+  ).find((s) => s.name === unionName);
+  if (!sym) throw new Error(`Union ${unionName} not found`);
+
+  // Resolve the type alias to its underlying union type
+  const decl = sym.declarations?.[0];
+  if (!decl || !ts.isTypeAliasDeclaration(decl))
+    throw new Error(`${unionName} is not a type alias`);
+  const type = checker.getTypeFromTypeNode(decl.type);
+  if (!type.isUnion()) throw new Error(`${unionName} is not a union`);
+
+  for (const member of type.types) {
+    // Each member: { type: "OpName", params: OpInterface }
+    const typeProp = member.getProperty("type");
+    const paramsProp = member.getProperty("params");
+    if (!typeProp || !paramsProp) continue;
+
+    const typeType = checker.getTypeOfSymbol(typeProp);
+    if (!typeType.isStringLiteral()) continue;
+    const opName = typeType.value;
+
+    const paramsType = checker.getTypeOfSymbol(paramsProp);
+    if (paramsType.getFlags() & ts.TypeFlags.Object) {
+      ops.set(opName, {
+        endpoint,
+        iface: paramsType as ts.InterfaceType,
+      });
+    }
   }
 }
 
-extractUnion("ReadRequest", "read");
-extractUnion("WriteRequest", "write");
-extractUnion("ExecuteRequest", "execute");
+extractOps("ReadRequest", "read");
+extractOps("WriteRequest", "write");
+extractOps("ExecuteRequest", "execute");
 
 console.log(`Found ${ops.size} operations total`);
 
-// ── Step 2: Parse interfaces ─────────────────────────────────────────────
-
-interface Field {
-  name: string;
-  tsType: string;
-  optional: boolean;
-  doc: string; // first line of JSDoc
-}
-
-interface ParsedInterface {
-  name: string;
-  doc: string; // JSDoc above the interface
-  fields: Field[];
-}
-
-const interfaces: Map<string, ParsedInterface> = new Map();
-
-// Pre-process: collect all interfaces with their positions
-const ifaceRegex =
-  /(?:\/\*\*[\s\S]*?\*\/\s*)?export interface (\w+)(?:<[^>]*>)?\s*\{/g;
-
-let ifMatch: RegExpExecArray | null;
-while ((ifMatch = ifaceRegex.exec(src)) !== null) {
-  const ifaceName = ifMatch[1];
-  const startPos = ifMatch.index;
-  const bodyStart = src.indexOf("{", ifMatch.index + ifMatch[0].length - 1);
-
-  // Find matching closing brace
-  let depth = 1;
-  let pos = bodyStart + 1;
-  while (depth > 0 && pos < src.length) {
-    if (src[pos] === "{") depth++;
-    else if (src[pos] === "}") depth--;
-    pos++;
-  }
-  const bodyEnd = pos - 1;
-  const body = src.slice(bodyStart + 1, bodyEnd);
-
-  // Extract JSDoc above the interface
-  const before = src.slice(Math.max(0, startPos - 500), startPos);
-  let ifaceDoc = "";
-  const docMatch = before.match(/\/\*\*\s*([\s\S]*?)\s*\*\/\s*$/);
-  if (docMatch) {
-    ifaceDoc = docMatch[1]
-      .replace(/^\s*\*\s?/gm, "")
-      .split("\n")[0]
-      .trim();
-  }
-
-  // Parse fields
-  const fields: Field[] = [];
-  // Split by lines and parse each field
-  const lines = body.split("\n");
-  let currentDoc = "";
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-
-    // Accumulate JSDoc
-    if (trimmed.startsWith("/**")) {
-      // Single-line JSDoc: /** ... */
-      const singleDoc = trimmed.match(/\/\*\*\s*(.*?)\s*\*\//);
-      if (singleDoc) {
-        currentDoc = singleDoc[1];
-        continue;
-      }
-      currentDoc = "";
-      continue;
-    }
-    if (trimmed.startsWith("*")) {
-      if (trimmed === "*/") continue;
-      const docLine = trimmed.replace(/^\*\s?/, "").trim();
-      if (docLine && !currentDoc) currentDoc = docLine;
-      continue;
-    }
-
-    // Field: name?: Type;
-    const fieldMatch = trimmed.match(
-      /^(\w+)(\?)?:\s*(.+?);?\s*$/
-    );
-    if (fieldMatch) {
-      fields.push({
-        name: fieldMatch[1],
-        tsType: fieldMatch[3].replace(/;$/, "").trim(),
-        optional: !!fieldMatch[2],
-        doc: currentDoc,
-      });
-      currentDoc = "";
-    }
-  }
-
-  interfaces.set(ifaceName, { name: ifaceName, doc: ifaceDoc, fields });
-}
-
-console.log(`Parsed ${interfaces.size} interfaces`);
-
-// ── Step 3: Type mapping ─────────────────────────────────────────────────
-
-function tsPyType(tsType: string): string {
-  // Remove trailing semicolons
-  tsType = tsType.replace(/;$/, "").trim();
-
-  // Primitive types
-  if (tsType === "string") return "str";
-  if (tsType === "number" || tsType === "I64") return "int";
-  if (tsType === "boolean") return "bool";
-
-  // Arrays
-  if (tsType.endsWith("[]")) {
-    const inner = tsType.slice(0, -2);
-    const pyInner = tsPyType(inner);
-    return `list[${pyInner}]`;
-  }
-
-  // JsonObject, any
-  if (tsType === "JsonObject" || tsType === "any" || tsType === "JsonValue")
-    return "dict";
-
-  // Union types with | — check for PermissionLevelAndSpecifics | PermissionLevel
-  if (tsType.includes("|")) return "dict";
-
-  // ResourceTarget["type"] (used in RunSync for resource_type)
-  if (tsType.includes('["type"]') || tsType.includes("['type']"))
-    return "str";
-
-  // Enum types (serialize as strings)
-  // Named types that are enums or complex objects → str for enums, dict for objects
-  const knownEnums = new Set([
-    "TerminationSignal",
-    "Timelength",
-    "SearchCombinator",
-    "SeverityLevel",
-    "TerminalRecreateMode",
-    "TagQueryBehavior",
-    "PermissionLevel",
-  ]);
-  if (knownEnums.has(tsType)) return "str";
-
-  // Everything else (named interfaces, config objects, query objects) → dict
-  return "dict";
-}
-
-// ── Step 4: Generate Python ──────────────────────────────────────────────
+// ── Step 2: Type mapping ─────────────────────────────────────────────────
 
 function toSnakeCase(name: string): string {
-  // PascalCase → snake_case
   return name
     .replace(/([A-Z]+)([A-Z][a-z])/g, "$1_$2")
     .replace(/([a-z\d])([A-Z])/g, "$1_$2")
     .toLowerCase();
 }
 
+/** Get string literal values from a union of string literals (enum). */
+function getStringLiteralValues(type: ts.Type): string[] | null {
+  if (type.isUnion()) {
+    const vals: string[] = [];
+    for (const m of type.types) {
+      if (m.isStringLiteral()) {
+        vals.push(m.value);
+      }
+    }
+    if (vals.length > 0 && vals.length === type.types.length) {
+      return vals;
+    }
+  }
+  if (type.isStringLiteral()) {
+    return [type.value];
+  }
+  return null;
+}
+
+/** Check if a type is ResourceQuery<T>. Returns base + specific fields. */
+function resolveResourceQuery(
+  type: ts.Type
+): { baseFields: ts.Symbol[]; specificFields: ts.Symbol[] } | null {
+  const sym = type.getSymbol() || type.aliasSymbol;
+  // Follow alias to see if it resolves to ResourceQuery<T>
+  const targetType =
+    type.aliasSymbol
+      ? checker.getDeclaredTypeOfSymbol(type.aliasSymbol)
+      : type;
+  const targetSym = targetType.getSymbol();
+  if (!targetSym) return null;
+
+  // Check if base interface is ResourceQuery
+  // Walk alias chain
+  let resolved = type;
+  if (type.aliasSymbol) {
+    const aliasType = checker.getTypeOfSymbol(type.aliasSymbol);
+    // Try type arguments from the alias
+  }
+
+  // Check symbol name directly or through alias
+  const props = checker.getPropertiesOfType(type);
+  const propNames = new Set(props.map((p) => p.name));
+
+  // ResourceQuery has: names?, templates?, tags?, tag_behavior?, specific?
+  if (
+    propNames.has("tags") &&
+    propNames.has("tag_behavior") &&
+    propNames.has("specific")
+  ) {
+    const baseFields = props.filter((p) => p.name !== "specific");
+    // Resolve the specific field's type to get its properties
+    const specificProp = props.find((p) => p.name === "specific");
+    let specificFields: ts.Symbol[] = [];
+    if (specificProp) {
+      const specificType = checker.getTypeOfSymbol(specificProp).getNonNullableType();
+      specificFields = checker.getPropertiesOfType(specificType);
+    }
+    return { baseFields, specificFields };
+  }
+  return null;
+}
+
+/** Check if type is ResourceTarget or UserTarget. */
+function getTargetKind(
+  type: ts.Type
+): "resource" | "user" | null {
+  // These are discriminated unions: { type: "Server", id: string } | ...
+  if (!type.isUnion()) return null;
+  const props = new Set<string>();
+  for (const member of type.types) {
+    for (const p of checker.getPropertiesOfType(member)) {
+      props.add(p.name);
+    }
+  }
+  if (!props.has("type") || !props.has("id")) return null;
+
+  // Check discriminant values to distinguish Resource vs User
+  for (const member of type.types) {
+    const typeProp = member.getProperty("type");
+    if (!typeProp) continue;
+    const t = checker.getTypeOfSymbol(typeProp);
+    if (t.isStringLiteral()) {
+      if (t.value === "Server" || t.value === "Stack" || t.value === "System")
+        return "resource";
+      if (t.value === "User" || t.value === "UserGroup") return "user";
+    }
+  }
+  return null;
+}
+
+interface PyParam {
+  name: string;
+  type: string; // Python type annotation
+  required: boolean;
+}
+
+interface QueryReassembly {
+  kind: "query";
+  originalName: string;
+  baseFieldNames: string[];
+  specificFieldNames: string[];
+}
+
+interface TargetReassembly {
+  kind: "target";
+  originalName: string;
+  typeName: string;
+  idName: string;
+  required: boolean;
+}
+
+type Reassembly = QueryReassembly | TargetReassembly;
+
+/**
+ * Convert a TS type to Python type string.
+ * Returns a Literal[...] for string enums.
+ */
+function tsPyType(type: ts.Type): string {
+  // Unwrap T | undefined for optional fields
+  const t = type.getNonNullableType();
+
+  // Boolean
+  if (t.getFlags() & ts.TypeFlags.Boolean) return "bool";
+  if (t.getFlags() & ts.TypeFlags.BooleanLiteral) return "bool";
+
+  // String
+  if (t.getFlags() & ts.TypeFlags.String) return "str";
+  if (t.isStringLiteral()) return "str";
+
+  // Number
+  if (t.getFlags() & ts.TypeFlags.Number) return "int";
+  if (t.isNumberLiteral()) return "int";
+
+  // Check for string literal union (enum) → Literal
+  const litVals = getStringLiteralValues(t);
+  if (litVals) {
+    return `Literal[${litVals.map((v) => `"${v}"`).join(", ")}]`;
+  }
+
+  // Union with non-all-string-literal members (e.g. PermissionLevel | PermissionLevelAndSpecifics)
+  if (t.isUnion()) {
+    // Check if it's bool (true | false union)
+    const isBool = t.types.every(
+      (tt) => tt.getFlags() & ts.TypeFlags.BooleanLiteral
+    );
+    if (isBool) return "bool";
+    return "dict";
+  }
+
+  // Array
+  if (checker.isArrayType(t)) {
+    const typeArgs = checker.getTypeArguments(t as ts.TypeReference);
+    if (typeArgs.length === 1) {
+      return `list[${tsPyType(typeArgs[0])}]`;
+    }
+    return "list";
+  }
+
+  // Object / interface — default to dict
+  if (t.getFlags() & ts.TypeFlags.Object) return "dict";
+
+  return "dict";
+}
+
+/**
+ * Resolve config interface for documentation.
+ * For Partial<StackConfig> → get StackConfig fields.
+ */
+function resolveConfigFields(
+  type: ts.Type
+): { name: string; pyType: string }[] | null {
+  const props = checker.getPropertiesOfType(type);
+  if (props.length < 3) return null; // Not a config object
+
+  // Check if this looks like a config (many optional fields)
+  const optCount = props.filter((p) =>
+    (p.getFlags() & ts.SymbolFlags.Optional) ||
+    p.declarations?.some(
+      (d) => ts.isPropertySignature(d) && !!d.questionToken
+    )
+  ).length;
+  if (optCount < 3) return null;
+
+  return props.slice(0, 15).map((p) => ({
+    name: p.name,
+    pyType: tsPyType(checker.getTypeOfSymbol(p)),
+  }));
+}
+
+/**
+ * Process an operation interface: flatten queries/targets, resolve types.
+ */
+function processOperation(
+  opName: string,
+  type: ts.InterfaceType
+): {
+  params: PyParam[];
+  reassemblies: Reassembly[];
+  directRequired: { name: string; pyType: string }[];
+  directOptional: { name: string; pyType: string }[];
+  configDocs: string[];
+} {
+  const params: PyParam[] = [];
+  const reassemblies: Reassembly[] = [];
+  const directRequired: { name: string; pyType: string }[] = [];
+  const directOptional: { name: string; pyType: string }[] = [];
+  const configDocs: string[] = [];
+
+  const props = checker.getPropertiesOfType(type);
+
+  for (const prop of props) {
+    const rawPropType = checker.getTypeOfSymbol(prop);
+    const isOptional =
+      (prop.getFlags() & ts.SymbolFlags.Optional) !== 0 ||
+      prop.declarations?.some(
+        (d) => ts.isPropertySignature(d) && !!d.questionToken
+      ) ||
+      false;
+    // Unwrap optional (T | undefined) to get the real type
+    const propType = rawPropType.getNonNullableType();
+
+    // Try ResourceQuery expansion
+    const queryInfo = resolveResourceQuery(propType);
+    if (queryInfo) {
+      const baseNames: string[] = [];
+      const specificNames: string[] = [];
+
+      for (const bf of queryInfo.baseFields) {
+        const bfType = checker.getTypeOfSymbol(bf);
+        params.push({
+          name: bf.name,
+          type: tsPyType(bfType),
+          required: false,
+        });
+        baseNames.push(bf.name);
+      }
+      for (const sf of queryInfo.specificFields) {
+        const sfType = checker.getTypeOfSymbol(sf);
+        params.push({
+          name: sf.name,
+          type: tsPyType(sfType),
+          required: false,
+        });
+        specificNames.push(sf.name);
+      }
+      reassemblies.push({
+        kind: "query",
+        originalName: prop.name,
+        baseFieldNames: baseNames,
+        specificFieldNames: specificNames,
+      });
+      continue;
+    }
+
+    // Try ResourceTarget / UserTarget expansion
+    const targetKind = getTargetKind(propType);
+    if (targetKind) {
+      const prefix = prop.name;
+      const typeName = `${prefix}_type`;
+      const idName = `${prefix}_id`;
+
+      // Collect all discriminant values from the union members
+      const allTargetTypes: string[] = [];
+      if (propType.isUnion()) {
+        for (const m of propType.types) {
+          const tp = m.getProperty("type");
+          if (tp) {
+            const tt = checker.getTypeOfSymbol(tp);
+            if (tt.isStringLiteral()) allTargetTypes.push(tt.value);
+          }
+        }
+      }
+
+      const litType =
+        allTargetTypes.length > 0
+          ? `Literal[${allTargetTypes.map((v) => `"${v}"`).join(", ")}]`
+          : "str";
+
+      params.push({ name: typeName, type: litType, required: !isOptional });
+      params.push({ name: idName, type: "str", required: !isOptional });
+      reassemblies.push({
+        kind: "target",
+        originalName: prop.name,
+        typeName,
+        idName,
+        required: !isOptional,
+      });
+      continue;
+    }
+
+    // Regular field
+    const pyType = tsPyType(propType);
+    params.push({ name: prop.name, type: pyType, required: !isOptional });
+
+    if (isOptional) {
+      directOptional.push({ name: prop.name, pyType });
+    } else {
+      directRequired.push({ name: prop.name, pyType });
+    }
+
+    // Config field documentation for dict params
+    if (pyType === "dict") {
+      const fields = resolveConfigFields(propType);
+      if (fields && fields.length > 0) {
+        const fieldStr = fields
+          .map((f) => `${f.name} (${f.pyType})`)
+          .join(", ");
+        const suffix = fields.length >= 15 ? ", ..." : "";
+        configDocs.push(`${prop.name} fields: ${fieldStr}${suffix}`);
+      }
+    }
+  }
+
+  return { params, reassemblies, directRequired, directOptional, configDocs };
+}
+
+// ── Step 3: Generate Python ──────────────────────────────────────────────
+
 const pyLines: string[] = [
   "# GENERATED by codegen/generate.ts — DO NOT EDIT",
   "from __future__ import annotations",
+  "",
+  "from typing import Literal",
   "",
   "from ._helpers import _ok, _get_client",
   "",
   "",
 ];
 
-// Sort operations by endpoint then name for readability
 const sortedOps = [...ops.entries()].sort((a, b) => {
-  const endpointOrder: Record<string, number> = {
-    read: 0,
-    write: 1,
-    execute: 2,
-  };
-  const eo = endpointOrder[a[1]] - endpointOrder[b[1]];
+  const order: Record<string, number> = { read: 0, write: 1, execute: 2 };
+  const eo = order[a[1].endpoint] - order[b[1].endpoint];
   if (eo !== 0) return eo;
   return a[0].localeCompare(b[0]);
 });
 
 let currentEndpoint = "";
+let flattenedCount = 0;
 
-for (const [opName, endpoint] of sortedOps) {
-  const iface = interfaces.get(opName);
-  if (!iface) {
-    console.warn(`  WARNING: No interface found for ${opName}, skipping`);
-    continue;
-  }
-
+for (const [opName, { endpoint, iface }] of sortedOps) {
   if (endpoint !== currentEndpoint) {
     if (currentEndpoint) pyLines.push("");
-    pyLines.push(
-      `# ── ${endpoint} ${"─".repeat(68 - endpoint.length)}`
-    );
+    pyLines.push(`# ── ${endpoint} ${"─".repeat(68 - endpoint.length)}`);
     pyLines.push("");
     currentEndpoint = endpoint;
   }
 
   const fnName = toSnakeCase(opName);
-  const fields = iface.fields;
+  const { params, reassemblies, directRequired, directOptional, configDocs } =
+    processOperation(opName, iface);
 
-  // Build function signature
-  const params: string[] = [];
-  const requiredFields = fields.filter((f) => !f.optional);
-  const optionalFields = fields.filter((f) => f.optional);
+  if (reassemblies.length > 0) flattenedCount++;
 
-  for (const f of requiredFields) {
-    params.push(`${f.name}: ${tsPyType(f.tsType)}`);
+  // Build signature
+  const sigParts: string[] = [];
+  const requiredParams = params.filter((p) => p.required);
+  const optionalParams = params.filter((p) => !p.required);
+
+  for (const p of requiredParams) {
+    sigParts.push(`${p.name}: ${p.type}`);
   }
-  for (const f of optionalFields) {
-    params.push(`${f.name}: ${tsPyType(f.tsType)} | None = None`);
+  for (const p of optionalParams) {
+    sigParts.push(`${p.name}: ${p.type} | None = None`);
   }
 
   const sig =
-    params.length > 0
-      ? `def ${fnName}(${params.join(", ")}):`
+    sigParts.length > 0
+      ? `def ${fnName}(${sigParts.join(", ")}):`
       : `def ${fnName}():`;
 
-  // Build docstring
-  let doc = iface.doc || `${opName}.`;
-  // Clean up Response: [...] references
-  doc = doc.replace(/\s*Response:\s*\[.*?\]\.?/g, "").trim();
-  if (!doc.endsWith(".")) doc += ".";
-
-  // Add field docs
-  const fieldDocs: string[] = [];
-  for (const f of fields) {
-    if (f.doc) {
-      fieldDocs.push(`${f.name}: ${f.doc}`);
-    }
-  }
-
+  // Docstring — just the operation name, no JSDoc
   pyLines.push(sig);
-  if (fieldDocs.length > 0) {
-    pyLines.push(`    """${doc}`);
+  if (configDocs.length > 0) {
+    pyLines.push(`    """${opName}.`);
     pyLines.push("");
-    for (const fd of fieldDocs) {
-      pyLines.push(`    ${fd}`);
+    for (const cd of configDocs) {
+      pyLines.push(`    ${cd}`);
     }
     pyLines.push(`    """`);
   } else {
-    pyLines.push(`    """${doc}"""`);
+    pyLines.push(`    """${opName}."""`);
   }
 
-  // Build function body
-  if (fields.length === 0) {
+  // Function body
+  if (params.length === 0) {
     pyLines.push(
       `    return _ok(_get_client().${endpoint}("${opName}"))`
     );
-  } else {
-    // Build params dict
-    if (requiredFields.length > 0 && optionalFields.length > 0) {
-      // Mix of required and optional
-      const reqParts = requiredFields
+  } else if (reassemblies.length > 0) {
+    // Has flattened params
+    if (directRequired.length > 0) {
+      const reqParts = directRequired
         .map((f) => `"${f.name}": ${f.name}`)
         .join(", ");
       pyLines.push(`    params: dict = {${reqParts}}`);
-      for (const f of optionalFields) {
-        pyLines.push(`    if ${f.name} is not None:`);
-        pyLines.push(`        params["${f.name}"] = ${f.name}`);
+    } else {
+      pyLines.push(`    params: dict = {}`);
+    }
+
+    for (const f of directOptional) {
+      pyLines.push(`    if ${f.name} is not None:`);
+      pyLines.push(`        params["${f.name}"] = ${f.name}`);
+    }
+
+    for (const r of reassemblies) {
+      if (r.kind === "query") {
+        pyLines.push(`    _query: dict = {}`);
+        for (const bn of r.baseFieldNames) {
+          pyLines.push(`    if ${bn} is not None:`);
+          pyLines.push(`        _query["${bn}"] = ${bn}`);
+        }
+        if (r.specificFieldNames.length > 0) {
+          pyLines.push(`    _specific: dict = {}`);
+          for (const sn of r.specificFieldNames) {
+            pyLines.push(`    if ${sn} is not None:`);
+            pyLines.push(`        _specific["${sn}"] = ${sn}`);
+          }
+          pyLines.push(`    if _specific:`);
+          pyLines.push(`        _query["specific"] = _specific`);
+        }
+        pyLines.push(`    if _query:`);
+        pyLines.push(`        params["${r.originalName}"] = _query`);
+      } else if (r.kind === "target") {
+        if (r.required) {
+          pyLines.push(
+            `    params["${r.originalName}"] = {"type": ${r.typeName}, "id": ${r.idName}}`
+          );
+        } else {
+          pyLines.push(
+            `    if ${r.typeName} is not None and ${r.idName} is not None:`
+          );
+          pyLines.push(
+            `        params["${r.originalName}"] = {"type": ${r.typeName}, "id": ${r.idName}}`
+          );
+        }
+      }
+    }
+
+    pyLines.push(
+      `    return _ok(_get_client().${endpoint}("${opName}", params or None))`
+    );
+  } else {
+    // No flattening
+    if (requiredParams.length > 0 && optionalParams.length > 0) {
+      const reqParts = requiredParams
+        .map((p) => `"${p.name}": ${p.name}`)
+        .join(", ");
+      pyLines.push(`    params: dict = {${reqParts}}`);
+      for (const p of optionalParams) {
+        pyLines.push(`    if ${p.name} is not None:`);
+        pyLines.push(`        params["${p.name}"] = ${p.name}`);
       }
       pyLines.push(
         `    return _ok(_get_client().${endpoint}("${opName}", params))`
       );
-    } else if (requiredFields.length > 0) {
-      // All required
-      const parts = requiredFields
-        .map((f) => `"${f.name}": ${f.name}`)
+    } else if (requiredParams.length > 0) {
+      const parts = requiredParams
+        .map((p) => `"${p.name}": ${p.name}`)
         .join(", ");
       pyLines.push(
         `    return _ok(_get_client().${endpoint}("${opName}", {${parts}}))`
       );
     } else {
-      // All optional
       pyLines.push("    params: dict = {}");
-      for (const f of optionalFields) {
-        pyLines.push(`    if ${f.name} is not None:`);
-        pyLines.push(`        params["${f.name}"] = ${f.name}`);
+      for (const p of optionalParams) {
+        pyLines.push(`    if ${p.name} is not None:`);
+        pyLines.push(`        params["${p.name}"] = ${p.name}`);
       }
       pyLines.push(
         `    return _ok(_get_client().${endpoint}("${opName}", params or None))`
@@ -331,11 +565,15 @@ for (const [opName, endpoint] of sortedOps) {
 }
 
 // Write output
-const output = pyLines.join("\n").replace(/\n{3,}/g, "\n\n\n").trimEnd() + "\n";
+const output = pyLines
+  .join("\n")
+  .replace(/\n{3,}/g, "\n\n\n")
+  .trimEnd() + "\n";
 writeFileSync(OUT_PATH, output);
 console.log(`Wrote ${OUT_PATH}`);
 console.log(
-  `  ${sortedOps.filter(([, e]) => e === "read").length} read, ` +
-    `${sortedOps.filter(([, e]) => e === "write").length} write, ` +
-    `${sortedOps.filter(([, e]) => e === "execute").length} execute`
+  `  ${sortedOps.filter(([, o]) => o.endpoint === "read").length} read, ` +
+    `${sortedOps.filter(([, o]) => o.endpoint === "write").length} write, ` +
+    `${sortedOps.filter(([, o]) => o.endpoint === "execute").length} execute`
 );
+console.log(`  ${flattenedCount} operations with flattened parameters`);

@@ -1,11 +1,13 @@
 """Komodo MCP server — auto-discovery, grouping, and dispatch."""
 
 import inspect
+import types
 import typing
 
 from mcp.server.fastmcp import FastMCP
 
 from . import tools as _tools_module
+from .annotations import ANNOTATIONS
 from .registry import ROOT
 
 mcp = FastMCP("komodo")
@@ -37,16 +39,80 @@ def _is_bool_hint(hint) -> bool:
     return bool in args if args else False
 
 
+def _get_literal_values(hint) -> list[str] | None:
+    """Extract Literal values from a type hint (including Optional[Literal[...]])."""
+    if hint is None:
+        return None
+    origin = typing.get_origin(hint)
+    if origin is typing.Literal:
+        return [str(v) for v in typing.get_args(hint)]
+    # Optional[Literal[...]] = Union[Literal[...], None]
+    if origin is typing.Union:
+        for arg in typing.get_args(hint):
+            if typing.get_origin(arg) is typing.Literal:
+                return [str(v) for v in typing.get_args(arg)]
+    return None
+
+
+def _unwrap_optional(hint):
+    """Unwrap Optional[X] or X | None to X."""
+    origin = typing.get_origin(hint)
+    if origin is typing.Union or isinstance(hint, types.UnionType):
+        args = [a for a in typing.get_args(hint) if a is not type(None)]
+        if len(args) == 1:
+            return args[0]
+    return hint
+
+
+def _format_param(name: str, hint) -> str:
+    """Format a parameter with type info for help text."""
+    if hint is None:
+        return name
+    lit_vals = _get_literal_values(hint)
+    if lit_vals:
+        return f"{name}: {'|'.join(lit_vals)}"
+    inner = _unwrap_optional(hint)
+    origin = typing.get_origin(inner)
+    if origin is list:
+        type_args = typing.get_args(inner)
+        if type_args and hasattr(type_args[0], "__name__"):
+            return f"{name}: list[{type_args[0].__name__}]"
+        return f"{name}: list"
+    if inner is str:
+        return f"{name}: str"
+    if inner is int:
+        return f"{name}: int"
+    if inner is bool:
+        return f"{name}: bool"
+    if inner is dict:
+        return f"{name}: dict"
+    return name
+
+
 def _coerce_call(fn, params: dict):
     """Coerce JSON-parsed params to match function signature, then call fn."""
     sig = inspect.signature(fn)
-    hints = typing.get_type_hints(fn)
+    valid = set(sig.parameters.keys())
+    unknown = set(params.keys()) - valid
+    if unknown:
+        raise ValueError(
+            f"Unknown parameters: {sorted(unknown)}. "
+            f"Valid: {sorted(valid)}"
+        )
+    hints = typing.get_type_hints(fn, include_extras=True)
     kwargs = {}
     for name, param in sig.parameters.items():
         if name not in params:
             continue
         val = params[name]
         hint = hints.get(name)
+        # Validate Literal values
+        lit_vals = _get_literal_values(hint)
+        if lit_vals and val not in lit_vals:
+            raise ValueError(
+                f"Invalid value {val!r} for {name}. "
+                f"Accepted: {', '.join(lit_vals)}"
+            )
         if hint and _is_bool_hint(hint) and not isinstance(val, bool):
             default = param.default
             if default is inspect.Parameter.empty or default is None:
@@ -68,9 +134,10 @@ def _build_help(group_name: str) -> str:
     lines = []
     for pascal_name, fn in ops.items():
         sig = inspect.signature(fn)
-        params = ", ".join(sig.parameters.keys())
-        doc = fn.__doc__.split("\n")[0]
-        lines.append(f"  {pascal_name}({params}) — {doc}")
+        hints = typing.get_type_hints(fn, include_extras=True)
+        parts = [_format_param(p, hints.get(p)) for p in sig.parameters]
+        desc = ANNOTATIONS.get(pascal_name, f"{pascal_name}.")
+        lines.append(f"  {pascal_name}({', '.join(parts)}) — {desc}")
     return f"{len(lines)} operations available:\n" + "\n".join(lines)
 
 
@@ -101,8 +168,11 @@ def _register_tools():
     groups: dict[str, tuple] = {}  # {group_name: (Group, {snake_name: fn})}
 
     for name, fn in inspect.getmembers(_tools_module, inspect.isfunction):
+        if name.startswith("_"):
+            continue
         if not hasattr(fn, "_mcp_group"):
             continue
+        assert fn.__doc__, f"Missing docstring for {name}"
         group = fn._mcp_group
         if group is ROOT:
             mcp.tool()(fn)

@@ -6,7 +6,7 @@ services:
     environment:
       KOMODO_LOCAL_AUTH: "true"
       KOMODO_PASSKEY: test-passkey
-      KOMODO_FIRST_SERVER: http://komodo-periphery:8120
+      KOMODO_FIRST_SERVER: https://komodo-periphery:8120
       KOMODO_DATABASE_ADDRESS: komodo-mongo:27017
     depends_on:
       - komodo-mongo
