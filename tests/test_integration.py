@@ -11,7 +11,6 @@ The test simulates a realistic agent workflow:
 
 import pytest
 
-from tests.conftest import KOMODO_URL
 
 
 def _id(result: dict) -> str:
@@ -393,7 +392,6 @@ class TestAgentWorkflow:
         7. Check permissions on stack via flattened target
         8. Clean up everything
         """
-        import time
 
         # 1. Tags
         prod = agent.call("create_tag", name="e2e-prod", color="Green")

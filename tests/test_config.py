@@ -1,6 +1,5 @@
 """Unit tests for pydantic-settings config."""
 
-import os
 
 import pytest
 
