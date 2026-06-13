@@ -1,5 +1,7 @@
 """Test infrastructure: Docker Compose Komodo instance + MCP agent simulator."""
 
+import asyncio
+import inspect
 import json
 import subprocess
 import time
@@ -127,7 +129,6 @@ class AgentSimulator:
         for tool in mcp._tool_manager._tools.values():
             self._tools[tool.name] = tool.fn
         # Also expose individual operation functions for direct calls
-        import inspect
         from komodo_mcp import tools as tools_module
         for name, fn in inspect.getmembers(tools_module, inspect.isfunction):
             if hasattr(fn, "_mcp_group") and name not in self._tools:
@@ -135,13 +136,7 @@ class AgentSimulator:
 
     def call(self, tool_name: str, **kwargs) -> Any:
         """Call an MCP tool by name and return parsed result."""
-        fn = self._tools.get(tool_name)
-        if fn is None:
-            raise ValueError(f"Unknown tool: {tool_name}. Available: {sorted(self._tools.keys())}")
-
-        result_str = fn(**kwargs)
-        self.call_log.append({"tool": tool_name, "kwargs": kwargs, "result": result_str})
-
+        result_str = self.call_raw(tool_name, **kwargs)
         try:
             return json.loads(result_str)
         except (json.JSONDecodeError, TypeError):
@@ -151,9 +146,13 @@ class AgentSimulator:
         """Call an MCP tool and return raw string result."""
         fn = self._tools.get(tool_name)
         if fn is None:
-            raise ValueError(f"Unknown tool: {tool_name}")
+            raise ValueError(f"Unknown tool: {tool_name}. Available: {sorted(self._tools.keys())}")
 
         result_str = fn(**kwargs)
+        if inspect.iscoroutine(result_str):
+            # Meta-tools are async (waiters need the event loop); run them
+            # to completion so sync tests keep their call-and-assert style.
+            result_str = asyncio.run(result_str)
         self.call_log.append({"tool": tool_name, "kwargs": kwargs, "result": result_str})
         return result_str
 

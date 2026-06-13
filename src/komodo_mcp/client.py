@@ -33,6 +33,7 @@ class KomodoClient:
         base_url: str | None = None,
         api_key: str | None = None,
         api_secret: str | None = None,
+        transport: httpx.BaseTransport | None = None,
     ):
         s = get_settings()
         self._base = (base_url or s.komodo_url).rstrip("/")
@@ -42,6 +43,7 @@ class KomodoClient:
                 "X-Api-Secret": api_secret or s.komodo_api_secret,
             },
             timeout=30.0,
+            transport=transport,
         )
 
     def _call(self, endpoint: str, operation: str, params: dict | None = None):

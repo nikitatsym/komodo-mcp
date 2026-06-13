@@ -4,13 +4,18 @@ import inspect
 import types
 import typing
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.fastmcp import Context, FastMCP
 
 from . import tools as _tools_module
 from .annotations import ANNOTATIONS
 from .registry import ROOT
 
 mcp = FastMCP("komodo")
+
+# Functions may declare a `ctx` parameter to receive the live MCP Context
+# (progress / log notifications). It is injected by `_coerce_call` and
+# excluded from param validation and help - callers can't pass it.
+_CTX_PARAM = "ctx"
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
@@ -89,10 +94,16 @@ def _format_param(name: str, hint) -> str:
     return name
 
 
-def _coerce_call(fn, params: dict):
-    """Coerce JSON-parsed params to match function signature, then call fn."""
+def _coerce_call(fn, params: dict, ctx: Context | None = None):
+    """Coerce JSON-parsed params to match function signature, then call fn.
+
+    When the target function declares a `ctx` parameter, the live MCP
+    Context (when present) is injected after validation; `ctx` is never a
+    valid caller-supplied param. Async functions return their coroutine
+    as-is - the meta-tool awaits it.
+    """
     sig = inspect.signature(fn)
-    valid = set(sig.parameters.keys())
+    valid = set(sig.parameters.keys()) - {_CTX_PARAM}
     unknown = set(params.keys()) - valid
     if unknown:
         raise ValueError(
@@ -102,7 +113,7 @@ def _coerce_call(fn, params: dict):
     hints = typing.get_type_hints(fn, include_extras=True)
     kwargs = {}
     for name, param in sig.parameters.items():
-        if name not in params:
+        if name == _CTX_PARAM or name not in params:
             continue
         val = params[name]
         hint = hints.get(name)
@@ -119,6 +130,8 @@ def _coerce_call(fn, params: dict):
                 default = False
             val = _parse_bool(val, default)
         kwargs[name] = val
+    if _CTX_PARAM in sig.parameters:
+        kwargs[_CTX_PARAM] = ctx
     return fn(**kwargs)
 
 
@@ -135,14 +148,22 @@ def _build_help(group_name: str) -> str:
     for pascal_name, fn in ops.items():
         sig = inspect.signature(fn)
         hints = typing.get_type_hints(fn, include_extras=True)
-        parts = [_format_param(p, hints.get(p)) for p in sig.parameters]
+        parts = [
+            _format_param(p, hints.get(p))
+            for p in sig.parameters if p != _CTX_PARAM
+        ]
         desc = ANNOTATIONS.get(pascal_name, f"{pascal_name}.")
         lines.append(f"  {pascal_name}({', '.join(parts)}) — {desc}")
     return f"{len(lines)} operations available:\n" + "\n".join(lines)
 
 
-def _dispatch(operation: str, group_name: str, params: dict):
-    """Dispatch an operation call to the right function."""
+def _dispatch(operation: str, group_name: str, params: dict, ctx: Context | None = None):
+    """Dispatch an operation call to the right function.
+
+    Async ops (the waiters) return a coroutine which is returned as-is —
+    the meta-tool `tool_fn` awaits it. Sync callers dispatching an async op
+    directly must `asyncio.run(...)` the result themselves.
+    """
     ops = _group_ops[group_name]
     if operation not in ops:
         if operation in _all_grouped:
@@ -157,7 +178,7 @@ def _dispatch(operation: str, group_name: str, params: dict):
         }
 
     fn = ops[operation]
-    return _coerce_call(fn, params)
+    return _coerce_call(fn, params, ctx)
 
 
 # ── Registration ─────────────────────────────────────────────────────────
@@ -189,10 +210,23 @@ def _register_tools():
             _all_grouped[pascal_name] = group_name
 
         def _make_tool(gname, gdoc):
-            def tool_fn(operation: str, params: dict = {}):
+            # Async by design so tools that need the MCP Context (progress /
+            # log) can `await ctx.report_progress(...)` inside their dispatch
+            # path; sync ops still work - we only await actual coroutines.
+            # `params` defaults to None (NOT `{}`): a mutable default would
+            # be shared across every call of the meta-tool.
+            async def tool_fn(
+                operation: str,
+                params: dict | None = None,
+                ctx: Context | None = None,
+            ):
+                params = params or {}
                 if operation == "help":
                     return _build_help(gname)
-                return _dispatch(operation, gname, params)
+                result = _dispatch(operation, gname, params, ctx)
+                if inspect.iscoroutine(result):
+                    result = await result
+                return result
             tool_fn.__name__ = gname
             tool_fn.__qualname__ = gname
             tool_fn.__doc__ = gdoc

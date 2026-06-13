@@ -4,6 +4,8 @@ MCP server for [Komodo](https://komo.do/) — full API coverage for autonomous A
 
 **293 tools** covering every Komodo Core operation: servers, deployments, stacks, builds, repos, procedures, actions, resource syncs, Docker management, users, permissions, and more. Compact mode available (6 meta-tools).
 
+**Long-running waiters**: every execute op returns an Update; `UpdatesWait` blocks until it completes, `UpdatesWaitStart` / `UpdatesWaitPoll(max_block=...)` / `UpdatesWaitCancel` + `WaitsList` keep the agent responsive. Waits tolerate transient API errors (`max_poll_failures`), self-terminate after `max_lifetime` (default 2h), and live in `komodo_read` - they only ever read.
+
 ## Quick Start
 
 Add to your MCP client config:
