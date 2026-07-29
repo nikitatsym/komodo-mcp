@@ -47,7 +47,7 @@ def _wait_for_komodo(timeout: int = 120):
             r = _auth_rpc("GetLoginOptions", {})
             if r.status_code < 500:
                 return
-        except Exception:
+        except Exception:  # noqa: BLE001, S110 - container not accepting connections yet, keep polling
             pass
         time.sleep(3)
     raise TimeoutError("Komodo Core did not start in time")

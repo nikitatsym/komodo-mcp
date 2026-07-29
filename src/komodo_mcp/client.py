@@ -55,7 +55,8 @@ class KomodoClient:
         if r.status_code >= 400:
             try:
                 body = r.json()
-            except Exception:
+            except ValueError:
+                # JSONDecodeError and non-UTF8 UnicodeDecodeError are both ValueError
                 body = r.text
             raise KomodoError(r.status_code, endpoint, operation, body)
         if not r.content:

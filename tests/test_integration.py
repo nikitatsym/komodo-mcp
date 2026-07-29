@@ -11,6 +11,9 @@ The test simulates a realistic agent workflow:
 
 import pytest
 
+# Whole module needs the Docker Compose stack (see conftest.py); excluded
+# from the default `dev.py test` run via addopts, opt-in via `dev.py e2e`.
+pytestmark = pytest.mark.integration
 
 
 def _id(result: dict) -> str:
@@ -130,7 +133,7 @@ class TestAgentWorkflow:
                 result = agent.call("get_deployment_log", deployment="test-deploy", tail=10)
                 assert result is not None
                 return
-            except Exception:
+            except Exception:  # noqa: BLE001 - log may not exist yet; retry, then let the final call fail loud
                 time.sleep(3)
         result = agent.call("get_deployment_log", deployment="test-deploy", tail=10)
         assert result is not None
@@ -147,7 +150,7 @@ class TestAgentWorkflow:
             try:
                 agent.call("delete_deployment", id=TestAgentWorkflow.deployment_id)
                 return
-            except Exception:
+            except Exception:  # noqa: BLE001 - may race a still-stopping deployment; retry, then let the final call fail loud
                 time.sleep(2)
         agent.call("delete_deployment", id=TestAgentWorkflow.deployment_id)
 

@@ -10,17 +10,16 @@ import logging
 import re
 import time
 
-from ._generated import *  # noqa: F403 — re-export all generated ops
 from . import _generated
-from ._helpers import _ok, _get_client
+from ._generated import *
+from ._helpers import _get_client, _ok
 from .client import KomodoError
-from .registry import Group, ROOT, _op
+from .registry import ROOT, Group, _op
 from .wait_registry import (
     TERMINAL_STATUSES as _WAIT_TERMINAL,
     WAIT_REGISTRY as _WAIT_REGISTRY,
     WaitHandle as _WaitHandle,
 )
-
 
 # ── Groups ──────────────────────────────────────────────────────────────────
 
@@ -540,7 +539,7 @@ async def updates_wait(
         elapsed = time.monotonic() - start
         try:
             update_raw = await asyncio.to_thread(_fetch_update_raw, update_id)
-        except Exception as e:  # noqa: BLE001 - classified below
+        except Exception as e:
             polls += 1
             poll_failures += 1
             consecutive_failures += 1
@@ -700,7 +699,7 @@ async def _cancel_handle(handle: _WaitHandle) -> None:
         task.cancel()
         try:
             await task
-        except (asyncio.CancelledError, Exception):  # noqa: BLE001 - defensive
+        except (asyncio.CancelledError, Exception):  # noqa: BLE001, S110 - task outcome ignored, cleanup below always runs
             pass
     if not handle.done_event.is_set():
         handle.mark_terminated(error="cancelled")

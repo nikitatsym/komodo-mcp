@@ -25,25 +25,25 @@ class WaitHandle:
     """One long-running wait operation (kind is always "update")."""
 
     __slots__ = (
-        "wait_id",
+        "done_event",
+        "ended_at",
+        "error",
+        "final_extras",
         "kind",
-        "target_id",
+        "last_payload",
+        "last_poll_error",
         "options",
+        "poll_failures",
+        "polls",
+        "started_at",
         "status",
         "success",
+        "target_id",
+        "task",
         "terminated",
         "timed_out",
-        "polls",
-        "poll_failures",
-        "last_poll_error",
-        "started_at",
-        "ended_at",
-        "last_payload",
         "transitions",
-        "final_extras",
-        "error",
-        "task",
-        "done_event",
+        "wait_id",
     )
 
     def __init__(self, wait_id: str, target_id: str, options: dict[str, Any]):
