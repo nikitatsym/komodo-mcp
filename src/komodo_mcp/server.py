@@ -4,13 +4,13 @@ import inspect
 import types
 import typing
 
-from mcp.server.fastmcp import Context, FastMCP
+from mcp.server.mcpserver import Context, MCPServer
 
 from . import tools as _tools_module
 from .annotations import ANNOTATIONS
 from .registry import ROOT
 
-mcp = FastMCP("komodo")
+mcp = MCPServer("komodo")
 
 # Functions may declare a `ctx` parameter to receive the live MCP Context
 # (progress / log notifications). It is injected by `_coerce_call` and
