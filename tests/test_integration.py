@@ -320,11 +320,12 @@ class TestAgentWorkflow:
 
     def test_82_unknown_param_rejected(self, agent):
         """_coerce_call rejects unknown parameters."""
-        with pytest.raises(ValueError, match="Unknown parameters"):
-            agent.call("komodo_read",
-                operation="ListStacks",
-                params={"bogus_param": True},
-            )
+        result = agent.call("komodo_read",
+            operation="ListStacks",
+            params={"bogus_param": True},
+        )
+        assert "Unknown parameters" in result["error"]
+        assert "bogus_param" in result["error"]
 
     def test_83_list_tags_by_name(self, agent):
         """MongoDocument override: ListTags with name filter."""
@@ -362,16 +363,16 @@ class TestAgentWorkflow:
 
     def test_87_literal_validation(self, agent):
         """Literal type validation rejects invalid enum values."""
-        with pytest.raises(ValueError, match="Invalid value"):
-            agent.call("komodo_read",
-                operation="ListStacks",
-                params={"tag_behavior": "Garbage"},
-            )
-        with pytest.raises(ValueError, match="Invalid value"):
-            agent.call("komodo_write",
-                operation="CreateRepoWebhook",
-                params={"repo": "x", "action": "BadAction"},
-            )
+        result = agent.call("komodo_read",
+            operation="ListStacks",
+            params={"tag_behavior": "Garbage"},
+        )
+        assert "Invalid value" in result["error"]
+        result = agent.call("komodo_write",
+            operation="CreateRepoWebhook",
+            params={"repo": "x", "action": "BadAction"},
+        )
+        assert "Invalid value" in result["error"]
         # Valid Literal values pass
         result = agent.call("list_stacks", tag_behavior="All")
         assert isinstance(result, list)

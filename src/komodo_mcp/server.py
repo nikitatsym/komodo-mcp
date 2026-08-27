@@ -1,15 +1,19 @@
 """Komodo MCP server — auto-discovery, grouping, and dispatch."""
 
+import functools
 import inspect
 import re
 import string
 import types
 import typing
+from urllib.parse import urlsplit, urlunsplit
 
+import httpx
 from mcp.server.mcpserver import Context, MCPServer
 
 from . import tools as _tools_module
 from .annotations import ANNOTATIONS
+from .client import KomodoError
 from .registry import ROOT
 
 mcp = MCPServer("komodo")
@@ -18,6 +22,83 @@ mcp = MCPServer("komodo")
 # (progress / log notifications). It is injected by `_coerce_call` and
 # excluded from param validation and help - callers can't pass it.
 _CTX_PARAM = "ctx"
+
+_URL_RE = re.compile(r"[a-z][a-z0-9+.-]*://[^\s'\"<>]+", re.IGNORECASE)
+_RELATIVE_QUERY_RE = re.compile(r"/[^\s?,'\"<>]*\?[^ \t\r\n,'\"<>]*")
+_SECRET_VALUE_RE = re.compile(
+    r"""(?ix)
+    (["']?(?:authorization|token|api[_-]?key|secret|password|credential|dsn)
+    ["']?\s*[:=]\s*)
+    (?:["'][^"']*["']|\[[^\]]*\]|\{[^}]*\}|[^,\s}]+)
+    """
+)
+_AUTHORIZATION_RE = re.compile(
+    r"(?i)(authorization\s*[:=]\s*)(?:bearer|basic)\s+[^\s,;]+"
+)
+
+
+def _redact_error_text(value: object) -> str:
+    """Remove credentials and query values from an error string."""
+    text = str(value)
+
+    def _redact_url(match: re.Match[str]) -> str:
+        try:
+            parts = urlsplit(match.group())
+            host = parts.hostname
+            if host is None:
+                return "<redacted-url>"
+            if ":" in host:
+                host = f"[{host}]"
+            try:
+                port = parts.port
+            except ValueError:
+                port = None
+            netloc = f"{host}:{port}" if port is not None else host
+            return urlunsplit((parts.scheme, netloc, parts.path, "", ""))
+        except ValueError:
+            return "<redacted-url>"
+
+    text = _URL_RE.sub(_redact_url, text)
+    text = _RELATIVE_QUERY_RE.sub(lambda match: match.group().split("?", 1)[0], text)
+    text = _AUTHORIZATION_RE.sub(r"\1<redacted>", text)
+    return _SECRET_VALUE_RE.sub(r"\1<redacted>", text)
+
+
+def _error_result(exc: ValueError | KomodoError | httpx.RequestError) -> dict[str, str]:
+    if isinstance(exc, httpx.RequestError):
+        try:
+            request = exc.request
+        except RuntimeError:
+            request = None
+        method = request.method if request is not None else "REQUEST"
+        path = request.url.path if request is not None else "<unknown path>"
+        cause = _redact_error_text(exc) or "request failed"
+        return {
+            "error": (
+                f"Komodo transport failure: {method} {path}: "
+                f"{type(exc).__name__}: {cause}"
+            )
+        }
+    return {"error": _redact_error_text(exc)}
+
+
+def _safe_root(fn):
+    """Serialize expected failures for a ROOT tool, which has no meta-tool seam.
+
+    ROOT ops come from the generated sync surface, so the wrapper stays sync -
+    MCP classifies tools with `iscoroutinefunction` and an awaitable wrapper
+    would move the blocking HTTP call onto the event loop.
+    """
+    @functools.wraps(fn)
+    def wrapped(*args, **kwargs):
+        try:
+            return fn(*args, **kwargs)
+        except (ValueError, KomodoError) as exc:
+            return _error_result(exc)
+        except httpx.RequestError as exc:
+            return _error_result(exc)
+
+    return wrapped
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
@@ -105,17 +186,39 @@ def _coerce_call(fn, params: dict, ctx: Context | None = None):
     as-is - the meta-tool awaits it.
     """
     sig = inspect.signature(fn)
-    valid = set(sig.parameters.keys()) - {_CTX_PARAM}
-    unknown = set(params.keys()) - valid
-    if unknown:
+    parameters = tuple(sig.parameters.items())
+    accepts_kwargs = any(
+        param.kind is inspect.Parameter.VAR_KEYWORD
+        for _, param in parameters
+    )
+    valid = {
+        name
+        for name, param in parameters
+        if name != _CTX_PARAM
+        and param.kind
+        not in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD)
+    }
+    unknown = set(params) - valid
+    if unknown and not accepts_kwargs:
         raise ValueError(
             f"Unknown parameters: {sorted(unknown)}. "
             f"Valid: {sorted(valid)}"
         )
+    missing = [
+        name
+        for name, param in parameters
+        if name != _CTX_PARAM
+        and param.kind
+        not in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD)
+        and param.default is inspect.Parameter.empty
+        and name not in params
+    ]
+    if missing:
+        raise ValueError(f"Missing required parameters: {missing}")
     hints = typing.get_type_hints(fn, include_extras=True)
     kwargs = {}
-    for name, param in sig.parameters.items():
-        if name == _CTX_PARAM or name not in params:
+    for name, param in parameters:
+        if name not in valid or name not in params:
             continue
         val = params[name]
         hint = hints.get(name)
@@ -132,9 +235,20 @@ def _coerce_call(fn, params: dict, ctx: Context | None = None):
                 default = False
             val = _parse_bool(val, default)
         kwargs[name] = val
+    if accepts_kwargs:
+        kwargs.update({name: value for name, value in params.items() if name not in valid})
     if _CTX_PARAM in sig.parameters:
         kwargs[_CTX_PARAM] = ctx
     return fn(**kwargs)
+
+
+async def _await_result(result):
+    try:
+        return await result
+    except (ValueError, KomodoError) as exc:
+        return _error_result(exc)
+    except httpx.RequestError as exc:
+        return _error_result(exc)
 
 
 # ── Module-level state (populated by _register_tools) ────────────────────────
@@ -160,27 +274,32 @@ def _build_help(group_name: str) -> str:
 
 
 def _dispatch(operation: str, group_name: str, params: dict, ctx: Context | None = None):
-    """Dispatch an operation call to the right function.
+    """Dispatch an operation call and serialize expected service failures.
 
-    Async ops (the waiters) return a coroutine which is returned as-is —
-    the meta-tool `tool_fn` awaits it. Sync callers dispatching an async op
-    directly must `asyncio.run(...)` the result themselves.
+    Async waiter operations remain coroutines for direct callers; their
+    execution errors are converted when the registered meta-tool awaits them.
     """
-    ops = _group_ops[group_name]
-    if operation not in ops:
-        if operation in _all_grouped:
-            correct = _all_grouped[operation]
+    try:
+        ops = _group_ops[group_name]
+        if operation not in ops:
+            if operation in _all_grouped:
+                correct = _all_grouped[operation]
+                return {
+                    "error": f"{operation} belongs to {correct}. "
+                    f"Use {correct}() instead."
+                }
             return {
-                "error": f"{operation} belongs to {correct}. "
-                         f"Use {correct}() instead."
+                "error": f"Unknown operation: {operation}. "
+                "Use operation=\"help\" to list available operations."
             }
-        return {
-            "error": f"Unknown operation: {operation}. "
-                     "Use operation=\"help\" to list available operations."
-        }
-
-    fn = ops[operation]
-    return _coerce_call(fn, params, ctx)
+        result = _coerce_call(ops[operation], params, ctx)
+    except (ValueError, KomodoError) as exc:
+        return _error_result(exc)
+    except httpx.RequestError as exc:
+        return _error_result(exc)
+    if inspect.iscoroutine(result):
+        return _await_result(result)
+    return result
 
 
 # ── Registration ─────────────────────────────────────────────────────────
@@ -223,7 +342,7 @@ def _register_tools():
         assert fn.__doc__, f"Missing docstring for {name}"
         group = fn._mcp_group
         if group is ROOT:
-            mcp.tool()(fn)
+            mcp.tool()(_safe_root(fn))
         else:
             if group.name not in groups:
                 groups[group.name] = (group, {})

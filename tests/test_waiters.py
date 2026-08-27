@@ -282,11 +282,12 @@ class TestDispatch:
         snap = asyncio.run(flow())
         assert snap["status"] == "Complete"
 
-        with pytest.raises(ValueError, match="Unknown parameters.*ctx"):
-            server._dispatch(
-                "UpdatesWait", "komodo_read",
-                {"update_id": UPDATE_ID, "ctx": "evil"},
-            )
+        result = server._dispatch(
+            "UpdatesWait", "komodo_read",
+            {"update_id": UPDATE_ID, "ctx": "evil"},
+        )
+        assert "Unknown parameters" in result["error"]
+        assert "ctx" in result["error"]
 
     def test_help_hides_ctx(self):
         _seed(_make_handler({}))
