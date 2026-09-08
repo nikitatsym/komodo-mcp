@@ -10,6 +10,7 @@ from typing import Any
 
 import httpx
 import pytest
+from mcp.types import TextContent
 
 from komodo_mcp.server import mcp
 
@@ -136,25 +137,30 @@ class AgentSimulator:
 
     def call(self, tool_name: str, **kwargs) -> Any:
         """Call an MCP tool by name and return parsed result."""
-        result_str = self.call_raw(tool_name, **kwargs)
-        try:
-            return json.loads(result_str)
-        except (json.JSONDecodeError, TypeError):
-            return result_str
+        result = self.call_raw(tool_name, **kwargs)
+        if isinstance(result, str):
+            try:
+                return json.loads(result)
+            except json.JSONDecodeError:
+                return result
+        return result
 
-    def call_raw(self, tool_name: str, **kwargs) -> str:
-        """Call an MCP tool and return raw string result."""
+    def call_raw(self, tool_name: str, **kwargs) -> Any:
+        """Call an MCP tool and return its result with the wire envelope removed."""
         fn = self._tools.get(tool_name)
         if fn is None:
             raise ValueError(f"Unknown tool: {tool_name}. Available: {sorted(self._tools.keys())}")
 
-        result_str = fn(**kwargs)
-        if inspect.iscoroutine(result_str):
+        result = fn(**kwargs)
+        if inspect.iscoroutine(result):
             # Meta-tools are async (waiters need the event loop); run them
             # to completion so sync tests keep their call-and-assert style.
-            result_str = asyncio.run(result_str)
-        self.call_log.append({"tool": tool_name, "kwargs": kwargs, "result": result_str})
-        return result_str
+            result = asyncio.run(result)
+        # Registered tools hand the SDK a one-line JSON text block, not a dict.
+        if isinstance(result, TextContent):
+            result = json.loads(result.text)
+        self.call_log.append({"tool": tool_name, "kwargs": kwargs, "result": result})
+        return result
 
     @property
     def total_calls(self) -> int:
