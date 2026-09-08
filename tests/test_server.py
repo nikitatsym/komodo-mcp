@@ -1,8 +1,11 @@
 """Unit tests for server-side registration invariants."""
 
+import asyncio
 import inspect
+import json
 
 import pytest
+from mcp.types import TextContent
 
 from komodo_mcp import server, tools
 from komodo_mcp.registry import Group
@@ -52,3 +55,23 @@ def test_render_group_doc_resolves_meta_and_keeps_generic_form():
         "komodo_read", 'operation="$help" or operation="<OpName>"', {}
     )
     assert rendered == 'operation="help" or operation="<OpName>"'
+
+
+def test_registered_tools_return_compact_json():
+    registered_tools = server.mcp._tool_manager.list_tools()
+    assert all(tool.fn_metadata.output_schema is None for tool in registered_tools)
+
+    result = asyncio.run(
+        server.mcp.call_tool("komodo_read", {"operation": "not-an-operation"})
+    )
+    assert result.structured_content is None
+    assert len(result.content) == 1
+    content = result.content[0]
+    assert isinstance(content, TextContent)
+    assert "\n" not in content.text
+    assert json.loads(content.text) == {
+        "error": (
+            "Unknown operation: not-an-operation. "
+            'Use operation="help" to list available operations.'
+        )
+    }

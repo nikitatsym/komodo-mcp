@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import asyncio
+import json
 
 import httpx
 import pytest
+from mcp.types import TextContent
 
 from komodo_mcp import _generated, server
 from komodo_mcp.client import KomodoError
@@ -15,6 +17,11 @@ def _raise(exc: Exception):
 
 def _registered(name: str):
     return server.mcp._tool_manager._tools[name].fn
+
+
+def _data_result(result):
+    assert isinstance(result, TextContent)
+    return json.loads(result.text)
 
 
 def test_dispatch_returns_contextual_api_error(monkeypatch):
@@ -84,7 +91,7 @@ def test_registered_root_returns_contextual_api_error(monkeypatch):
 
     monkeypatch.setattr(_generated, "_get_client", lambda: BrokenClient())
 
-    result = _registered("get_version")()
+    result = _data_result(_registered("get_version")())
 
     assert result == {"error": "Komodo API 503 read GetVersion: {'detail': 'unavailable'}"}
 
@@ -98,7 +105,7 @@ def test_registered_root_redacts_transport_query_values(monkeypatch):
 
     monkeypatch.setattr(_generated, "_get_client", lambda: DownClient())
 
-    result = _registered("get_version")()
+    result = _data_result(_registered("get_version")())
 
     assert "Komodo transport failure: POST /read: ConnectError" in result["error"]
     assert "secret" not in result["error"]
@@ -112,7 +119,7 @@ def test_registered_root_preserves_success_shape(monkeypatch):
 
     monkeypatch.setattr(_generated, "_get_client", lambda: OkClient())
 
-    assert _registered("get_version")() == {"version": "1.19.4"}
+    assert _data_result(_registered("get_version")()) == {"version": "1.19.4"}
 
 
 def test_error_text_redacts_secret_fields():
