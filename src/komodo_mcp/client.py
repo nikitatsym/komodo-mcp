@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import httpx
 
-from .config import get_settings
+from .config import Settings, get_settings
 
 
 class KomodoError(Exception):
@@ -34,8 +34,12 @@ class KomodoClient:
         api_key: str | None = None,
         api_secret: str | None = None,
         transport: httpx.BaseTransport | None = None,
+        *,
+        settings: Settings | None = None,
     ):
-        s = get_settings()
+        # A host serving several instances passes `settings` per instance;
+        # explicit kwargs still override individual fields.
+        s = settings or get_settings()
         self._base = (base_url or s.komodo_url).rstrip("/")
         self._http = httpx.Client(
             headers={

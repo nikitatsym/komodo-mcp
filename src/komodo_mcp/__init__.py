@@ -2,10 +2,15 @@ import argparse
 
 from mcp.server.transport_security import TransportSecuritySettings
 
+from ._helpers import client_var
+from .client import KomodoClient
+from .config import Settings
+from .server import mcp
+
+__all__ = ["KomodoClient", "Settings", "client_var", "main", "mcp"]
+
 
 def main() -> None:
-    from .server import mcp
-
     parser = argparse.ArgumentParser(
         prog="komodo-mcp",
         description="MCP server for Komodo. Serves MCP over stdio unless --http is given.",
