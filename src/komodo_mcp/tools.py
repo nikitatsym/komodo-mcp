@@ -421,6 +421,17 @@ _op(komodo_read)(list_updates)
 _grouped.add("list_updates")
 
 
+# GetVersion through the startup check: main() and this tool make one request,
+# described in one place (replaces generated version)
+def get_version():
+    """GetVersion."""
+    return _get_client().check()
+
+
+_op(ROOT)(get_version)
+_grouped.add("get_version")
+
+
 # ── Auto-ROOT for ungrouped functions ────────────────────────────────────────
 
 for _name, _fn in inspect.getmembers(_generated, inspect.isfunction):

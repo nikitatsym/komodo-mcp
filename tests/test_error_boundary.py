@@ -7,7 +7,7 @@ import httpx
 import pytest
 from mcp.types import TextContent
 
-from komodo_mcp import _generated, server
+from komodo_mcp import server, tools
 from komodo_mcp.client import KomodoError
 
 
@@ -86,10 +86,10 @@ def test_deferred_waiter_cancellation_propagates(monkeypatch):
 
 def test_registered_root_returns_contextual_api_error(monkeypatch):
     class BrokenClient:
-        def read(self, *_args, **_kwargs):
+        def check(self, *_args, **_kwargs):
             raise KomodoError(503, "read", "GetVersion", {"detail": "unavailable"})
 
-    monkeypatch.setattr(_generated, "_get_client", lambda: BrokenClient())
+    monkeypatch.setattr(tools, "_get_client", lambda: BrokenClient())
 
     result = _data_result(_registered("get_version")())
 
@@ -100,10 +100,10 @@ def test_registered_root_redacts_transport_query_values(monkeypatch):
     request = httpx.Request("POST", "https://komodo.example/read?api_key=secret")
 
     class DownClient:
-        def read(self, *_args, **_kwargs):
+        def check(self, *_args, **_kwargs):
             raise httpx.ConnectError("connection refused", request=request)
 
-    monkeypatch.setattr(_generated, "_get_client", lambda: DownClient())
+    monkeypatch.setattr(tools, "_get_client", lambda: DownClient())
 
     result = _data_result(_registered("get_version")())
 
@@ -114,10 +114,10 @@ def test_registered_root_redacts_transport_query_values(monkeypatch):
 
 def test_registered_root_preserves_success_shape(monkeypatch):
     class OkClient:
-        def read(self, *_args, **_kwargs):
+        def check(self, *_args, **_kwargs):
             return {"version": "1.19.4"}
 
-    monkeypatch.setattr(_generated, "_get_client", lambda: OkClient())
+    monkeypatch.setattr(tools, "_get_client", lambda: OkClient())
 
     assert _data_result(_registered("get_version")()) == {"version": "1.19.4"}
 

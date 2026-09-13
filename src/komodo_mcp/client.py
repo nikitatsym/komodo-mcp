@@ -78,3 +78,15 @@ class KomodoClient:
     def execute(self, operation: str, params: dict | None = None):
         """Execute operation (trigger actions)."""
         return self._call("execute", operation, params)
+
+    def check(self) -> dict:
+        """Verify URL and credentials with the cheapest authenticated read.
+
+        `main()` and the version tool both call this: a broken credential
+        fails at startup, not on the first tool call.
+        """
+        headers = self._http.headers
+        if not (self._base and headers.get("X-Api-Key") and headers.get("X-Api-Secret")):
+            raise ValueError("KOMODO_URL, KOMODO_API_KEY and KOMODO_API_SECRET must be set")
+        version = self.read("GetVersion")
+        return {"status": "ok"} if version is None else version

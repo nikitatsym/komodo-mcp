@@ -3,6 +3,7 @@
 
 import pytest
 
+from komodo_mcp.client import KomodoClient
 from komodo_mcp.config import Settings, _reset_settings, get_settings
 
 
@@ -50,3 +51,16 @@ class TestGetSettings:
         s2 = get_settings()
         assert s2.komodo_url == "https://second.com"
         assert s2 is not s1
+
+
+class TestClientCheck:
+    """Unset config must fail at startup and name the variable to set."""
+
+    def test_empty_credentials_raise_naming_env_vars(self):
+        client = KomodoClient(
+            settings=Settings(komodo_url="", komodo_api_key="", komodo_api_secret="")
+        )
+        with pytest.raises(
+            ValueError, match="KOMODO_URL, KOMODO_API_KEY and KOMODO_API_SECRET must be set"
+        ):
+            client.check()
