@@ -30,6 +30,10 @@ Add to your MCP client config:
 
 Or use the [interactive config generator](https://nikitatsym.github.io/komodo-mcp/).
 
+### HTTP
+
+`komodo-mcp --http` serves streamable HTTP at `http://127.0.0.1:8000/mcp` (`--host`, `--port`) instead of stdio, same environment variables. No authentication: put a gateway in front.
+
 ## Configuration
 
 | Variable | Description |
