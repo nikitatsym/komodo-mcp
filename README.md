@@ -1,8 +1,8 @@
 # komodo-mcp
 
-MCP server for [Komodo](https://komo.do/) — full API coverage for autonomous AI agents.
+MCP server for [Komodo](https://komo.do/), built for autonomous AI agents.
 
-**293 tools** covering every Komodo Core operation: servers, deployments, stacks, builds, repos, procedures, actions, resource syncs, Docker management, users, permissions, and more. Compact mode available (6 meta-tools).
+Servers, deployments, stacks, builds, repos, procedures, actions, resource syncs, Docker management, users, permissions, and more — one tool per operation, or compact mode with risk-graded meta-tools.
 
 **Long-running waiters**: every execute op returns an Update; `UpdatesWait` blocks until it completes, `UpdatesWaitStart` / `UpdatesWaitPoll(max_block=...)` / `UpdatesWaitCancel` + `WaitsList` keep the agent responsive. Waits tolerate transient API errors (`max_poll_failures`), self-terminate after `max_lifetime` (default 2h), and live in `komodo_read` - they only ever read.
 
@@ -43,7 +43,7 @@ The package can also be imported: `mcp`, `Settings`, the client class, and `clie
 | `KOMODO_URL` | Base URL of your Komodo Core instance |
 | `KOMODO_API_KEY` | API key for authentication |
 | `KOMODO_API_SECRET` | API secret for authentication |
-| `KOMODO_COMPACT` | Set to `true` for compact mode (3 meta-tools instead of 293) |
+| `KOMODO_COMPACT` | Set to `true` for compact mode (risk-graded meta-tools instead of one tool per operation) |
 
 ## Getting API Credentials
 
@@ -54,16 +54,16 @@ The package can also be imported: `mcp`, `Settings`, the client class, and `clie
 
 ## Compact Mode
 
-If you have many MCP servers and want to reduce total tool count, set `KOMODO_COMPACT=true`. Instead of 293 individual tools, it exposes 6 meta-tools split by risk level, with built-in help discovery:
+If you have many MCP servers and want to reduce total tool count, set `KOMODO_COMPACT=true`. Instead of one tool per operation, it exposes meta-tools split by risk level, with built-in help discovery:
 
-| Tool | Scope | Ops |
-|------|-------|-----|
-| `komodo_read` | Safe resource queries | 109 |
-| `komodo_write` | Create/update/rename/copy (non-destructive) | 68 |
-| `komodo_execute` | Deploy, start/stop, build (actions) | 48 |
-| `komodo_delete` | Delete, destroy, prune (destructive) | 36 |
-| `komodo_admin_read` | User/permission queries | 10 |
-| `komodo_admin_write` | User/permission management, admin-only | 22 |
+| Tool | Scope |
+|------|-------|
+| `komodo_read` | Safe resource queries |
+| `komodo_write` | Create/update/rename/copy (non-destructive) |
+| `komodo_execute` | Deploy, start/stop, build (actions) |
+| `komodo_delete` | Delete, destroy, prune (destructive) |
+| `komodo_admin_read` | User/permission queries |
+| `komodo_admin_write` | User/permission management, admin-only |
 
 ```json
 {
@@ -88,13 +88,13 @@ The LLM calls any tool with `operation="help"` to discover available operations,
 
 ## Tools Overview
 
-### Read (119 tools)
+### Read
 Query servers, deployments, stacks, builds, repos, procedures, actions, resource syncs, builders, alerters, Docker containers/images/networks/volumes, tags, variables, users, permissions, updates, alerts, and more.
 
-### Write (108 tools)
+### Write
 Create, update, delete, rename, and copy all resource types. Manage webhooks, variables, tags, users, user groups, permissions, and provider accounts.
 
-### Execute (66 tools)
+### Execute
 Deploy, start, stop, restart, pause, unpause, and destroy deployments and stacks. Run builds, clone/pull repos, execute procedures and actions, sync resources. Docker cleanup (prune). Batch operations. Send alerts, backup database.
 
 ## Running Tests
