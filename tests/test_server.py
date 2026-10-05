@@ -75,3 +75,50 @@ def test_registered_tools_return_compact_json():
             'Use operation="help" to list available operations.'
         )
     }
+
+
+@pytest.mark.parametrize(
+    ("group_name", "operation", "present", "absent"),
+    [
+        (
+            "komodo_read",
+            "UpdatesWait",
+            ["update_id: str", "failed_only?: bool = True", "log_tail?: int = 100"],
+            ["update_id?"],
+        ),
+        (
+            "komodo_execute",
+            "RunStackService",
+            ["stack: str", "service: str", "no_tty?: bool"],
+            ["stack?", "service?", " = None"],
+        ),
+    ],
+)
+def test_registered_help_marks_optional_params_and_defaults(group_name, operation, present, absent):
+    result = asyncio.run(server.mcp.call_tool(group_name, {"operation": "help"}))
+    content = result.content[0]
+    assert isinstance(content, TextContent)
+    line = next(
+        line.strip()
+        for line in content.text.splitlines()
+        if line.strip().startswith(f"{operation}(")
+    )
+    for fragment in present:
+        assert fragment in line
+    for fragment in absent:
+        assert fragment not in line
+    assert "ctx" not in line
+
+
+@pytest.mark.parametrize(
+    ("default", "expected"),
+    [
+        (inspect.Parameter.empty, "value"),
+        (None, "value?"),
+        (False, "value? = False"),
+        (0, "value? = 0"),
+        ("default", "value? = 'default'"),
+    ],
+)
+def test_untyped_help_params_keep_optional_markers_and_defaults(default, expected):
+    assert server._format_param("value", None, default) == expected

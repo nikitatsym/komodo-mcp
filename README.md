@@ -4,7 +4,7 @@ MCP server for [Komodo](https://komo.do/), built for autonomous AI agents.
 
 Servers, deployments, stacks, builds, repos, procedures, actions, resource syncs, Docker management, users, permissions, and more — one tool per operation, or compact mode with risk-graded meta-tools.
 
-**Long-running waiters**: every execute op returns an Update; `UpdatesWait` blocks until it completes, `UpdatesWaitStart` / `UpdatesWaitPoll(max_block=...)` / `UpdatesWaitCancel` + `WaitsList` keep the agent responsive. Waits tolerate transient API errors (`max_poll_failures`), self-terminate after `max_lifetime` (default 2h), and live in `komodo_read` - they only ever read.
+**Long-running waiters**: every execute op returns an Update; `UpdatesWait` blocks until it completes, `UpdatesWaitStart` / `UpdatesWaitPoll(max_block=...)` / `UpdatesWaitCancel` + `WaitsList` keep the agent responsive. Waits tolerate transient API errors (`max_poll_failures`), self-terminate after `max_lifetime` (default 2h), and live in `komodo_read` - they only ever read. Stage logs default to failed stages only (`failed_only=True`); `logs_omitted` counts the hidden ones.
 
 ## Quick Start
 

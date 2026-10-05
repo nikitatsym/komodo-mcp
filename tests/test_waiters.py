@@ -90,8 +90,10 @@ class TestUpdatesWait:
         scripts = {"GetUpdate": [
             (200, _update("Queued")),
             (200, _update("InProgress")),
-            (200, _update("Complete", success=True,
-                          logs=[_stage("build", True, stdout="ok")])),
+            (200, _update("Complete", success=True, logs=[
+                _stage("pull", True, stdout="pulled"),
+                _stage("build", True, stdout="ok"),
+            ])),
         ]}
         _seed(_make_handler(scripts))
         result = asyncio.run(tools_mod.updates_wait(
@@ -101,10 +103,12 @@ class TestUpdatesWait:
         assert result["status"] == "Complete"
         assert result["success"] is True
         assert result["polls"] == 3
-        # failed_only=True and everything succeeded -> no logs attached.
         assert result["logs"] == []
-        # Snapshot meta carries stage successes without stdout.
-        assert result["update"]["stages"] == [{"stage": "build", "success": True}]
+        assert result["logs_omitted"] == 2
+        assert result["update"]["stages"] == [
+            {"stage": "pull", "success": True},
+            {"stage": "build", "success": True},
+        ]
 
     def test_failed_update_attaches_failed_stage_logs(self, instant_sleep):
         boom = "\n".join(f"line{i}" for i in range(10)) + "\nERROR: boom"
@@ -120,7 +124,8 @@ class TestUpdatesWait:
             update_id=UPDATE_ID, timeout=60.0, interval=0.01, log_tail=3,
         ))
         assert result["success"] is False
-        assert len(result["logs"]) == 1  # failed_only drops the passing stage
+        assert len(result["logs"]) == 1
+        assert result["logs_omitted"] == 1
         entry = result["logs"][0]
         assert entry["stage"] == "build"
         assert "ERROR: boom" in entry["stderr"]
@@ -260,6 +265,55 @@ class TestWaitStartPoll:
         assert in_flight == []
         with pytest.raises(ValueError, match="Unknown wait_id"):
             asyncio.run(tools_mod.updates_wait_poll("wu-nope"))
+
+
+@pytest.mark.parametrize("surface", ["blocking", "terminal_start", "background_poll"])
+@pytest.mark.parametrize(
+    ("successes", "options", "visible", "omitted"),
+    [
+        ([True, True], {}, [], 2),
+        ([True, True], {"failed_only": False}, [0, 1], None),
+        ([True, False], {}, [1], 1),
+        ([False, False], {}, [0, 1], None),
+        ([], {}, [], None),
+        ([True, True], {"include_logs": False}, None, None),
+    ],
+)
+def test_waiter_log_filter_reports_only_omitted_stages(
+    surface, successes, options, visible, omitted,
+):
+    logs = [_stage(f"stage{i}", success, stdout=f"output{i}")
+            for i, success in enumerate(successes)]
+    complete = _update("Complete", success=all(successes), logs=logs)
+    script = [(200, complete)]
+    if surface == "background_poll":
+        script.insert(0, (200, _update("InProgress")))
+    _seed(_make_handler({"GetUpdate": script}))
+
+    async def flow():
+        if surface == "blocking":
+            return await tools_mod.updates_wait(update_id=UPDATE_ID, **options)
+        start = await tools_mod.updates_wait_start(
+            update_id=UPDATE_ID, interval=0.01, **options,
+        )
+        if surface == "terminal_start":
+            assert start["terminated"] is True
+        else:
+            assert start["terminated"] is False
+            assert "logs" not in start
+            assert "logs_omitted" not in start
+        return await tools_mod.updates_wait_poll(start["wait_id"], max_block=5.0)
+
+    result = asyncio.run(flow())
+    assert result["terminated"] is True
+    if visible is None:
+        assert "logs" not in result
+    else:
+        assert result["logs"] == [logs[i] for i in visible]
+    if omitted is None:
+        assert "logs_omitted" not in result
+    else:
+        assert result["logs_omitted"] == omitted
 
 
 # ── dispatch through the async meta-tool path ────────────────────────────────

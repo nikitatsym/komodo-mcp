@@ -180,29 +180,28 @@ def _unwrap_optional(hint):
     return hint
 
 
-def _format_param(name: str, hint) -> str:
-    """Format a parameter with type info for help text."""
-    if hint is None:
-        return name
-    lit_vals = _get_literal_values(hint)
-    if lit_vals:
-        return f"{name}: {'|'.join(lit_vals)}"
-    inner = _unwrap_optional(hint)
-    origin = typing.get_origin(inner)
-    if origin is list:
-        type_args = typing.get_args(inner)
-        if type_args and hasattr(type_args[0], "__name__"):
-            return f"{name}: list[{type_args[0].__name__}]"
-        return f"{name}: list"
-    if inner is str:
-        return f"{name}: str"
-    if inner is int:
-        return f"{name}: int"
-    if inner is bool:
-        return f"{name}: bool"
-    if inner is dict:
-        return f"{name}: dict"
-    return name
+def _format_param(name: str, hint, default=inspect.Parameter.empty) -> str:
+    optional = default is not inspect.Parameter.empty
+    if optional:
+        name += "?"
+    formatted = name
+    if hint is not None:
+        lit_vals = _get_literal_values(hint)
+        inner = _unwrap_optional(hint)
+        origin = typing.get_origin(inner)
+        if lit_vals:
+            formatted = f"{name}: {'|'.join(lit_vals)}"
+        elif origin is list:
+            type_args = typing.get_args(inner)
+            if type_args and hasattr(type_args[0], "__name__"):
+                formatted = f"{name}: list[{type_args[0].__name__}]"
+            else:
+                formatted = f"{name}: list"
+        elif inner in (str, int, bool, dict):
+            formatted = f"{name}: {inner.__name__}"
+    if optional and default is not None:
+        formatted += f" = {default!r}"
+    return formatted
 
 
 def _coerce_call(fn, params: dict, ctx: Context | None = None):
@@ -286,15 +285,14 @@ _all_grouped: dict[str, str] = {}   # {PascalName: group_name}
 
 
 def _build_help(group_name: str) -> str:
-    """Build help text from operation functions in a group."""
     ops = _group_ops[group_name]
     lines = []
     for pascal_name, fn in ops.items():
         sig = inspect.signature(fn)
         hints = typing.get_type_hints(fn, include_extras=True)
         parts = [
-            _format_param(p, hints.get(p))
-            for p in sig.parameters if p != _CTX_PARAM
+            _format_param(p, hints.get(p), param.default)
+            for p, param in sig.parameters.items() if p != _CTX_PARAM
         ]
         desc = ANNOTATIONS.get(pascal_name, f"{pascal_name}.")
         lines.append(f"  {pascal_name}({', '.join(parts)}) — {desc}")

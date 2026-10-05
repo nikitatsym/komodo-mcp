@@ -617,7 +617,11 @@ async def updates_wait(
             f"after {polls} polls in {elapsed_final:.1f}s",
         )
         if include_logs:
-            result["logs"] = _trim_update_logs(update_raw, failed_only, log_tail)
+            logs = _trim_update_logs(update_raw, failed_only, log_tail)
+            result["logs"] = logs
+            logs_omitted = len(meta["stages"]) - len(logs)
+            if logs_omitted:
+                result["logs_omitted"] = logs_omitted
     else:
         await _emit_log(
             ctx, "warning",
@@ -650,8 +654,7 @@ async def _do_update_poll(handle: _WaitHandle) -> bool:
 
 
 async def _enrich_update_final(handle: _WaitHandle) -> None:
-    """Attach trimmed stage logs to final_extras. One extra GetUpdate so the
-    mid-flight snapshots never carry full stdout/stderr."""
+    """Refetch logs only at completion to keep mid-flight snapshots small."""
     opts = handle.options
     if not opts.get("include_logs", True):
         return
@@ -659,6 +662,10 @@ async def _enrich_update_final(handle: _WaitHandle) -> None:
     handle.final_extras["logs"] = _trim_update_logs(
         raw, opts.get("failed_only", True), opts.get("log_tail", 100)
     )
+    stages = (raw.get("logs") or []) if isinstance(raw, dict) else []
+    logs_omitted = len(stages) - len(handle.final_extras["logs"])
+    if logs_omitted:
+        handle.final_extras["logs_omitted"] = logs_omitted
 
 
 async def _update_loop(handle: _WaitHandle) -> None:
