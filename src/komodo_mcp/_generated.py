@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from ._helpers import _ok, _get_client
+from ._helpers import invoke as _invoke
 
 
 # ── read ────────────────────────────────────────────────────────────────
@@ -17,7 +17,7 @@ def export_all_resources_to_toml(include_resources: bool, tags: list[str] | None
         params["include_variables"] = include_variables
     if include_user_groups is not None:
         params["include_user_groups"] = include_user_groups
-    return _ok(_get_client().read("ExportAllResourcesToToml", params))
+    return _invoke("read", "ExportAllResourcesToToml", params)
 
 
 def export_resources_to_toml(targets: list[dict] | None = None, user_groups: list[str] | None = None, include_variables: bool | None = None):
@@ -29,62 +29,62 @@ def export_resources_to_toml(targets: list[dict] | None = None, user_groups: lis
         params["user_groups"] = user_groups
     if include_variables is not None:
         params["include_variables"] = include_variables
-    return _ok(_get_client().read("ExportResourcesToToml", params or None))
+    return _invoke("read", "ExportResourcesToToml", params or None)
 
 
 def find_user(user: str):
     """FindUser."""
-    return _ok(_get_client().read("FindUser", {"user": user}))
+    return _invoke("read", "FindUser", {"user": user})
 
 
 def get_action(action: str):
     """GetAction."""
-    return _ok(_get_client().read("GetAction", {"action": action}))
+    return _invoke("read", "GetAction", {"action": action})
 
 
 def get_action_action_state(action: str):
     """GetActionActionState."""
-    return _ok(_get_client().read("GetActionActionState", {"action": action}))
+    return _invoke("read", "GetActionActionState", {"action": action})
 
 
 def get_actions_summary():
     """GetActionsSummary."""
-    return _ok(_get_client().read("GetActionsSummary"))
+    return _invoke("read", "GetActionsSummary")
 
 
 def get_alert(id: str):
     """GetAlert."""
-    return _ok(_get_client().read("GetAlert", {"id": id}))
+    return _invoke("read", "GetAlert", {"id": id})
 
 
 def get_alerter(alerter: str):
     """GetAlerter."""
-    return _ok(_get_client().read("GetAlerter", {"alerter": alerter}))
+    return _invoke("read", "GetAlerter", {"alerter": alerter})
 
 
 def get_alerters_summary():
     """GetAlertersSummary."""
-    return _ok(_get_client().read("GetAlertersSummary"))
+    return _invoke("read", "GetAlertersSummary")
 
 
 def get_build(build: str):
     """GetBuild."""
-    return _ok(_get_client().read("GetBuild", {"build": build}))
+    return _invoke("read", "GetBuild", {"build": build})
 
 
 def get_build_action_state(build: str):
     """GetBuildActionState."""
-    return _ok(_get_client().read("GetBuildActionState", {"build": build}))
+    return _invoke("read", "GetBuildActionState", {"build": build})
 
 
 def get_builder(builder: str):
     """GetBuilder."""
-    return _ok(_get_client().read("GetBuilder", {"builder": builder}))
+    return _invoke("read", "GetBuilder", {"builder": builder})
 
 
 def get_builders_summary():
     """GetBuildersSummary."""
-    return _ok(_get_client().read("GetBuildersSummary"))
+    return _invoke("read", "GetBuildersSummary")
 
 
 def get_build_monthly_stats(page: int | None = None):
@@ -92,17 +92,17 @@ def get_build_monthly_stats(page: int | None = None):
     params: dict = {}
     if page is not None:
         params["page"] = page
-    return _ok(_get_client().read("GetBuildMonthlyStats", params or None))
+    return _invoke("read", "GetBuildMonthlyStats", params or None)
 
 
 def get_builds_summary():
     """GetBuildsSummary."""
-    return _ok(_get_client().read("GetBuildsSummary"))
+    return _invoke("read", "GetBuildsSummary")
 
 
 def get_build_webhook_enabled(build: str):
     """GetBuildWebhookEnabled."""
-    return _ok(_get_client().read("GetBuildWebhookEnabled", {"build": build}))
+    return _invoke("read", "GetBuildWebhookEnabled", {"build": build})
 
 
 def get_container_log(server: str, container: str, tail: int, timestamps: bool | None = None):
@@ -110,27 +110,27 @@ def get_container_log(server: str, container: str, tail: int, timestamps: bool |
     params: dict = {"server": server, "container": container, "tail": tail}
     if timestamps is not None:
         params["timestamps"] = timestamps
-    return _ok(_get_client().read("GetContainerLog", params))
+    return _invoke("read", "GetContainerLog", params)
 
 
 def get_core_info():
     """GetCoreInfo."""
-    return _ok(_get_client().read("GetCoreInfo"))
+    return _invoke("read", "GetCoreInfo")
 
 
 def get_deployment(deployment: str):
     """GetDeployment."""
-    return _ok(_get_client().read("GetDeployment", {"deployment": deployment}))
+    return _invoke("read", "GetDeployment", {"deployment": deployment})
 
 
 def get_deployment_action_state(deployment: str):
     """GetDeploymentActionState."""
-    return _ok(_get_client().read("GetDeploymentActionState", {"deployment": deployment}))
+    return _invoke("read", "GetDeploymentActionState", {"deployment": deployment})
 
 
 def get_deployment_container(deployment: str):
     """GetDeploymentContainer."""
-    return _ok(_get_client().read("GetDeploymentContainer", {"deployment": deployment}))
+    return _invoke("read", "GetDeploymentContainer", {"deployment": deployment})
 
 
 def get_deployment_log(deployment: str, tail: int, timestamps: bool | None = None):
@@ -138,32 +138,32 @@ def get_deployment_log(deployment: str, tail: int, timestamps: bool | None = Non
     params: dict = {"deployment": deployment, "tail": tail}
     if timestamps is not None:
         params["timestamps"] = timestamps
-    return _ok(_get_client().read("GetDeploymentLog", params))
+    return _invoke("read", "GetDeploymentLog", params)
 
 
 def get_deployments_summary():
     """GetDeploymentsSummary."""
-    return _ok(_get_client().read("GetDeploymentsSummary"))
+    return _invoke("read", "GetDeploymentsSummary")
 
 
 def get_deployment_stats(deployment: str):
     """GetDeploymentStats."""
-    return _ok(_get_client().read("GetDeploymentStats", {"deployment": deployment}))
+    return _invoke("read", "GetDeploymentStats", {"deployment": deployment})
 
 
 def get_docker_containers_summary():
     """GetDockerContainersSummary."""
-    return _ok(_get_client().read("GetDockerContainersSummary"))
+    return _invoke("read", "GetDockerContainersSummary")
 
 
 def get_docker_registry_account(id: str):
     """GetDockerRegistryAccount."""
-    return _ok(_get_client().read("GetDockerRegistryAccount", {"id": id}))
+    return _invoke("read", "GetDockerRegistryAccount", {"id": id})
 
 
 def get_git_provider_account(id: str):
     """GetGitProviderAccount."""
-    return _ok(_get_client().read("GetGitProviderAccount", {"id": id}))
+    return _invoke("read", "GetGitProviderAccount", {"id": id})
 
 
 def get_historical_server_stats(server: str, granularity: Literal["1-sec", "5-sec", "10-sec", "15-sec", "30-sec", "1-min", "2-min", "5-min", "10-min", "15-min", "30-min", "1-hr", "2-hr", "6-hr", "8-hr", "12-hr", "1-day", "3-day", "1-wk", "2-wk", "30-day"], page: int | None = None):
@@ -171,104 +171,104 @@ def get_historical_server_stats(server: str, granularity: Literal["1-sec", "5-se
     params: dict = {"server": server, "granularity": granularity}
     if page is not None:
         params["page"] = page
-    return _ok(_get_client().read("GetHistoricalServerStats", params))
+    return _invoke("read", "GetHistoricalServerStats", params)
 
 
 def get_periphery_version(server: str):
     """GetPeripheryVersion."""
-    return _ok(_get_client().read("GetPeripheryVersion", {"server": server}))
+    return _invoke("read", "GetPeripheryVersion", {"server": server})
 
 
 def get_permission(target_type: Literal["System", "Server", "Stack", "Deployment", "Build", "Repo", "Procedure", "Action", "Builder", "Alerter", "ResourceSync"], target_id: str):
     """GetPermission."""
     params: dict = {}
     params["target"] = {"type": target_type, "id": target_id}
-    return _ok(_get_client().read("GetPermission", params or None))
+    return _invoke("read", "GetPermission", params or None)
 
 
 def get_procedure(procedure: str):
     """GetProcedure."""
-    return _ok(_get_client().read("GetProcedure", {"procedure": procedure}))
+    return _invoke("read", "GetProcedure", {"procedure": procedure})
 
 
 def get_procedure_action_state(procedure: str):
     """GetProcedureActionState."""
-    return _ok(_get_client().read("GetProcedureActionState", {"procedure": procedure}))
+    return _invoke("read", "GetProcedureActionState", {"procedure": procedure})
 
 
 def get_procedures_summary():
     """GetProceduresSummary."""
-    return _ok(_get_client().read("GetProceduresSummary"))
+    return _invoke("read", "GetProceduresSummary")
 
 
 def get_repo(repo: str):
     """GetRepo."""
-    return _ok(_get_client().read("GetRepo", {"repo": repo}))
+    return _invoke("read", "GetRepo", {"repo": repo})
 
 
 def get_repo_action_state(repo: str):
     """GetRepoActionState."""
-    return _ok(_get_client().read("GetRepoActionState", {"repo": repo}))
+    return _invoke("read", "GetRepoActionState", {"repo": repo})
 
 
 def get_repos_summary():
     """GetReposSummary."""
-    return _ok(_get_client().read("GetReposSummary"))
+    return _invoke("read", "GetReposSummary")
 
 
 def get_repo_webhooks_enabled(repo: str):
     """GetRepoWebhooksEnabled."""
-    return _ok(_get_client().read("GetRepoWebhooksEnabled", {"repo": repo}))
+    return _invoke("read", "GetRepoWebhooksEnabled", {"repo": repo})
 
 
 def get_resource_matching_container(server: str, container: str):
     """GetResourceMatchingContainer."""
-    return _ok(_get_client().read("GetResourceMatchingContainer", {"server": server, "container": container}))
+    return _invoke("read", "GetResourceMatchingContainer", {"server": server, "container": container})
 
 
 def get_resource_sync(sync: str):
     """GetResourceSync."""
-    return _ok(_get_client().read("GetResourceSync", {"sync": sync}))
+    return _invoke("read", "GetResourceSync", {"sync": sync})
 
 
 def get_resource_sync_action_state(sync: str):
     """GetResourceSyncActionState."""
-    return _ok(_get_client().read("GetResourceSyncActionState", {"sync": sync}))
+    return _invoke("read", "GetResourceSyncActionState", {"sync": sync})
 
 
 def get_resource_syncs_summary():
     """GetResourceSyncsSummary."""
-    return _ok(_get_client().read("GetResourceSyncsSummary"))
+    return _invoke("read", "GetResourceSyncsSummary")
 
 
 def get_server(server: str):
     """GetServer."""
-    return _ok(_get_client().read("GetServer", {"server": server}))
+    return _invoke("read", "GetServer", {"server": server})
 
 
 def get_server_action_state(server: str):
     """GetServerActionState."""
-    return _ok(_get_client().read("GetServerActionState", {"server": server}))
+    return _invoke("read", "GetServerActionState", {"server": server})
 
 
 def get_servers_summary():
     """GetServersSummary."""
-    return _ok(_get_client().read("GetServersSummary"))
+    return _invoke("read", "GetServersSummary")
 
 
 def get_server_state(server: str):
     """GetServerState."""
-    return _ok(_get_client().read("GetServerState", {"server": server}))
+    return _invoke("read", "GetServerState", {"server": server})
 
 
 def get_stack(stack: str):
     """GetStack."""
-    return _ok(_get_client().read("GetStack", {"stack": stack}))
+    return _invoke("read", "GetStack", {"stack": stack})
 
 
 def get_stack_action_state(stack: str):
     """GetStackActionState."""
-    return _ok(_get_client().read("GetStackActionState", {"stack": stack}))
+    return _invoke("read", "GetStackActionState", {"stack": stack})
 
 
 def get_stack_log(stack: str, services: list[str], tail: int, timestamps: bool | None = None):
@@ -276,92 +276,82 @@ def get_stack_log(stack: str, services: list[str], tail: int, timestamps: bool |
     params: dict = {"stack": stack, "services": services, "tail": tail}
     if timestamps is not None:
         params["timestamps"] = timestamps
-    return _ok(_get_client().read("GetStackLog", params))
+    return _invoke("read", "GetStackLog", params)
 
 
 def get_stacks_summary():
     """GetStacksSummary."""
-    return _ok(_get_client().read("GetStacksSummary"))
+    return _invoke("read", "GetStacksSummary")
 
 
 def get_stack_webhooks_enabled(stack: str):
     """GetStackWebhooksEnabled."""
-    return _ok(_get_client().read("GetStackWebhooksEnabled", {"stack": stack}))
+    return _invoke("read", "GetStackWebhooksEnabled", {"stack": stack})
 
 
 def get_sync_webhooks_enabled(sync: str):
     """GetSyncWebhooksEnabled."""
-    return _ok(_get_client().read("GetSyncWebhooksEnabled", {"sync": sync}))
+    return _invoke("read", "GetSyncWebhooksEnabled", {"sync": sync})
 
 
 def get_system_information(server: str):
     """GetSystemInformation."""
-    return _ok(_get_client().read("GetSystemInformation", {"server": server}))
+    return _invoke("read", "GetSystemInformation", {"server": server})
 
 
 def get_system_stats(server: str):
     """GetSystemStats."""
-    return _ok(_get_client().read("GetSystemStats", {"server": server}))
+    return _invoke("read", "GetSystemStats", {"server": server})
 
 
 def get_tag(tag: str):
     """GetTag."""
-    return _ok(_get_client().read("GetTag", {"tag": tag}))
-
-
-def get_update(id: str):
-    """GetUpdate."""
-    return _ok(_get_client().read("GetUpdate", {"id": id}))
+    return _invoke("read", "GetTag", {"tag": tag})
 
 
 def get_user_group(user_group: str):
     """GetUserGroup."""
-    return _ok(_get_client().read("GetUserGroup", {"user_group": user_group}))
+    return _invoke("read", "GetUserGroup", {"user_group": user_group})
 
 
 def get_username(user_id: str):
     """GetUsername."""
-    return _ok(_get_client().read("GetUsername", {"user_id": user_id}))
+    return _invoke("read", "GetUsername", {"user_id": user_id})
 
 
 def get_variable(name: str):
     """GetVariable."""
-    return _ok(_get_client().read("GetVariable", {"name": name}))
-
-
-def get_version():
-    """GetVersion."""
-    return _ok(_get_client().read("GetVersion"))
+    return _invoke("read", "GetVariable", {"name": name})
 
 
 def inspect_deployment_container(deployment: str):
     """InspectDeploymentContainer."""
-    return _ok(_get_client().read("InspectDeploymentContainer", {"deployment": deployment}))
+    return _invoke("read", "InspectDeploymentContainer", {"deployment": deployment})
 
 
 def inspect_docker_container(server: str, container: str):
     """InspectDockerContainer."""
-    return _ok(_get_client().read("InspectDockerContainer", {"server": server, "container": container}))
+    return _invoke("read", "InspectDockerContainer", {"server": server, "container": container})
 
 
 def inspect_docker_image(server: str, image: str):
     """InspectDockerImage."""
-    return _ok(_get_client().read("InspectDockerImage", {"server": server, "image": image}))
+    return _invoke("read", "InspectDockerImage", {"server": server, "image": image})
 
 
 def inspect_docker_network(server: str, network: str):
     """InspectDockerNetwork."""
-    return _ok(_get_client().read("InspectDockerNetwork", {"server": server, "network": network}))
+    return _invoke("read", "InspectDockerNetwork", {"server": server, "network": network})
 
 
 def inspect_docker_volume(server: str, volume: str):
     """InspectDockerVolume."""
-    return _ok(_get_client().read("InspectDockerVolume", {"server": server, "volume": volume}))
+    return _invoke("read", "InspectDockerVolume", {"server": server, "volume": volume})
 
 
 def inspect_stack_container(stack: str, service: str):
     """InspectStackContainer."""
-    return _ok(_get_client().read("InspectStackContainer", {"stack": stack, "service": service}))
+    return _invoke("read", "InspectStackContainer", {"stack": stack, "service": service})
 
 
 def list_actions(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None):
@@ -378,7 +368,7 @@ def list_actions(names: list[str] | None = None, templates: Literal["Include", "
         _query["tag_behavior"] = tag_behavior
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListActions", params or None))
+    return _invoke("read", "ListActions", params or None)
 
 
 def list_alerters(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None, enabled: bool | None = None, types: list[Literal["Custom", "Slack", "Discord", "Ntfy", "Pushover"]] | None = None):
@@ -402,17 +392,7 @@ def list_alerters(names: list[str] | None = None, templates: Literal["Include", 
         _query["specific"] = _specific
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListAlerters", params or None))
-
-
-def list_alerts(query: dict | None = None, page: int | None = None):
-    """ListAlerts."""
-    params: dict = {}
-    if query is not None:
-        params["query"] = query
-    if page is not None:
-        params["page"] = page
-    return _ok(_get_client().read("ListAlerts", params or None))
+    return _invoke("read", "ListAlerters", params or None)
 
 
 def list_all_docker_containers(servers: list[str] | None = None):
@@ -420,17 +400,17 @@ def list_all_docker_containers(servers: list[str] | None = None):
     params: dict = {}
     if servers is not None:
         params["servers"] = servers
-    return _ok(_get_client().read("ListAllDockerContainers", params or None))
+    return _invoke("read", "ListAllDockerContainers", params or None)
 
 
 def list_api_keys():
     """ListApiKeys."""
-    return _ok(_get_client().read("ListApiKeys"))
+    return _invoke("read", "ListApiKeys")
 
 
 def list_api_keys_for_service_user(user: str):
     """ListApiKeysForServiceUser."""
-    return _ok(_get_client().read("ListApiKeysForServiceUser", {"user": user}))
+    return _invoke("read", "ListApiKeysForServiceUser", {"user": user})
 
 
 def list_builders(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None):
@@ -447,7 +427,7 @@ def list_builders(names: list[str] | None = None, templates: Literal["Include", 
         _query["tag_behavior"] = tag_behavior
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListBuilders", params or None))
+    return _invoke("read", "ListBuilders", params or None)
 
 
 def list_builds(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None, builder_ids: list[str] | None = None, repos: list[str] | None = None, built_since: int | None = None):
@@ -473,7 +453,7 @@ def list_builds(names: list[str] | None = None, templates: Literal["Include", "E
         _query["specific"] = _specific
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListBuilds", params or None))
+    return _invoke("read", "ListBuilds", params or None)
 
 
 def list_build_versions(build: str, major: int | None = None, minor: int | None = None, patch: int | None = None, limit: int | None = None):
@@ -487,7 +467,7 @@ def list_build_versions(build: str, major: int | None = None, minor: int | None 
         params["patch"] = patch
     if limit is not None:
         params["limit"] = limit
-    return _ok(_get_client().read("ListBuildVersions", params))
+    return _invoke("read", "ListBuildVersions", params)
 
 
 def list_common_build_extra_args(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None, builder_ids: list[str] | None = None, repos: list[str] | None = None, built_since: int | None = None):
@@ -513,7 +493,7 @@ def list_common_build_extra_args(names: list[str] | None = None, templates: Lite
         _query["specific"] = _specific
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListCommonBuildExtraArgs", params or None))
+    return _invoke("read", "ListCommonBuildExtraArgs", params or None)
 
 
 def list_common_deployment_extra_args(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None, server_ids: list[str] | None = None, build_ids: list[str] | None = None, update_available: bool | None = None):
@@ -539,7 +519,7 @@ def list_common_deployment_extra_args(names: list[str] | None = None, templates:
         _query["specific"] = _specific
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListCommonDeploymentExtraArgs", params or None))
+    return _invoke("read", "ListCommonDeploymentExtraArgs", params or None)
 
 
 def list_common_stack_build_extra_args(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None, server_ids: list[str] | None = None, linked_repos: list[str] | None = None, repos: list[str] | None = None, update_available: bool | None = None):
@@ -567,7 +547,7 @@ def list_common_stack_build_extra_args(names: list[str] | None = None, templates
         _query["specific"] = _specific
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListCommonStackBuildExtraArgs", params or None))
+    return _invoke("read", "ListCommonStackBuildExtraArgs", params or None)
 
 
 def list_common_stack_extra_args(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None, server_ids: list[str] | None = None, linked_repos: list[str] | None = None, repos: list[str] | None = None, update_available: bool | None = None):
@@ -595,12 +575,12 @@ def list_common_stack_extra_args(names: list[str] | None = None, templates: Lite
         _query["specific"] = _specific
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListCommonStackExtraArgs", params or None))
+    return _invoke("read", "ListCommonStackExtraArgs", params or None)
 
 
 def list_compose_projects(server: str):
     """ListComposeProjects."""
-    return _ok(_get_client().read("ListComposeProjects", {"server": server}))
+    return _invoke("read", "ListComposeProjects", {"server": server})
 
 
 def list_deployments(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None, server_ids: list[str] | None = None, build_ids: list[str] | None = None, update_available: bool | None = None):
@@ -626,27 +606,27 @@ def list_deployments(names: list[str] | None = None, templates: Literal["Include
         _query["specific"] = _specific
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListDeployments", params or None))
+    return _invoke("read", "ListDeployments", params or None)
 
 
 def list_docker_containers(server: str):
     """ListDockerContainers."""
-    return _ok(_get_client().read("ListDockerContainers", {"server": server}))
+    return _invoke("read", "ListDockerContainers", {"server": server})
 
 
 def list_docker_image_history(server: str, image: str):
     """ListDockerImageHistory."""
-    return _ok(_get_client().read("ListDockerImageHistory", {"server": server, "image": image}))
+    return _invoke("read", "ListDockerImageHistory", {"server": server, "image": image})
 
 
 def list_docker_images(server: str):
     """ListDockerImages."""
-    return _ok(_get_client().read("ListDockerImages", {"server": server}))
+    return _invoke("read", "ListDockerImages", {"server": server})
 
 
 def list_docker_networks(server: str):
     """ListDockerNetworks."""
-    return _ok(_get_client().read("ListDockerNetworks", {"server": server}))
+    return _invoke("read", "ListDockerNetworks", {"server": server})
 
 
 def list_docker_registries_from_config(target_type: Literal["System", "Server", "Stack", "Deployment", "Build", "Repo", "Procedure", "Action", "Builder", "Alerter", "ResourceSync"] | None = None, target_id: str | None = None):
@@ -654,7 +634,7 @@ def list_docker_registries_from_config(target_type: Literal["System", "Server", 
     params: dict = {}
     if target_type is not None and target_id is not None:
         params["target"] = {"type": target_type, "id": target_id}
-    return _ok(_get_client().read("ListDockerRegistriesFromConfig", params or None))
+    return _invoke("read", "ListDockerRegistriesFromConfig", params or None)
 
 
 def list_docker_registry_accounts(domain: str | None = None, username: str | None = None):
@@ -664,12 +644,12 @@ def list_docker_registry_accounts(domain: str | None = None, username: str | Non
         params["domain"] = domain
     if username is not None:
         params["username"] = username
-    return _ok(_get_client().read("ListDockerRegistryAccounts", params or None))
+    return _invoke("read", "ListDockerRegistryAccounts", params or None)
 
 
 def list_docker_volumes(server: str):
     """ListDockerVolumes."""
-    return _ok(_get_client().read("ListDockerVolumes", {"server": server}))
+    return _invoke("read", "ListDockerVolumes", {"server": server})
 
 
 def list_full_actions(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None):
@@ -686,7 +666,7 @@ def list_full_actions(names: list[str] | None = None, templates: Literal["Includ
         _query["tag_behavior"] = tag_behavior
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListFullActions", params or None))
+    return _invoke("read", "ListFullActions", params or None)
 
 
 def list_full_alerters(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None, enabled: bool | None = None, types: list[Literal["Custom", "Slack", "Discord", "Ntfy", "Pushover"]] | None = None):
@@ -710,7 +690,7 @@ def list_full_alerters(names: list[str] | None = None, templates: Literal["Inclu
         _query["specific"] = _specific
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListFullAlerters", params or None))
+    return _invoke("read", "ListFullAlerters", params or None)
 
 
 def list_full_builders(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None):
@@ -727,7 +707,7 @@ def list_full_builders(names: list[str] | None = None, templates: Literal["Inclu
         _query["tag_behavior"] = tag_behavior
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListFullBuilders", params or None))
+    return _invoke("read", "ListFullBuilders", params or None)
 
 
 def list_full_builds(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None, builder_ids: list[str] | None = None, repos: list[str] | None = None, built_since: int | None = None):
@@ -753,7 +733,7 @@ def list_full_builds(names: list[str] | None = None, templates: Literal["Include
         _query["specific"] = _specific
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListFullBuilds", params or None))
+    return _invoke("read", "ListFullBuilds", params or None)
 
 
 def list_full_deployments(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None, server_ids: list[str] | None = None, build_ids: list[str] | None = None, update_available: bool | None = None):
@@ -779,7 +759,7 @@ def list_full_deployments(names: list[str] | None = None, templates: Literal["In
         _query["specific"] = _specific
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListFullDeployments", params or None))
+    return _invoke("read", "ListFullDeployments", params or None)
 
 
 def list_full_procedures(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None):
@@ -796,7 +776,7 @@ def list_full_procedures(names: list[str] | None = None, templates: Literal["Inc
         _query["tag_behavior"] = tag_behavior
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListFullProcedures", params or None))
+    return _invoke("read", "ListFullProcedures", params or None)
 
 
 def list_full_repos(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None, repos: list[str] | None = None):
@@ -818,7 +798,7 @@ def list_full_repos(names: list[str] | None = None, templates: Literal["Include"
         _query["specific"] = _specific
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListFullRepos", params or None))
+    return _invoke("read", "ListFullRepos", params or None)
 
 
 def list_full_resource_syncs(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None, repos: list[str] | None = None):
@@ -840,7 +820,7 @@ def list_full_resource_syncs(names: list[str] | None = None, templates: Literal[
         _query["specific"] = _specific
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListFullResourceSyncs", params or None))
+    return _invoke("read", "ListFullResourceSyncs", params or None)
 
 
 def list_full_servers(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None):
@@ -857,7 +837,7 @@ def list_full_servers(names: list[str] | None = None, templates: Literal["Includ
         _query["tag_behavior"] = tag_behavior
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListFullServers", params or None))
+    return _invoke("read", "ListFullServers", params or None)
 
 
 def list_full_stacks(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None, server_ids: list[str] | None = None, linked_repos: list[str] | None = None, repos: list[str] | None = None, update_available: bool | None = None):
@@ -885,7 +865,7 @@ def list_full_stacks(names: list[str] | None = None, templates: Literal["Include
         _query["specific"] = _specific
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListFullStacks", params or None))
+    return _invoke("read", "ListFullStacks", params or None)
 
 
 def list_git_provider_accounts(domain: str | None = None, username: str | None = None):
@@ -895,7 +875,7 @@ def list_git_provider_accounts(domain: str | None = None, username: str | None =
         params["domain"] = domain
     if username is not None:
         params["username"] = username
-    return _ok(_get_client().read("ListGitProviderAccounts", params or None))
+    return _invoke("read", "ListGitProviderAccounts", params or None)
 
 
 def list_git_providers_from_config(target_type: Literal["System", "Server", "Stack", "Deployment", "Build", "Repo", "Procedure", "Action", "Builder", "Alerter", "ResourceSync"] | None = None, target_id: str | None = None):
@@ -903,12 +883,12 @@ def list_git_providers_from_config(target_type: Literal["System", "Server", "Sta
     params: dict = {}
     if target_type is not None and target_id is not None:
         params["target"] = {"type": target_type, "id": target_id}
-    return _ok(_get_client().read("ListGitProvidersFromConfig", params or None))
+    return _invoke("read", "ListGitProvidersFromConfig", params or None)
 
 
 def list_permissions():
     """ListPermissions."""
-    return _ok(_get_client().read("ListPermissions"))
+    return _invoke("read", "ListPermissions")
 
 
 def list_procedures(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None):
@@ -925,7 +905,7 @@ def list_procedures(names: list[str] | None = None, templates: Literal["Include"
         _query["tag_behavior"] = tag_behavior
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListProcedures", params or None))
+    return _invoke("read", "ListProcedures", params or None)
 
 
 def list_repos(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None, repos: list[str] | None = None):
@@ -947,7 +927,7 @@ def list_repos(names: list[str] | None = None, templates: Literal["Include", "Ex
         _query["specific"] = _specific
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListRepos", params or None))
+    return _invoke("read", "ListRepos", params or None)
 
 
 def list_resource_syncs(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None, repos: list[str] | None = None):
@@ -969,7 +949,7 @@ def list_resource_syncs(names: list[str] | None = None, templates: Literal["Incl
         _query["specific"] = _specific
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListResourceSyncs", params or None))
+    return _invoke("read", "ListResourceSyncs", params or None)
 
 
 def list_schedules(tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None):
@@ -979,7 +959,7 @@ def list_schedules(tags: list[str] | None = None, tag_behavior: Literal["All", "
         params["tags"] = tags
     if tag_behavior is not None:
         params["tag_behavior"] = tag_behavior
-    return _ok(_get_client().read("ListSchedules", params or None))
+    return _invoke("read", "ListSchedules", params or None)
 
 
 def list_secrets(target_type: Literal["System", "Server", "Stack", "Deployment", "Build", "Repo", "Procedure", "Action", "Builder", "Alerter", "ResourceSync"] | None = None, target_id: str | None = None):
@@ -987,7 +967,7 @@ def list_secrets(target_type: Literal["System", "Server", "Stack", "Deployment",
     params: dict = {}
     if target_type is not None and target_id is not None:
         params["target"] = {"type": target_type, "id": target_id}
-    return _ok(_get_client().read("ListSecrets", params or None))
+    return _invoke("read", "ListSecrets", params or None)
 
 
 def list_servers(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None):
@@ -1004,7 +984,7 @@ def list_servers(names: list[str] | None = None, templates: Literal["Include", "
         _query["tag_behavior"] = tag_behavior
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListServers", params or None))
+    return _invoke("read", "ListServers", params or None)
 
 
 def list_stacks(names: list[str] | None = None, templates: Literal["Include", "Exclude", "Only"] | None = None, tags: list[str] | None = None, tag_behavior: Literal["All", "Any"] | None = None, server_ids: list[str] | None = None, linked_repos: list[str] | None = None, repos: list[str] | None = None, update_available: bool | None = None):
@@ -1032,25 +1012,17 @@ def list_stacks(names: list[str] | None = None, templates: Literal["Include", "E
         _query["specific"] = _specific
     if _query:
         params["query"] = _query
-    return _ok(_get_client().read("ListStacks", params or None))
+    return _invoke("read", "ListStacks", params or None)
 
 
 def list_stack_services(stack: str):
     """ListStackServices."""
-    return _ok(_get_client().read("ListStackServices", {"stack": stack}))
+    return _invoke("read", "ListStackServices", {"stack": stack})
 
 
 def list_system_processes(server: str):
     """ListSystemProcesses."""
-    return _ok(_get_client().read("ListSystemProcesses", {"server": server}))
-
-
-def list_tags(query: dict | None = None):
-    """ListTags."""
-    params: dict = {}
-    if query is not None:
-        params["query"] = query
-    return _ok(_get_client().read("ListTags", params or None))
+    return _invoke("read", "ListSystemProcesses", {"server": server})
 
 
 def list_terminals(server: str, fresh: bool | None = None):
@@ -1058,39 +1030,29 @@ def list_terminals(server: str, fresh: bool | None = None):
     params: dict = {"server": server}
     if fresh is not None:
         params["fresh"] = fresh
-    return _ok(_get_client().read("ListTerminals", params))
-
-
-def list_updates(query: dict | None = None, page: int | None = None):
-    """ListUpdates."""
-    params: dict = {}
-    if query is not None:
-        params["query"] = query
-    if page is not None:
-        params["page"] = page
-    return _ok(_get_client().read("ListUpdates", params or None))
+    return _invoke("read", "ListTerminals", params)
 
 
 def list_user_groups():
     """ListUserGroups."""
-    return _ok(_get_client().read("ListUserGroups"))
+    return _invoke("read", "ListUserGroups")
 
 
 def list_users():
     """ListUsers."""
-    return _ok(_get_client().read("ListUsers"))
+    return _invoke("read", "ListUsers")
 
 
 def list_user_target_permissions(user_target_type: Literal["User", "UserGroup"], user_target_id: str):
     """ListUserTargetPermissions."""
     params: dict = {}
     params["user_target"] = {"type": user_target_type, "id": user_target_id}
-    return _ok(_get_client().read("ListUserTargetPermissions", params or None))
+    return _invoke("read", "ListUserTargetPermissions", params or None)
 
 
 def list_variables():
     """ListVariables."""
-    return _ok(_get_client().read("ListVariables"))
+    return _invoke("read", "ListVariables")
 
 
 def search_container_log(server: str, container: str, terms: list[str], combinator: Literal["Or", "And"] | None = None, invert: bool | None = None, timestamps: bool | None = None):
@@ -1102,7 +1064,7 @@ def search_container_log(server: str, container: str, terms: list[str], combinat
         params["invert"] = invert
     if timestamps is not None:
         params["timestamps"] = timestamps
-    return _ok(_get_client().read("SearchContainerLog", params))
+    return _invoke("read", "SearchContainerLog", params)
 
 
 def search_deployment_log(deployment: str, terms: list[str], combinator: Literal["Or", "And"] | None = None, invert: bool | None = None, timestamps: bool | None = None):
@@ -1114,7 +1076,7 @@ def search_deployment_log(deployment: str, terms: list[str], combinator: Literal
         params["invert"] = invert
     if timestamps is not None:
         params["timestamps"] = timestamps
-    return _ok(_get_client().read("SearchDeploymentLog", params))
+    return _invoke("read", "SearchDeploymentLog", params)
 
 
 def search_stack_log(stack: str, services: list[str], terms: list[str], combinator: Literal["Or", "And"] | None = None, invert: bool | None = None, timestamps: bool | None = None):
@@ -1126,69 +1088,69 @@ def search_stack_log(stack: str, services: list[str], terms: list[str], combinat
         params["invert"] = invert
     if timestamps is not None:
         params["timestamps"] = timestamps
-    return _ok(_get_client().read("SearchStackLog", params))
+    return _invoke("read", "SearchStackLog", params)
 
 
 # ── write ───────────────────────────────────────────────────────────────
 
 def add_user_to_user_group(user_group: str, user: str):
     """AddUserToUserGroup."""
-    return _ok(_get_client().write("AddUserToUserGroup", {"user_group": user_group, "user": user}))
+    return _invoke("write", "AddUserToUserGroup", {"user_group": user_group, "user": user})
 
 
 def commit_sync(sync: str):
     """CommitSync."""
-    return _ok(_get_client().write("CommitSync", {"sync": sync}))
+    return _invoke("write", "CommitSync", {"sync": sync})
 
 
 def copy_action(name: str, id: str):
     """CopyAction."""
-    return _ok(_get_client().write("CopyAction", {"name": name, "id": id}))
+    return _invoke("write", "CopyAction", {"name": name, "id": id})
 
 
 def copy_alerter(name: str, id: str):
     """CopyAlerter."""
-    return _ok(_get_client().write("CopyAlerter", {"name": name, "id": id}))
+    return _invoke("write", "CopyAlerter", {"name": name, "id": id})
 
 
 def copy_build(name: str, id: str):
     """CopyBuild."""
-    return _ok(_get_client().write("CopyBuild", {"name": name, "id": id}))
+    return _invoke("write", "CopyBuild", {"name": name, "id": id})
 
 
 def copy_builder(name: str, id: str):
     """CopyBuilder."""
-    return _ok(_get_client().write("CopyBuilder", {"name": name, "id": id}))
+    return _invoke("write", "CopyBuilder", {"name": name, "id": id})
 
 
 def copy_deployment(name: str, id: str):
     """CopyDeployment."""
-    return _ok(_get_client().write("CopyDeployment", {"name": name, "id": id}))
+    return _invoke("write", "CopyDeployment", {"name": name, "id": id})
 
 
 def copy_procedure(name: str, id: str):
     """CopyProcedure."""
-    return _ok(_get_client().write("CopyProcedure", {"name": name, "id": id}))
+    return _invoke("write", "CopyProcedure", {"name": name, "id": id})
 
 
 def copy_repo(name: str, id: str):
     """CopyRepo."""
-    return _ok(_get_client().write("CopyRepo", {"name": name, "id": id}))
+    return _invoke("write", "CopyRepo", {"name": name, "id": id})
 
 
 def copy_resource_sync(name: str, id: str):
     """CopyResourceSync."""
-    return _ok(_get_client().write("CopyResourceSync", {"name": name, "id": id}))
+    return _invoke("write", "CopyResourceSync", {"name": name, "id": id})
 
 
 def copy_server(name: str, id: str):
     """CopyServer."""
-    return _ok(_get_client().write("CopyServer", {"name": name, "id": id}))
+    return _invoke("write", "CopyServer", {"name": name, "id": id})
 
 
 def copy_stack(name: str, id: str):
     """CopyStack."""
-    return _ok(_get_client().write("CopyStack", {"name": name, "id": id}))
+    return _invoke("write", "CopyStack", {"name": name, "id": id})
 
 
 def create_action(name: str, config: dict | None = None):
@@ -1199,7 +1161,7 @@ def create_action(name: str, config: dict | None = None):
     params: dict = {"name": name}
     if config is not None:
         params["config"] = config
-    return _ok(_get_client().write("CreateAction", params))
+    return _invoke("write", "CreateAction", params)
 
 
 def create_alerter(name: str, config: dict | None = None):
@@ -1210,7 +1172,7 @@ def create_alerter(name: str, config: dict | None = None):
     params: dict = {"name": name}
     if config is not None:
         params["config"] = config
-    return _ok(_get_client().write("CreateAlerter", params))
+    return _invoke("write", "CreateAlerter", params)
 
 
 def create_api_key_for_service_user(user_id: str, name: str, expires: int | None = None):
@@ -1218,7 +1180,7 @@ def create_api_key_for_service_user(user_id: str, name: str, expires: int | None
     params: dict = {"user_id": user_id, "name": name}
     if expires is not None:
         params["expires"] = expires
-    return _ok(_get_client().write("CreateApiKeyForServiceUser", params))
+    return _invoke("write", "CreateApiKeyForServiceUser", params)
 
 
 def create_build(name: str, config: dict | None = None):
@@ -1229,7 +1191,7 @@ def create_build(name: str, config: dict | None = None):
     params: dict = {"name": name}
     if config is not None:
         params["config"] = config
-    return _ok(_get_client().write("CreateBuild", params))
+    return _invoke("write", "CreateBuild", params)
 
 
 def create_builder(name: str, config: dict | None = None):
@@ -1237,12 +1199,12 @@ def create_builder(name: str, config: dict | None = None):
     params: dict = {"name": name}
     if config is not None:
         params["config"] = config
-    return _ok(_get_client().write("CreateBuilder", params))
+    return _invoke("write", "CreateBuilder", params)
 
 
 def create_build_webhook(build: str):
     """CreateBuildWebhook."""
-    return _ok(_get_client().write("CreateBuildWebhook", {"build": build}))
+    return _invoke("write", "CreateBuildWebhook", {"build": build})
 
 
 def create_deployment(name: str, config: dict | None = None):
@@ -1253,12 +1215,12 @@ def create_deployment(name: str, config: dict | None = None):
     params: dict = {"name": name}
     if config is not None:
         params["config"] = config
-    return _ok(_get_client().write("CreateDeployment", params))
+    return _invoke("write", "CreateDeployment", params)
 
 
 def create_deployment_from_container(name: str, server: str):
     """CreateDeploymentFromContainer."""
-    return _ok(_get_client().write("CreateDeploymentFromContainer", {"name": name, "server": server}))
+    return _invoke("write", "CreateDeploymentFromContainer", {"name": name, "server": server})
 
 
 def create_docker_registry_account(account: dict):
@@ -1266,7 +1228,7 @@ def create_docker_registry_account(account: dict):
 
     account fields: _id (dict), domain (str), username (str), token (str)
     """
-    return _ok(_get_client().write("CreateDockerRegistryAccount", {"account": account}))
+    return _invoke("write", "CreateDockerRegistryAccount", {"account": account})
 
 
 def create_git_provider_account(account: dict):
@@ -1274,17 +1236,17 @@ def create_git_provider_account(account: dict):
 
     account fields: _id (dict), domain (str), https (bool), username (str), token (str)
     """
-    return _ok(_get_client().write("CreateGitProviderAccount", {"account": account}))
+    return _invoke("write", "CreateGitProviderAccount", {"account": account})
 
 
 def create_local_user(username: str, password: str):
     """CreateLocalUser."""
-    return _ok(_get_client().write("CreateLocalUser", {"username": username, "password": password}))
+    return _invoke("write", "CreateLocalUser", {"username": username, "password": password})
 
 
 def create_network(server: str, name: str):
     """CreateNetwork."""
-    return _ok(_get_client().write("CreateNetwork", {"server": server, "name": name}))
+    return _invoke("write", "CreateNetwork", {"server": server, "name": name})
 
 
 def create_procedure(name: str, config: dict | None = None):
@@ -1295,7 +1257,7 @@ def create_procedure(name: str, config: dict | None = None):
     params: dict = {"name": name}
     if config is not None:
         params["config"] = config
-    return _ok(_get_client().write("CreateProcedure", params))
+    return _invoke("write", "CreateProcedure", params)
 
 
 def create_repo(name: str, config: dict | None = None):
@@ -1306,12 +1268,12 @@ def create_repo(name: str, config: dict | None = None):
     params: dict = {"name": name}
     if config is not None:
         params["config"] = config
-    return _ok(_get_client().write("CreateRepo", params))
+    return _invoke("write", "CreateRepo", params)
 
 
 def create_repo_webhook(repo: str, action: Literal["Clone", "Pull", "Build"]):
     """CreateRepoWebhook."""
-    return _ok(_get_client().write("CreateRepoWebhook", {"repo": repo, "action": action}))
+    return _invoke("write", "CreateRepoWebhook", {"repo": repo, "action": action})
 
 
 def create_resource_sync(name: str, config: dict | None = None):
@@ -1322,7 +1284,7 @@ def create_resource_sync(name: str, config: dict | None = None):
     params: dict = {"name": name}
     if config is not None:
         params["config"] = config
-    return _ok(_get_client().write("CreateResourceSync", params))
+    return _invoke("write", "CreateResourceSync", params)
 
 
 def create_server(name: str, config: dict | None = None):
@@ -1333,12 +1295,12 @@ def create_server(name: str, config: dict | None = None):
     params: dict = {"name": name}
     if config is not None:
         params["config"] = config
-    return _ok(_get_client().write("CreateServer", params))
+    return _invoke("write", "CreateServer", params)
 
 
 def create_service_user(username: str, description: str):
     """CreateServiceUser."""
-    return _ok(_get_client().write("CreateServiceUser", {"username": username, "description": description}))
+    return _invoke("write", "CreateServiceUser", {"username": username, "description": description})
 
 
 def create_stack(name: str, config: dict | None = None):
@@ -1349,17 +1311,17 @@ def create_stack(name: str, config: dict | None = None):
     params: dict = {"name": name}
     if config is not None:
         params["config"] = config
-    return _ok(_get_client().write("CreateStack", params))
+    return _invoke("write", "CreateStack", params)
 
 
 def create_stack_webhook(stack: str, action: Literal["Refresh", "Deploy"]):
     """CreateStackWebhook."""
-    return _ok(_get_client().write("CreateStackWebhook", {"stack": stack, "action": action}))
+    return _invoke("write", "CreateStackWebhook", {"stack": stack, "action": action})
 
 
 def create_sync_webhook(sync: str, action: Literal["Refresh", "Sync"]):
     """CreateSyncWebhook."""
-    return _ok(_get_client().write("CreateSyncWebhook", {"sync": sync, "action": action}))
+    return _invoke("write", "CreateSyncWebhook", {"sync": sync, "action": action})
 
 
 def create_tag(name: str, color: Literal["LightSlate", "Slate", "DarkSlate", "LightRed", "Red", "DarkRed", "LightOrange", "Orange", "DarkOrange", "LightAmber", "Amber", "DarkAmber", "LightYellow", "Yellow", "DarkYellow", "LightLime", "Lime", "DarkLime", "LightGreen", "Green", "DarkGreen", "LightEmerald", "Emerald", "DarkEmerald", "LightTeal", "Teal", "DarkTeal", "LightCyan", "Cyan", "DarkCyan", "LightSky", "Sky", "DarkSky", "LightBlue", "Blue", "DarkBlue", "LightIndigo", "Indigo", "DarkIndigo", "LightViolet", "Violet", "DarkViolet", "LightPurple", "Purple", "DarkPurple", "LightFuchsia", "Fuchsia", "DarkFuchsia", "LightPink", "Pink", "DarkPink", "LightRose", "Rose", "DarkRose"] | None = None):
@@ -1367,7 +1329,7 @@ def create_tag(name: str, color: Literal["LightSlate", "Slate", "DarkSlate", "Li
     params: dict = {"name": name}
     if color is not None:
         params["color"] = color
-    return _ok(_get_client().write("CreateTag", params))
+    return _invoke("write", "CreateTag", params)
 
 
 def create_terminal(server: str, name: str, command: str, recreate: Literal["Never", "Always", "DifferentCommand"] | None = None):
@@ -1375,12 +1337,12 @@ def create_terminal(server: str, name: str, command: str, recreate: Literal["Nev
     params: dict = {"server": server, "name": name, "command": command}
     if recreate is not None:
         params["recreate"] = recreate
-    return _ok(_get_client().write("CreateTerminal", params))
+    return _invoke("write", "CreateTerminal", params)
 
 
 def create_user_group(name: str):
     """CreateUserGroup."""
-    return _ok(_get_client().write("CreateUserGroup", {"name": name}))
+    return _invoke("write", "CreateUserGroup", {"name": name})
 
 
 def create_variable(name: str, value: str | None = None, description: str | None = None, is_secret: bool | None = None):
@@ -1392,217 +1354,217 @@ def create_variable(name: str, value: str | None = None, description: str | None
         params["description"] = description
     if is_secret is not None:
         params["is_secret"] = is_secret
-    return _ok(_get_client().write("CreateVariable", params))
+    return _invoke("write", "CreateVariable", params)
 
 
 def delete_action(id: str):
     """DeleteAction."""
-    return _ok(_get_client().write("DeleteAction", {"id": id}))
+    return _invoke("write", "DeleteAction", {"id": id})
 
 
 def delete_alerter(id: str):
     """DeleteAlerter."""
-    return _ok(_get_client().write("DeleteAlerter", {"id": id}))
+    return _invoke("write", "DeleteAlerter", {"id": id})
 
 
 def delete_all_terminals(server: str):
     """DeleteAllTerminals."""
-    return _ok(_get_client().write("DeleteAllTerminals", {"server": server}))
+    return _invoke("write", "DeleteAllTerminals", {"server": server})
 
 
 def delete_api_key_for_service_user(key: str):
     """DeleteApiKeyForServiceUser."""
-    return _ok(_get_client().write("DeleteApiKeyForServiceUser", {"key": key}))
+    return _invoke("write", "DeleteApiKeyForServiceUser", {"key": key})
 
 
 def delete_build(id: str):
     """DeleteBuild."""
-    return _ok(_get_client().write("DeleteBuild", {"id": id}))
+    return _invoke("write", "DeleteBuild", {"id": id})
 
 
 def delete_builder(id: str):
     """DeleteBuilder."""
-    return _ok(_get_client().write("DeleteBuilder", {"id": id}))
+    return _invoke("write", "DeleteBuilder", {"id": id})
 
 
 def delete_build_webhook(build: str):
     """DeleteBuildWebhook."""
-    return _ok(_get_client().write("DeleteBuildWebhook", {"build": build}))
+    return _invoke("write", "DeleteBuildWebhook", {"build": build})
 
 
 def delete_deployment(id: str):
     """DeleteDeployment."""
-    return _ok(_get_client().write("DeleteDeployment", {"id": id}))
+    return _invoke("write", "DeleteDeployment", {"id": id})
 
 
 def delete_docker_registry_account(id: str):
     """DeleteDockerRegistryAccount."""
-    return _ok(_get_client().write("DeleteDockerRegistryAccount", {"id": id}))
+    return _invoke("write", "DeleteDockerRegistryAccount", {"id": id})
 
 
 def delete_git_provider_account(id: str):
     """DeleteGitProviderAccount."""
-    return _ok(_get_client().write("DeleteGitProviderAccount", {"id": id}))
+    return _invoke("write", "DeleteGitProviderAccount", {"id": id})
 
 
 def delete_procedure(id: str):
     """DeleteProcedure."""
-    return _ok(_get_client().write("DeleteProcedure", {"id": id}))
+    return _invoke("write", "DeleteProcedure", {"id": id})
 
 
 def delete_repo(id: str):
     """DeleteRepo."""
-    return _ok(_get_client().write("DeleteRepo", {"id": id}))
+    return _invoke("write", "DeleteRepo", {"id": id})
 
 
 def delete_repo_webhook(repo: str, action: Literal["Clone", "Pull", "Build"]):
     """DeleteRepoWebhook."""
-    return _ok(_get_client().write("DeleteRepoWebhook", {"repo": repo, "action": action}))
+    return _invoke("write", "DeleteRepoWebhook", {"repo": repo, "action": action})
 
 
 def delete_resource_sync(id: str):
     """DeleteResourceSync."""
-    return _ok(_get_client().write("DeleteResourceSync", {"id": id}))
+    return _invoke("write", "DeleteResourceSync", {"id": id})
 
 
 def delete_server(id: str):
     """DeleteServer."""
-    return _ok(_get_client().write("DeleteServer", {"id": id}))
+    return _invoke("write", "DeleteServer", {"id": id})
 
 
 def delete_stack(id: str):
     """DeleteStack."""
-    return _ok(_get_client().write("DeleteStack", {"id": id}))
+    return _invoke("write", "DeleteStack", {"id": id})
 
 
 def delete_stack_webhook(stack: str, action: Literal["Refresh", "Deploy"]):
     """DeleteStackWebhook."""
-    return _ok(_get_client().write("DeleteStackWebhook", {"stack": stack, "action": action}))
+    return _invoke("write", "DeleteStackWebhook", {"stack": stack, "action": action})
 
 
 def delete_sync_webhook(sync: str, action: Literal["Refresh", "Sync"]):
     """DeleteSyncWebhook."""
-    return _ok(_get_client().write("DeleteSyncWebhook", {"sync": sync, "action": action}))
+    return _invoke("write", "DeleteSyncWebhook", {"sync": sync, "action": action})
 
 
 def delete_tag(id: str):
     """DeleteTag."""
-    return _ok(_get_client().write("DeleteTag", {"id": id}))
+    return _invoke("write", "DeleteTag", {"id": id})
 
 
 def delete_terminal(server: str, terminal: str):
     """DeleteTerminal."""
-    return _ok(_get_client().write("DeleteTerminal", {"server": server, "terminal": terminal}))
+    return _invoke("write", "DeleteTerminal", {"server": server, "terminal": terminal})
 
 
 def delete_user(user: str):
     """DeleteUser."""
-    return _ok(_get_client().write("DeleteUser", {"user": user}))
+    return _invoke("write", "DeleteUser", {"user": user})
 
 
 def delete_user_group(id: str):
     """DeleteUserGroup."""
-    return _ok(_get_client().write("DeleteUserGroup", {"id": id}))
+    return _invoke("write", "DeleteUserGroup", {"id": id})
 
 
 def delete_variable(name: str):
     """DeleteVariable."""
-    return _ok(_get_client().write("DeleteVariable", {"name": name}))
+    return _invoke("write", "DeleteVariable", {"name": name})
 
 
 def refresh_build_cache(build: str):
     """RefreshBuildCache."""
-    return _ok(_get_client().write("RefreshBuildCache", {"build": build}))
+    return _invoke("write", "RefreshBuildCache", {"build": build})
 
 
 def refresh_repo_cache(repo: str):
     """RefreshRepoCache."""
-    return _ok(_get_client().write("RefreshRepoCache", {"repo": repo}))
+    return _invoke("write", "RefreshRepoCache", {"repo": repo})
 
 
 def refresh_resource_sync_pending(sync: str):
     """RefreshResourceSyncPending."""
-    return _ok(_get_client().write("RefreshResourceSyncPending", {"sync": sync}))
+    return _invoke("write", "RefreshResourceSyncPending", {"sync": sync})
 
 
 def refresh_stack_cache(stack: str):
     """RefreshStackCache."""
-    return _ok(_get_client().write("RefreshStackCache", {"stack": stack}))
+    return _invoke("write", "RefreshStackCache", {"stack": stack})
 
 
 def remove_user_from_user_group(user_group: str, user: str):
     """RemoveUserFromUserGroup."""
-    return _ok(_get_client().write("RemoveUserFromUserGroup", {"user_group": user_group, "user": user}))
+    return _invoke("write", "RemoveUserFromUserGroup", {"user_group": user_group, "user": user})
 
 
 def rename_action(id: str, name: str):
     """RenameAction."""
-    return _ok(_get_client().write("RenameAction", {"id": id, "name": name}))
+    return _invoke("write", "RenameAction", {"id": id, "name": name})
 
 
 def rename_alerter(id: str, name: str):
     """RenameAlerter."""
-    return _ok(_get_client().write("RenameAlerter", {"id": id, "name": name}))
+    return _invoke("write", "RenameAlerter", {"id": id, "name": name})
 
 
 def rename_build(id: str, name: str):
     """RenameBuild."""
-    return _ok(_get_client().write("RenameBuild", {"id": id, "name": name}))
+    return _invoke("write", "RenameBuild", {"id": id, "name": name})
 
 
 def rename_builder(id: str, name: str):
     """RenameBuilder."""
-    return _ok(_get_client().write("RenameBuilder", {"id": id, "name": name}))
+    return _invoke("write", "RenameBuilder", {"id": id, "name": name})
 
 
 def rename_deployment(id: str, name: str):
     """RenameDeployment."""
-    return _ok(_get_client().write("RenameDeployment", {"id": id, "name": name}))
+    return _invoke("write", "RenameDeployment", {"id": id, "name": name})
 
 
 def rename_procedure(id: str, name: str):
     """RenameProcedure."""
-    return _ok(_get_client().write("RenameProcedure", {"id": id, "name": name}))
+    return _invoke("write", "RenameProcedure", {"id": id, "name": name})
 
 
 def rename_repo(id: str, name: str):
     """RenameRepo."""
-    return _ok(_get_client().write("RenameRepo", {"id": id, "name": name}))
+    return _invoke("write", "RenameRepo", {"id": id, "name": name})
 
 
 def rename_resource_sync(id: str, name: str):
     """RenameResourceSync."""
-    return _ok(_get_client().write("RenameResourceSync", {"id": id, "name": name}))
+    return _invoke("write", "RenameResourceSync", {"id": id, "name": name})
 
 
 def rename_server(id: str, name: str):
     """RenameServer."""
-    return _ok(_get_client().write("RenameServer", {"id": id, "name": name}))
+    return _invoke("write", "RenameServer", {"id": id, "name": name})
 
 
 def rename_stack(id: str, name: str):
     """RenameStack."""
-    return _ok(_get_client().write("RenameStack", {"id": id, "name": name}))
+    return _invoke("write", "RenameStack", {"id": id, "name": name})
 
 
 def rename_tag(id: str, name: str):
     """RenameTag."""
-    return _ok(_get_client().write("RenameTag", {"id": id, "name": name}))
+    return _invoke("write", "RenameTag", {"id": id, "name": name})
 
 
 def rename_user_group(id: str, name: str):
     """RenameUserGroup."""
-    return _ok(_get_client().write("RenameUserGroup", {"id": id, "name": name}))
+    return _invoke("write", "RenameUserGroup", {"id": id, "name": name})
 
 
 def set_everyone_user_group(user_group: str, everyone: bool):
     """SetEveryoneUserGroup."""
-    return _ok(_get_client().write("SetEveryoneUserGroup", {"user_group": user_group, "everyone": everyone}))
+    return _invoke("write", "SetEveryoneUserGroup", {"user_group": user_group, "everyone": everyone})
 
 
 def set_users_in_user_group(user_group: str, users: list[str]):
     """SetUsersInUserGroup."""
-    return _ok(_get_client().write("SetUsersInUserGroup", {"user_group": user_group, "users": users}))
+    return _invoke("write", "SetUsersInUserGroup", {"user_group": user_group, "users": users})
 
 
 def update_action(id: str, config: dict):
@@ -1610,7 +1572,7 @@ def update_action(id: str, config: dict):
 
     config fields: run_at_startup (bool), schedule_format (Literal["English", "Cron"]), schedule (str), schedule_enabled (bool), schedule_timezone (str), schedule_alert (bool), failure_alert (bool), webhook_enabled (bool), webhook_secret (str), reload_deno_deps (bool), file_contents (str), arguments_format (Literal["key_value", "toml", "yaml", "json"]), arguments (str)
     """
-    return _ok(_get_client().write("UpdateAction", {"id": id, "config": config}))
+    return _invoke("write", "UpdateAction", {"id": id, "config": config})
 
 
 def update_alerter(id: str, config: dict):
@@ -1618,7 +1580,7 @@ def update_alerter(id: str, config: dict):
 
     config fields: enabled (bool), endpoint (dict), alert_types (list[Literal["Custom", "None", "Test", "ServerUnreachable", "ServerCpu", "ServerMem", "ServerDisk", "ServerVersionMismatch", "ContainerStateChange", "DeploymentImageUpdateAvailable", "DeploymentAutoUpdated", "StackStateChange", "StackImageUpdateAvailable", "StackAutoUpdated", "AwsBuilderTerminationFailed", "ResourceSyncPendingUpdates", "BuildFailed", "RepoBuildFailed", "ProcedureFailed", "ActionFailed", "ScheduleRun"]]), resources (list[dict]), except_resources (list[dict]), maintenance_windows (list[dict])
     """
-    return _ok(_get_client().write("UpdateAlerter", {"id": id, "config": config}))
+    return _invoke("write", "UpdateAlerter", {"id": id, "config": config})
 
 
 def update_build(id: str, config: dict):
@@ -1626,12 +1588,12 @@ def update_build(id: str, config: dict):
 
     config fields: builder_id (str), version (dict), auto_increment_version (bool), image_name (str), image_tag (str), include_latest_tag (bool), include_version_tags (bool), include_commit_tag (bool), links (list[str]), linked_repo (str), git_provider (str), git_https (bool), git_account (str), repo (str), branch (str), ...
     """
-    return _ok(_get_client().write("UpdateBuild", {"id": id, "config": config}))
+    return _invoke("write", "UpdateBuild", {"id": id, "config": config})
 
 
 def update_builder(id: str, config: dict):
     """UpdateBuilder."""
-    return _ok(_get_client().write("UpdateBuilder", {"id": id, "config": config}))
+    return _invoke("write", "UpdateBuilder", {"id": id, "config": config})
 
 
 def update_deployment(id: str, config: dict):
@@ -1639,7 +1601,7 @@ def update_deployment(id: str, config: dict):
 
     config fields: server_id (str), image (dict), image_registry_account (str), skip_secret_interp (bool), redeploy_on_build (bool), poll_for_updates (bool), auto_update (bool), send_alerts (bool), links (list[str]), network (str), restart (Literal["no", "on-failure", "always", "unless-stopped"]), command (str), termination_signal (Literal["SIGHUP", "SIGINT", "SIGQUIT", "SIGTERM"]), termination_timeout (int), extra_args (list[str]), ...
     """
-    return _ok(_get_client().write("UpdateDeployment", {"id": id, "config": config}))
+    return _invoke("write", "UpdateDeployment", {"id": id, "config": config})
 
 
 def update_docker_registry_account(id: str, account: dict):
@@ -1647,7 +1609,7 @@ def update_docker_registry_account(id: str, account: dict):
 
     account fields: _id (dict), domain (str), username (str), token (str)
     """
-    return _ok(_get_client().write("UpdateDockerRegistryAccount", {"id": id, "account": account}))
+    return _invoke("write", "UpdateDockerRegistryAccount", {"id": id, "account": account})
 
 
 def update_git_provider_account(id: str, account: dict):
@@ -1655,14 +1617,14 @@ def update_git_provider_account(id: str, account: dict):
 
     account fields: _id (dict), domain (str), https (bool), username (str), token (str)
     """
-    return _ok(_get_client().write("UpdateGitProviderAccount", {"id": id, "account": account}))
+    return _invoke("write", "UpdateGitProviderAccount", {"id": id, "account": account})
 
 
 def update_permission_on_resource_type(user_target_type: Literal["User", "UserGroup"], user_target_id: str, resource_type: Literal["System", "Server", "Stack", "Deployment", "Build", "Repo", "Procedure", "Action", "Builder", "Alerter", "ResourceSync"], permission: dict):
     """UpdatePermissionOnResourceType."""
     params: dict = {"resource_type": resource_type, "permission": permission}
     params["user_target"] = {"type": user_target_type, "id": user_target_id}
-    return _ok(_get_client().write("UpdatePermissionOnResourceType", params or None))
+    return _invoke("write", "UpdatePermissionOnResourceType", params or None)
 
 
 def update_permission_on_target(user_target_type: Literal["User", "UserGroup"], user_target_id: str, resource_target_type: Literal["System", "Server", "Stack", "Deployment", "Build", "Repo", "Procedure", "Action", "Builder", "Alerter", "ResourceSync"], resource_target_id: str, permission: dict):
@@ -1670,7 +1632,7 @@ def update_permission_on_target(user_target_type: Literal["User", "UserGroup"], 
     params: dict = {"permission": permission}
     params["user_target"] = {"type": user_target_type, "id": user_target_id}
     params["resource_target"] = {"type": resource_target_type, "id": resource_target_id}
-    return _ok(_get_client().write("UpdatePermissionOnTarget", params or None))
+    return _invoke("write", "UpdatePermissionOnTarget", params or None)
 
 
 def update_procedure(id: str, config: dict):
@@ -1678,7 +1640,7 @@ def update_procedure(id: str, config: dict):
 
     config fields: stages (list[dict]), schedule_format (Literal["English", "Cron"]), schedule (str), schedule_enabled (bool), schedule_timezone (str), schedule_alert (bool), failure_alert (bool), webhook_enabled (bool), webhook_secret (str)
     """
-    return _ok(_get_client().write("UpdateProcedure", {"id": id, "config": config}))
+    return _invoke("write", "UpdateProcedure", {"id": id, "config": config})
 
 
 def update_repo(id: str, config: dict):
@@ -1686,7 +1648,7 @@ def update_repo(id: str, config: dict):
 
     config fields: server_id (str), builder_id (str), git_provider (str), git_https (bool), git_account (str), repo (str), branch (str), commit (str), path (str), webhook_enabled (bool), webhook_secret (str), on_clone (dict), on_pull (dict), links (list[str]), environment (str), ...
     """
-    return _ok(_get_client().write("UpdateRepo", {"id": id, "config": config}))
+    return _invoke("write", "UpdateRepo", {"id": id, "config": config})
 
 
 def update_resource_meta(target_type: Literal["System", "Server", "Stack", "Deployment", "Build", "Repo", "Procedure", "Action", "Builder", "Alerter", "ResourceSync"], target_id: str, description: str | None = None, template: bool | None = None, tags: list[str] | None = None):
@@ -1699,7 +1661,7 @@ def update_resource_meta(target_type: Literal["System", "Server", "Stack", "Depl
     if tags is not None:
         params["tags"] = tags
     params["target"] = {"type": target_type, "id": target_id}
-    return _ok(_get_client().write("UpdateResourceMeta", params or None))
+    return _invoke("write", "UpdateResourceMeta", params or None)
 
 
 def update_resource_sync(id: str, config: dict):
@@ -1707,7 +1669,7 @@ def update_resource_sync(id: str, config: dict):
 
     config fields: linked_repo (str), git_provider (str), git_https (bool), repo (str), branch (str), commit (str), git_account (str), webhook_enabled (bool), webhook_secret (str), files_on_host (bool), resource_path (list[str]), managed (bool), delete (bool), include_resources (bool), match_tags (list[str]), ...
     """
-    return _ok(_get_client().write("UpdateResourceSync", {"id": id, "config": config}))
+    return _invoke("write", "UpdateResourceSync", {"id": id, "config": config})
 
 
 def update_server(id: str, config: dict):
@@ -1715,12 +1677,12 @@ def update_server(id: str, config: dict):
 
     config fields: address (str), external_address (str), region (str), enabled (bool), timeout_seconds (int), passkey (str), ignore_mounts (list[str]), stats_monitoring (bool), auto_prune (bool), links (list[str]), send_unreachable_alerts (bool), send_cpu_alerts (bool), send_mem_alerts (bool), send_disk_alerts (bool), send_version_mismatch_alerts (bool), ...
     """
-    return _ok(_get_client().write("UpdateServer", {"id": id, "config": config}))
+    return _invoke("write", "UpdateServer", {"id": id, "config": config})
 
 
 def update_service_user_description(username: str, description: str):
     """UpdateServiceUserDescription."""
-    return _ok(_get_client().write("UpdateServiceUserDescription", {"username": username, "description": description}))
+    return _invoke("write", "UpdateServiceUserDescription", {"username": username, "description": description})
 
 
 def update_stack(id: str, config: dict):
@@ -1728,17 +1690,17 @@ def update_stack(id: str, config: dict):
 
     config fields: server_id (str), links (list[str]), project_name (str), auto_pull (bool), run_build (bool), poll_for_updates (bool), auto_update (bool), auto_update_all_services (bool), destroy_before_deploy (bool), skip_secret_interp (bool), linked_repo (str), git_provider (str), git_https (bool), git_account (str), repo (str), ...
     """
-    return _ok(_get_client().write("UpdateStack", {"id": id, "config": config}))
+    return _invoke("write", "UpdateStack", {"id": id, "config": config})
 
 
 def update_tag_color(tag: str, color: Literal["LightSlate", "Slate", "DarkSlate", "LightRed", "Red", "DarkRed", "LightOrange", "Orange", "DarkOrange", "LightAmber", "Amber", "DarkAmber", "LightYellow", "Yellow", "DarkYellow", "LightLime", "Lime", "DarkLime", "LightGreen", "Green", "DarkGreen", "LightEmerald", "Emerald", "DarkEmerald", "LightTeal", "Teal", "DarkTeal", "LightCyan", "Cyan", "DarkCyan", "LightSky", "Sky", "DarkSky", "LightBlue", "Blue", "DarkBlue", "LightIndigo", "Indigo", "DarkIndigo", "LightViolet", "Violet", "DarkViolet", "LightPurple", "Purple", "DarkPurple", "LightFuchsia", "Fuchsia", "DarkFuchsia", "LightPink", "Pink", "DarkPink", "LightRose", "Rose", "DarkRose"]):
     """UpdateTagColor."""
-    return _ok(_get_client().write("UpdateTagColor", {"tag": tag, "color": color}))
+    return _invoke("write", "UpdateTagColor", {"tag": tag, "color": color})
 
 
 def update_user_admin(user_id: str, admin: bool):
     """UpdateUserAdmin."""
-    return _ok(_get_client().write("UpdateUserAdmin", {"user_id": user_id, "admin": admin}))
+    return _invoke("write", "UpdateUserAdmin", {"user_id": user_id, "admin": admin})
 
 
 def update_user_base_permissions(user_id: str, enabled: bool | None = None, create_servers: bool | None = None, create_builds: bool | None = None):
@@ -1750,154 +1712,154 @@ def update_user_base_permissions(user_id: str, enabled: bool | None = None, crea
         params["create_servers"] = create_servers
     if create_builds is not None:
         params["create_builds"] = create_builds
-    return _ok(_get_client().write("UpdateUserBasePermissions", params))
+    return _invoke("write", "UpdateUserBasePermissions", params)
 
 
 def update_user_password(password: str):
     """UpdateUserPassword."""
-    return _ok(_get_client().write("UpdateUserPassword", {"password": password}))
+    return _invoke("write", "UpdateUserPassword", {"password": password})
 
 
 def update_user_username(username: str):
     """UpdateUserUsername."""
-    return _ok(_get_client().write("UpdateUserUsername", {"username": username}))
+    return _invoke("write", "UpdateUserUsername", {"username": username})
 
 
 def update_variable_description(name: str, description: str):
     """UpdateVariableDescription."""
-    return _ok(_get_client().write("UpdateVariableDescription", {"name": name, "description": description}))
+    return _invoke("write", "UpdateVariableDescription", {"name": name, "description": description})
 
 
 def update_variable_is_secret(name: str, is_secret: bool):
     """UpdateVariableIsSecret."""
-    return _ok(_get_client().write("UpdateVariableIsSecret", {"name": name, "is_secret": is_secret}))
+    return _invoke("write", "UpdateVariableIsSecret", {"name": name, "is_secret": is_secret})
 
 
 def update_variable_value(name: str, value: str):
     """UpdateVariableValue."""
-    return _ok(_get_client().write("UpdateVariableValue", {"name": name, "value": value}))
+    return _invoke("write", "UpdateVariableValue", {"name": name, "value": value})
 
 
 def write_build_file_contents(build: str, contents: str):
     """WriteBuildFileContents."""
-    return _ok(_get_client().write("WriteBuildFileContents", {"build": build, "contents": contents}))
+    return _invoke("write", "WriteBuildFileContents", {"build": build, "contents": contents})
 
 
 def write_stack_file_contents(stack: str, file_path: str, contents: str):
     """WriteStackFileContents."""
-    return _ok(_get_client().write("WriteStackFileContents", {"stack": stack, "file_path": file_path, "contents": contents}))
+    return _invoke("write", "WriteStackFileContents", {"stack": stack, "file_path": file_path, "contents": contents})
 
 
 def write_sync_file_contents(sync: str, resource_path: str, file_path: str, contents: str):
     """WriteSyncFileContents."""
-    return _ok(_get_client().write("WriteSyncFileContents", {"sync": sync, "resource_path": resource_path, "file_path": file_path, "contents": contents}))
+    return _invoke("write", "WriteSyncFileContents", {"sync": sync, "resource_path": resource_path, "file_path": file_path, "contents": contents})
 
 
 # ── execute ─────────────────────────────────────────────────────────────
 
 def backup_core_database():
     """BackupCoreDatabase."""
-    return _ok(_get_client().execute("BackupCoreDatabase"))
+    return _invoke("execute", "BackupCoreDatabase")
 
 
 def batch_build_repo(pattern: str):
     """BatchBuildRepo."""
-    return _ok(_get_client().execute("BatchBuildRepo", {"pattern": pattern}))
+    return _invoke("execute", "BatchBuildRepo", {"pattern": pattern})
 
 
 def batch_clone_repo(pattern: str):
     """BatchCloneRepo."""
-    return _ok(_get_client().execute("BatchCloneRepo", {"pattern": pattern}))
+    return _invoke("execute", "BatchCloneRepo", {"pattern": pattern})
 
 
 def batch_deploy(pattern: str):
     """BatchDeploy."""
-    return _ok(_get_client().execute("BatchDeploy", {"pattern": pattern}))
+    return _invoke("execute", "BatchDeploy", {"pattern": pattern})
 
 
 def batch_deploy_stack(pattern: str):
     """BatchDeployStack."""
-    return _ok(_get_client().execute("BatchDeployStack", {"pattern": pattern}))
+    return _invoke("execute", "BatchDeployStack", {"pattern": pattern})
 
 
 def batch_deploy_stack_if_changed(pattern: str):
     """BatchDeployStackIfChanged."""
-    return _ok(_get_client().execute("BatchDeployStackIfChanged", {"pattern": pattern}))
+    return _invoke("execute", "BatchDeployStackIfChanged", {"pattern": pattern})
 
 
 def batch_destroy_deployment(pattern: str):
     """BatchDestroyDeployment."""
-    return _ok(_get_client().execute("BatchDestroyDeployment", {"pattern": pattern}))
+    return _invoke("execute", "BatchDestroyDeployment", {"pattern": pattern})
 
 
 def batch_destroy_stack(pattern: str):
     """BatchDestroyStack."""
-    return _ok(_get_client().execute("BatchDestroyStack", {"pattern": pattern}))
+    return _invoke("execute", "BatchDestroyStack", {"pattern": pattern})
 
 
 def batch_pull_repo(pattern: str):
     """BatchPullRepo."""
-    return _ok(_get_client().execute("BatchPullRepo", {"pattern": pattern}))
+    return _invoke("execute", "BatchPullRepo", {"pattern": pattern})
 
 
 def batch_pull_stack(pattern: str):
     """BatchPullStack."""
-    return _ok(_get_client().execute("BatchPullStack", {"pattern": pattern}))
+    return _invoke("execute", "BatchPullStack", {"pattern": pattern})
 
 
 def batch_run_action(pattern: str):
     """BatchRunAction."""
-    return _ok(_get_client().execute("BatchRunAction", {"pattern": pattern}))
+    return _invoke("execute", "BatchRunAction", {"pattern": pattern})
 
 
 def batch_run_build(pattern: str):
     """BatchRunBuild."""
-    return _ok(_get_client().execute("BatchRunBuild", {"pattern": pattern}))
+    return _invoke("execute", "BatchRunBuild", {"pattern": pattern})
 
 
 def batch_run_procedure(pattern: str):
     """BatchRunProcedure."""
-    return _ok(_get_client().execute("BatchRunProcedure", {"pattern": pattern}))
+    return _invoke("execute", "BatchRunProcedure", {"pattern": pattern})
 
 
 def build_repo(repo: str):
     """BuildRepo."""
-    return _ok(_get_client().execute("BuildRepo", {"repo": repo}))
+    return _invoke("execute", "BuildRepo", {"repo": repo})
 
 
 def cancel_build(build: str):
     """CancelBuild."""
-    return _ok(_get_client().execute("CancelBuild", {"build": build}))
+    return _invoke("execute", "CancelBuild", {"build": build})
 
 
 def cancel_repo_build(repo: str):
     """CancelRepoBuild."""
-    return _ok(_get_client().execute("CancelRepoBuild", {"repo": repo}))
+    return _invoke("execute", "CancelRepoBuild", {"repo": repo})
 
 
 def clear_repo_cache():
     """ClearRepoCache."""
-    return _ok(_get_client().execute("ClearRepoCache"))
+    return _invoke("execute", "ClearRepoCache")
 
 
 def clone_repo(repo: str):
     """CloneRepo."""
-    return _ok(_get_client().execute("CloneRepo", {"repo": repo}))
+    return _invoke("execute", "CloneRepo", {"repo": repo})
 
 
 def delete_image(server: str, name: str):
     """DeleteImage."""
-    return _ok(_get_client().execute("DeleteImage", {"server": server, "name": name}))
+    return _invoke("execute", "DeleteImage", {"server": server, "name": name})
 
 
 def delete_network(server: str, name: str):
     """DeleteNetwork."""
-    return _ok(_get_client().execute("DeleteNetwork", {"server": server, "name": name}))
+    return _invoke("execute", "DeleteNetwork", {"server": server, "name": name})
 
 
 def delete_volume(server: str, name: str):
     """DeleteVolume."""
-    return _ok(_get_client().execute("DeleteVolume", {"server": server, "name": name}))
+    return _invoke("execute", "DeleteVolume", {"server": server, "name": name})
 
 
 def deploy(deployment: str, stop_signal: Literal["SIGHUP", "SIGINT", "SIGQUIT", "SIGTERM"] | None = None, stop_time: int | None = None):
@@ -1907,7 +1869,7 @@ def deploy(deployment: str, stop_signal: Literal["SIGHUP", "SIGINT", "SIGQUIT", 
         params["stop_signal"] = stop_signal
     if stop_time is not None:
         params["stop_time"] = stop_time
-    return _ok(_get_client().execute("Deploy", params))
+    return _invoke("execute", "Deploy", params)
 
 
 def deploy_stack(stack: str, services: list[str] | None = None, stop_time: int | None = None):
@@ -1917,7 +1879,7 @@ def deploy_stack(stack: str, services: list[str] | None = None, stop_time: int |
         params["services"] = services
     if stop_time is not None:
         params["stop_time"] = stop_time
-    return _ok(_get_client().execute("DeployStack", params))
+    return _invoke("execute", "DeployStack", params)
 
 
 def deploy_stack_if_changed(stack: str, stop_time: int | None = None):
@@ -1925,7 +1887,7 @@ def deploy_stack_if_changed(stack: str, stop_time: int | None = None):
     params: dict = {"stack": stack}
     if stop_time is not None:
         params["stop_time"] = stop_time
-    return _ok(_get_client().execute("DeployStackIfChanged", params))
+    return _invoke("execute", "DeployStackIfChanged", params)
 
 
 def destroy_container(server: str, container: str, signal: Literal["SIGHUP", "SIGINT", "SIGQUIT", "SIGTERM"] | None = None, time: int | None = None):
@@ -1935,7 +1897,7 @@ def destroy_container(server: str, container: str, signal: Literal["SIGHUP", "SI
         params["signal"] = signal
     if time is not None:
         params["time"] = time
-    return _ok(_get_client().execute("DestroyContainer", params))
+    return _invoke("execute", "DestroyContainer", params)
 
 
 def destroy_deployment(deployment: str, signal: Literal["SIGHUP", "SIGINT", "SIGQUIT", "SIGTERM"] | None = None, time: int | None = None):
@@ -1945,7 +1907,7 @@ def destroy_deployment(deployment: str, signal: Literal["SIGHUP", "SIGINT", "SIG
         params["signal"] = signal
     if time is not None:
         params["time"] = time
-    return _ok(_get_client().execute("DestroyDeployment", params))
+    return _invoke("execute", "DestroyDeployment", params)
 
 
 def destroy_stack(stack: str, services: list[str] | None = None, remove_orphans: bool | None = None, stop_time: int | None = None):
@@ -1957,27 +1919,27 @@ def destroy_stack(stack: str, services: list[str] | None = None, remove_orphans:
         params["remove_orphans"] = remove_orphans
     if stop_time is not None:
         params["stop_time"] = stop_time
-    return _ok(_get_client().execute("DestroyStack", params))
+    return _invoke("execute", "DestroyStack", params)
 
 
 def global_auto_update():
     """GlobalAutoUpdate."""
-    return _ok(_get_client().execute("GlobalAutoUpdate"))
+    return _invoke("execute", "GlobalAutoUpdate")
 
 
 def pause_all_containers(server: str):
     """PauseAllContainers."""
-    return _ok(_get_client().execute("PauseAllContainers", {"server": server}))
+    return _invoke("execute", "PauseAllContainers", {"server": server})
 
 
 def pause_container(server: str, container: str):
     """PauseContainer."""
-    return _ok(_get_client().execute("PauseContainer", {"server": server, "container": container}))
+    return _invoke("execute", "PauseContainer", {"server": server, "container": container})
 
 
 def pause_deployment(deployment: str):
     """PauseDeployment."""
-    return _ok(_get_client().execute("PauseDeployment", {"deployment": deployment}))
+    return _invoke("execute", "PauseDeployment", {"deployment": deployment})
 
 
 def pause_stack(stack: str, services: list[str] | None = None):
@@ -1985,52 +1947,52 @@ def pause_stack(stack: str, services: list[str] | None = None):
     params: dict = {"stack": stack}
     if services is not None:
         params["services"] = services
-    return _ok(_get_client().execute("PauseStack", params))
+    return _invoke("execute", "PauseStack", params)
 
 
 def prune_buildx(server: str):
     """PruneBuildx."""
-    return _ok(_get_client().execute("PruneBuildx", {"server": server}))
+    return _invoke("execute", "PruneBuildx", {"server": server})
 
 
 def prune_containers(server: str):
     """PruneContainers."""
-    return _ok(_get_client().execute("PruneContainers", {"server": server}))
+    return _invoke("execute", "PruneContainers", {"server": server})
 
 
 def prune_docker_builders(server: str):
     """PruneDockerBuilders."""
-    return _ok(_get_client().execute("PruneDockerBuilders", {"server": server}))
+    return _invoke("execute", "PruneDockerBuilders", {"server": server})
 
 
 def prune_images(server: str):
     """PruneImages."""
-    return _ok(_get_client().execute("PruneImages", {"server": server}))
+    return _invoke("execute", "PruneImages", {"server": server})
 
 
 def prune_networks(server: str):
     """PruneNetworks."""
-    return _ok(_get_client().execute("PruneNetworks", {"server": server}))
+    return _invoke("execute", "PruneNetworks", {"server": server})
 
 
 def prune_system(server: str):
     """PruneSystem."""
-    return _ok(_get_client().execute("PruneSystem", {"server": server}))
+    return _invoke("execute", "PruneSystem", {"server": server})
 
 
 def prune_volumes(server: str):
     """PruneVolumes."""
-    return _ok(_get_client().execute("PruneVolumes", {"server": server}))
+    return _invoke("execute", "PruneVolumes", {"server": server})
 
 
 def pull_deployment(deployment: str):
     """PullDeployment."""
-    return _ok(_get_client().execute("PullDeployment", {"deployment": deployment}))
+    return _invoke("execute", "PullDeployment", {"deployment": deployment})
 
 
 def pull_repo(repo: str):
     """PullRepo."""
-    return _ok(_get_client().execute("PullRepo", {"repo": repo}))
+    return _invoke("execute", "PullRepo", {"repo": repo})
 
 
 def pull_stack(stack: str, services: list[str] | None = None):
@@ -2038,22 +2000,22 @@ def pull_stack(stack: str, services: list[str] | None = None):
     params: dict = {"stack": stack}
     if services is not None:
         params["services"] = services
-    return _ok(_get_client().execute("PullStack", params))
+    return _invoke("execute", "PullStack", params)
 
 
 def restart_all_containers(server: str):
     """RestartAllContainers."""
-    return _ok(_get_client().execute("RestartAllContainers", {"server": server}))
+    return _invoke("execute", "RestartAllContainers", {"server": server})
 
 
 def restart_container(server: str, container: str):
     """RestartContainer."""
-    return _ok(_get_client().execute("RestartContainer", {"server": server, "container": container}))
+    return _invoke("execute", "RestartContainer", {"server": server, "container": container})
 
 
 def restart_deployment(deployment: str):
     """RestartDeployment."""
-    return _ok(_get_client().execute("RestartDeployment", {"deployment": deployment}))
+    return _invoke("execute", "RestartDeployment", {"deployment": deployment})
 
 
 def restart_stack(stack: str, services: list[str] | None = None):
@@ -2061,7 +2023,7 @@ def restart_stack(stack: str, services: list[str] | None = None):
     params: dict = {"stack": stack}
     if services is not None:
         params["services"] = services
-    return _ok(_get_client().execute("RestartStack", params))
+    return _invoke("execute", "RestartStack", params)
 
 
 def run_action(action: str, args: dict | None = None):
@@ -2069,17 +2031,17 @@ def run_action(action: str, args: dict | None = None):
     params: dict = {"action": action}
     if args is not None:
         params["args"] = args
-    return _ok(_get_client().execute("RunAction", params))
+    return _invoke("execute", "RunAction", params)
 
 
 def run_build(build: str):
     """RunBuild."""
-    return _ok(_get_client().execute("RunBuild", {"build": build}))
+    return _invoke("execute", "RunBuild", {"build": build})
 
 
 def run_procedure(procedure: str):
     """RunProcedure."""
-    return _ok(_get_client().execute("RunProcedure", {"procedure": procedure}))
+    return _invoke("execute", "RunProcedure", {"procedure": procedure})
 
 
 def run_stack_service(stack: str, service: str, command: list[str] | None = None, no_tty: bool | None = None, no_deps: bool | None = None, detach: bool | None = None, service_ports: bool | None = None, env: dict | None = None, workdir: str | None = None, user: str | None = None, entrypoint: str | None = None, pull: bool | None = None):
@@ -2105,7 +2067,7 @@ def run_stack_service(stack: str, service: str, command: list[str] | None = None
         params["entrypoint"] = entrypoint
     if pull is not None:
         params["pull"] = pull
-    return _ok(_get_client().execute("RunStackService", params))
+    return _invoke("execute", "RunStackService", params)
 
 
 def run_sync(sync: str, resource_type: Literal["System", "Server", "Stack", "Deployment", "Build", "Repo", "Procedure", "Action", "Builder", "Alerter", "ResourceSync"] | None = None, resources: list[str] | None = None):
@@ -2115,7 +2077,7 @@ def run_sync(sync: str, resource_type: Literal["System", "Server", "Stack", "Dep
         params["resource_type"] = resource_type
     if resources is not None:
         params["resources"] = resources
-    return _ok(_get_client().execute("RunSync", params))
+    return _invoke("execute", "RunSync", params)
 
 
 def send_alert(message: str, level: Literal["OK", "WARNING", "CRITICAL"] | None = None, details: str | None = None, alerters: list[str] | None = None):
@@ -2127,22 +2089,22 @@ def send_alert(message: str, level: Literal["OK", "WARNING", "CRITICAL"] | None 
         params["details"] = details
     if alerters is not None:
         params["alerters"] = alerters
-    return _ok(_get_client().execute("SendAlert", params))
+    return _invoke("execute", "SendAlert", params)
 
 
 def start_all_containers(server: str):
     """StartAllContainers."""
-    return _ok(_get_client().execute("StartAllContainers", {"server": server}))
+    return _invoke("execute", "StartAllContainers", {"server": server})
 
 
 def start_container(server: str, container: str):
     """StartContainer."""
-    return _ok(_get_client().execute("StartContainer", {"server": server, "container": container}))
+    return _invoke("execute", "StartContainer", {"server": server, "container": container})
 
 
 def start_deployment(deployment: str):
     """StartDeployment."""
-    return _ok(_get_client().execute("StartDeployment", {"deployment": deployment}))
+    return _invoke("execute", "StartDeployment", {"deployment": deployment})
 
 
 def start_stack(stack: str, services: list[str] | None = None):
@@ -2150,12 +2112,12 @@ def start_stack(stack: str, services: list[str] | None = None):
     params: dict = {"stack": stack}
     if services is not None:
         params["services"] = services
-    return _ok(_get_client().execute("StartStack", params))
+    return _invoke("execute", "StartStack", params)
 
 
 def stop_all_containers(server: str):
     """StopAllContainers."""
-    return _ok(_get_client().execute("StopAllContainers", {"server": server}))
+    return _invoke("execute", "StopAllContainers", {"server": server})
 
 
 def stop_container(server: str, container: str, signal: Literal["SIGHUP", "SIGINT", "SIGQUIT", "SIGTERM"] | None = None, time: int | None = None):
@@ -2165,7 +2127,7 @@ def stop_container(server: str, container: str, signal: Literal["SIGHUP", "SIGIN
         params["signal"] = signal
     if time is not None:
         params["time"] = time
-    return _ok(_get_client().execute("StopContainer", params))
+    return _invoke("execute", "StopContainer", params)
 
 
 def stop_deployment(deployment: str, signal: Literal["SIGHUP", "SIGINT", "SIGQUIT", "SIGTERM"] | None = None, time: int | None = None):
@@ -2175,7 +2137,7 @@ def stop_deployment(deployment: str, signal: Literal["SIGHUP", "SIGINT", "SIGQUI
         params["signal"] = signal
     if time is not None:
         params["time"] = time
-    return _ok(_get_client().execute("StopDeployment", params))
+    return _invoke("execute", "StopDeployment", params)
 
 
 def stop_stack(stack: str, stop_time: int | None = None, services: list[str] | None = None):
@@ -2185,27 +2147,27 @@ def stop_stack(stack: str, stop_time: int | None = None, services: list[str] | N
         params["stop_time"] = stop_time
     if services is not None:
         params["services"] = services
-    return _ok(_get_client().execute("StopStack", params))
+    return _invoke("execute", "StopStack", params)
 
 
 def test_alerter(alerter: str):
     """TestAlerter."""
-    return _ok(_get_client().execute("TestAlerter", {"alerter": alerter}))
+    return _invoke("execute", "TestAlerter", {"alerter": alerter})
 
 
 def unpause_all_containers(server: str):
     """UnpauseAllContainers."""
-    return _ok(_get_client().execute("UnpauseAllContainers", {"server": server}))
+    return _invoke("execute", "UnpauseAllContainers", {"server": server})
 
 
 def unpause_container(server: str, container: str):
     """UnpauseContainer."""
-    return _ok(_get_client().execute("UnpauseContainer", {"server": server, "container": container}))
+    return _invoke("execute", "UnpauseContainer", {"server": server, "container": container})
 
 
 def unpause_deployment(deployment: str):
     """UnpauseDeployment."""
-    return _ok(_get_client().execute("UnpauseDeployment", {"deployment": deployment}))
+    return _invoke("execute", "UnpauseDeployment", {"deployment": deployment})
 
 
 def unpause_stack(stack: str, services: list[str] | None = None):
@@ -2213,4 +2175,4 @@ def unpause_stack(stack: str, services: list[str] | None = None):
     params: dict = {"stack": stack}
     if services is not None:
         params["services"] = services
-    return _ok(_get_client().execute("UnpauseStack", params))
+    return _invoke("execute", "UnpauseStack", params)

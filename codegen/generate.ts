@@ -4,11 +4,15 @@
  * Uses the TypeScript Compiler API for reliable type resolution —
  * no regex parsing of interfaces, generics, or JSDoc.
  *
+ * Operations listed in hand_written.json (op name -> reason) are not emitted:
+ * src/komodo_mcp/tools.py implements them. Every emitted op calls
+ * _helpers.invoke, which applies the per-op tables in overrides.py.
+ *
  * Usage: npx tsx generate.ts
  */
 
 import * as ts from "typescript";
-import { writeFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -18,6 +22,9 @@ const TYPES_PATH = join(
   "node_modules/komodo_client/src/types.ts"
 );
 const OUT_PATH = join(__dirname, "../src/komodo_mcp/_generated.py");
+const HAND_WRITTEN: Record<string, string> = JSON.parse(
+  readFileSync(join(__dirname, "hand_written.json"), "utf8")
+);
 
 // ── Load program ─────────────────────────────────────────────────────────
 
@@ -75,6 +82,11 @@ extractOps("WriteRequest", "write");
 extractOps("ExecuteRequest", "execute");
 
 console.log(`Found ${ops.size} operations total`);
+
+const unknownHandWritten = Object.keys(HAND_WRITTEN).filter((op) => !ops.has(op));
+if (unknownHandWritten.length > 0)
+  throw new Error(`hand_written.json lists unknown operations: ${unknownHandWritten.join(", ")}`);
+for (const op of Object.keys(HAND_WRITTEN)) ops.delete(op);
 
 // ── Step 2: Type mapping ─────────────────────────────────────────────────
 
@@ -410,7 +422,8 @@ const pyLines: string[] = [
   "",
   "from typing import Literal",
   "",
-  "from ._helpers import _ok, _get_client",
+  // Private alias: the generated module's public functions are its operations.
+  "from ._helpers import invoke as _invoke",
   "",
   "",
 ];
@@ -472,7 +485,7 @@ for (const [opName, { endpoint, iface }] of sortedOps) {
   // Function body
   if (params.length === 0) {
     pyLines.push(
-      `    return _ok(_get_client().${endpoint}("${opName}"))`
+      `    return _invoke("${endpoint}", "${opName}")`
     );
   } else if (reassemblies.length > 0) {
     // Has flattened params
@@ -525,7 +538,7 @@ for (const [opName, { endpoint, iface }] of sortedOps) {
     }
 
     pyLines.push(
-      `    return _ok(_get_client().${endpoint}("${opName}", params or None))`
+      `    return _invoke("${endpoint}", "${opName}", params or None)`
     );
   } else {
     // No flattening
@@ -539,14 +552,14 @@ for (const [opName, { endpoint, iface }] of sortedOps) {
         pyLines.push(`        params["${p.name}"] = ${p.name}`);
       }
       pyLines.push(
-        `    return _ok(_get_client().${endpoint}("${opName}", params))`
+        `    return _invoke("${endpoint}", "${opName}", params)`
       );
     } else if (requiredParams.length > 0) {
       const parts = requiredParams
         .map((p) => `"${p.name}": ${p.name}`)
         .join(", ");
       pyLines.push(
-        `    return _ok(_get_client().${endpoint}("${opName}", {${parts}}))`
+        `    return _invoke("${endpoint}", "${opName}", {${parts}})`
       );
     } else {
       pyLines.push("    params: dict = {}");
@@ -555,7 +568,7 @@ for (const [opName, { endpoint, iface }] of sortedOps) {
         pyLines.push(`        params["${p.name}"] = ${p.name}`);
       }
       pyLines.push(
-        `    return _ok(_get_client().${endpoint}("${opName}", params or None))`
+        `    return _invoke("${endpoint}", "${opName}", params or None)`
       );
     }
   }

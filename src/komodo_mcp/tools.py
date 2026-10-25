@@ -2,6 +2,8 @@
 
 All generated functions are imported and assigned to MCP groups.
 Functions not explicitly grouped become standalone ROOT tools.
+Operations listed in codegen/hand_written.json are not generated; they are
+written here. Per-operation deltas for generated ones live in overrides.py.
 """
 
 import asyncio
@@ -14,6 +16,7 @@ from . import _generated
 from ._generated import *
 from ._helpers import _get_client, _ok
 from .client import KomodoError
+from .overrides import REQUEST_OVERRIDES, RESPONSE_OVERRIDES
 from .registry import ROOT, Group, _op
 from .wait_registry import (
     TERMINAL_STATUSES as _WAIT_TERMINAL,
@@ -25,7 +28,7 @@ from .wait_registry import (
 
 komodo_read = Group(
     "komodo_read",
-    "Query Komodo resources (safe, read-only).\n\n"
+    "Query Komodo resources (safe, read-only; secret values masked).\n\n"
     "Call with operation=\"$help\" to list all available read operations.\n"
     "Otherwise pass the operation name and a JSON object with parameters.\n\n"
     "Example: komodo_read(operation=\"$GetServer\", "
@@ -61,7 +64,7 @@ komodo_delete = Group(
 
 komodo_admin_read = Group(
     "komodo_admin_read",
-    "Query users, permissions, groups, and API keys.\n\n"
+    "Query users, permissions, groups, API keys, provider accounts, and secret values.\n\n"
     "Call with operation=\"$help\" to list all available admin read operations.\n"
     "Otherwise pass the operation name and a JSON object with parameters.\n\n"
     "Example: komodo_admin_read(operation=\"$ListUsers\")",
@@ -138,14 +141,9 @@ _SCOPE_GROUPS: dict[Group, list[str]] = {
         # Compose
         "ListComposeProjects",
         # Tags, Variables, Secrets
-        "ListTags", "GetTag", "ListVariables", "GetVariable",
-        # Provider Accounts
-        "ListGitProviderAccounts", "GetGitProviderAccount",
-        "ListGitProvidersFromConfig",
-        "ListDockerRegistryAccounts", "GetDockerRegistryAccount",
-        "ListDockerRegistriesFromConfig",
-        # Updates & Alerts
-        "ListUpdates", "GetUpdate", "ListAlerts",
+        "GetTag", "ListVariables", "GetVariable",
+        # Provider config (no credentials)
+        "ListGitProvidersFromConfig", "ListDockerRegistriesFromConfig",
         # Misc
         "ListSecrets", "ListSchedules", "GetResourceMatchingContainer",
         "ListCommonDeploymentExtraArgs", "ListCommonBuildExtraArgs",
@@ -265,6 +263,9 @@ _SCOPE_GROUPS: dict[Group, list[str]] = {
         "ListUserGroups", "GetUserGroup",
         "ListPermissions", "ListUserTargetPermissions", "GetPermission",
         "ListApiKeys", "ListApiKeysForServiceUser",
+        # Provider accounts (with tokens)
+        "ListGitProviderAccounts", "GetGitProviderAccount",
+        "ListDockerRegistryAccounts", "GetDockerRegistryAccount",
     ],
     komodo_admin_write: [
         # Users
@@ -295,15 +296,27 @@ def _register_groups():
             snake = _to_snake(pascal)
             fn = getattr(_generated, snake, None)
             if fn is None:
-                continue
+                raise RuntimeError(f"_SCOPE_GROUPS names an operation that is not generated: {pascal}")
             _op(group)(fn)
             _grouped.add(snake)
 
 
+def _check_override_tables():
+    """An override for an operation that is not generated would never run."""
+    unknown = sorted(
+        op
+        for op in REQUEST_OVERRIDES.keys() | RESPONSE_OVERRIDES.keys()
+        if not hasattr(_generated, _to_snake(op))
+    )
+    if unknown:
+        raise RuntimeError(f"overrides.py names operations that are not generated: {unknown}")
+
+
 _register_groups()
+_check_override_tables()
 
 
-# ── Custom overrides ────────────────────────────────────────────────────────
+# ── Hand-written operations ─────────────────────────────────────────────────
 
 def _trim_update_logs(update, failed_only: bool, tail: int) -> list:
     """Stage logs of an update: optionally only failed stages, stdout/stderr
@@ -329,7 +342,7 @@ def _trim_update_logs(update, failed_only: bool, tail: int) -> list:
     return out
 
 
-# GetUpdate with client-side post-processing (replaces generated version)
+# GetUpdate with client-side log trimming
 def get_update(id: str, failed_only: bool = False, tail: int = 0):
     """Get update by id. failed_only: only failed stages. tail: limit lines."""
     result = _get_client().read("GetUpdate", {"id": id})
@@ -339,7 +352,6 @@ def get_update(id: str, failed_only: bool = False, tail: int = 0):
 
 
 _op(komodo_read)(get_update)
-_grouped.add("get_update")
 
 
 # ListTags — flatten MongoDocument query into explicit Tag fields
@@ -359,7 +371,6 @@ def list_tags(name: str | None = None, color: str | None = None, owner: str | No
 
 
 _op(komodo_read)(list_tags)
-_grouped.add("list_tags")
 
 
 # ListAlerts — flatten MongoDocument query into explicit Alert fields
@@ -387,7 +398,6 @@ def list_alerts(
 
 
 _op(komodo_read)(list_alerts)
-_grouped.add("list_alerts")
 
 
 # ListUpdates — flatten MongoDocument query into explicit Update fields
@@ -418,18 +428,24 @@ def list_updates(
 
 
 _op(komodo_read)(list_updates)
-_grouped.add("list_updates")
 
 
 # GetVersion through the startup check: main() and this tool make one request,
-# described in one place (replaces generated version)
+# described in one place
 def get_version():
     """GetVersion."""
     return _get_client().check()
 
 
 _op(ROOT)(get_version)
-_grouped.add("get_version")
+
+
+def reveal_variable(name: str):
+    """Get a variable with its value unmasked, secret or not."""
+    return _ok(_get_client().read("GetVariable", {"name": name}))
+
+
+_op(komodo_admin_read)(reveal_variable)
 
 
 # ── Auto-ROOT for ungrouped functions ────────────────────────────────────────
@@ -795,7 +811,7 @@ async def updates_wait_poll(wait_id: str, max_block: float = 0.0):
     if max_block > 0 and not handle.done_event.is_set():
         try:
             await asyncio.wait_for(handle.done_event.wait(), timeout=max_block)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             snap = handle.snapshot()
             snap["timed_out"] = True
             return snap

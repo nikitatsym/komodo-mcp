@@ -230,6 +230,34 @@ class TestAgentWorkflow:
     def test_53_delete_variable(self, agent):
         agent.call("delete_variable", name="TEST_VAR")
 
+    def test_53b_secret_variable_masked_outside_admin_read(self, agent):
+        created = agent.call("create_variable", name="TEST_SECRET", value="s3cr3t", is_secret=True)
+        assert created["value"] == "######"
+        listed = {v["name"]: v for v in agent.call("list_variables")}
+        assert listed["TEST_SECRET"]["value"] == "######"
+        revealed = agent.call(
+            "komodo_admin_read", operation="RevealVariable", params={"name": "TEST_SECRET"}
+        )
+        assert revealed["value"] == "s3cr3t"
+        exported = agent.call("export_resources_to_toml", include_variables=True)["toml"]
+        assert 'value = "######"' in exported
+        assert "s3cr3t" not in exported
+        agent.call("delete_variable", name="TEST_SECRET")
+
+    def test_53c_provider_account_token_masked_outside_admin_read(self, agent):
+        created = agent.call(
+            "create_git_provider_account",
+            account={"domain": "git.example.com", "username": "bot", "token": "tok-123"},
+        )
+        assert created["token"] == "#######"
+        listed = agent.call(
+            "komodo_admin_read",
+            operation="ListGitProviderAccounts",
+            params={"domain": "git.example.com"},
+        )
+        assert [account["token"] for account in listed] == ["tok-123"]
+        agent.call("delete_git_provider_account", id=_id(created))
+
     def test_54_create_tag(self, agent):
         result = agent.call("create_tag", name="test-tag")
         assert result["name"] == "test-tag"

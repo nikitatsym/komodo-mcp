@@ -1,0 +1,7 @@
+{
+  "GetUpdate": "adds failed_only/tail trimming of stage logs",
+  "GetVersion": "goes through Client.check(), the same request as the startup check",
+  "ListAlerts": "query is a MongoDocument; exposed as explicit Alert fields",
+  "ListTags": "query is a MongoDocument; exposed as explicit Tag fields",
+  "ListUpdates": "query is a MongoDocument; exposed as explicit Update fields"
+}

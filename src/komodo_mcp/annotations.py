@@ -42,8 +42,18 @@ ANNOTATIONS: dict[str, str] = {
     "SearchDeploymentLog": "Search deployment log by terms.",
     "SearchStackLog": "Search stack log by terms.",
     "GetHistoricalServerStats": "Paginated historical server stats for graphing.",
-    "ExportAllResourcesToToml": "Export all resources to TOML sync format.",
-    "ExportResourcesToToml": "Export specific resources to TOML sync format.",
+    "ExportAllResourcesToToml": (
+        "Export all resources to TOML sync format. Secret variable values are masked, "
+        "so syncing this TOML back would overwrite them with the mask."
+    ),
+    "ExportResourcesToToml": (
+        "Export specific resources to TOML sync format. Secret variable values are masked, "
+        "so syncing this TOML back would overwrite them with the mask."
+    ),
+    "ListVariables": "List variables. Secret values are masked; RevealVariable in komodo_admin_read shows one.",
+    "GetVariable": "Get a variable. A secret value is masked; RevealVariable in komodo_admin_read shows it.",
+    # Admin read
+    "RevealVariable": "Get a variable with its value unmasked, secret or not.",
     # Write
     "CreateDeploymentFromContainer": "Create a Deployment from an existing container.",
     "WriteBuildFileContents": "Write/update dockerfile contents.",

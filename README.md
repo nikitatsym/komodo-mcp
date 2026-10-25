@@ -58,11 +58,11 @@ If you have many MCP servers and want to reduce total tool count, set `KOMODO_CO
 
 | Tool | Scope |
 |------|-------|
-| `komodo_read` | Safe resource queries |
+| `komodo_read` | Safe resource queries; secret values masked |
 | `komodo_write` | Create/update/rename/copy (non-destructive) |
 | `komodo_execute` | Deploy, start/stop, build (actions) |
 | `komodo_delete` | Delete, destroy, prune (destructive) |
-| `komodo_admin_read` | User/permission queries |
+| `komodo_admin_read` | Users, permissions, groups, API keys, provider accounts, secret values |
 | `komodo_admin_write` | User/permission management, admin-only |
 
 ```json
@@ -90,6 +90,8 @@ The LLM calls any tool with `operation="help"` to discover available operations,
 
 ### Read
 Query servers, deployments, stacks, builds, repos, procedures, actions, resource syncs, builders, alerters, Docker containers/images/networks/volumes, tags, variables, users, permissions, updates, alerts, and more.
+
+Variable and provider-account operations mask secret variable values and tokens (`#` per character, as Komodo shows them to non-admins) in every group except `komodo_admin_read`, where `RevealVariable` and the provider-account reads return them. TOML exports mask secret variables too, so applying such an export through a sync overwrites them with the mask. This guards against accidental exposure, not against an agent with an admin API key: container inspection (`Env` with interpolated secrets), resource configs, and logs are returned as Komodo sends them.
 
 ### Write
 Create, update, delete, rename, and copy all resource types. Manage webhooks, variables, tags, users, user groups, permissions, and provider accounts.
