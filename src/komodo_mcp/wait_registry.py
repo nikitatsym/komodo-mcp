@@ -1,9 +1,10 @@
 """Registry of long-running wait handles for the updates_wait_* tools.
 
-Module-level singleton; terminal handles reaped after 1h TTL. The poll task
-is the sole writer to a handle (HTTP in a worker thread, mutations applied
-back on the loop), so reads need no lock. Pattern: mcp-server-v2 spec,
-"Long-running waiters".
+One registry per client: under mcps-host one process serves several
+instances, and one instance must not list or cancel another's waits.
+Terminal handles reaped after 1h TTL. The poll task is the sole writer to a
+handle (HTTP in a worker thread, mutations applied back on the loop), so
+reads need no lock. Pattern: mcp-server-v2 spec, "Long-running waiters".
 """
 
 from __future__ import annotations
@@ -12,6 +13,7 @@ import asyncio
 import secrets
 import time
 from typing import Any
+from weakref import WeakKeyDictionary
 
 # Lifecycle: Queued -> InProgress -> Complete; outcome is the separate
 # `success` bool, so Complete is the only terminal status.
@@ -137,7 +139,7 @@ class WaitHandle:
 
 
 class WaitRegistry:
-    """Module-level singleton holding all in-flight and recently-terminal waits."""
+    """In-flight and recently-terminal waits of one client."""
 
     def __init__(self, ttl_seconds: int = _DEFAULT_TTL_SECONDS):
         self._waits: dict[str, WaitHandle] = {}
@@ -174,4 +176,15 @@ class WaitRegistry:
         self._waits.clear()
 
 
-WAIT_REGISTRY = WaitRegistry()
+_REGISTRIES: WeakKeyDictionary[object, WaitRegistry] = WeakKeyDictionary()
+
+
+def registry_for(client: object) -> WaitRegistry:
+    return _REGISTRIES.setdefault(client, WaitRegistry())
+
+
+def clear_all() -> None:
+    """Drop every client's handles. Used by tests to reset state between cases."""
+    for registry in _REGISTRIES.values():
+        registry.clear()
+    _REGISTRIES.clear()

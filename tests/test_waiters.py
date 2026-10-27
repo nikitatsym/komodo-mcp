@@ -19,7 +19,7 @@ import komodo_mcp.tools as tools_mod
 from komodo_mcp import server
 from komodo_mcp.client import KomodoClient, KomodoError
 from komodo_mcp.config import _reset_settings
-from komodo_mcp.wait_registry import WAIT_REGISTRY
+from komodo_mcp.wait_registry import clear_all, registry_for
 
 UPDATE_ID = "65a1b2c3d4e5f6a7b8c9d0e1"
 
@@ -31,9 +31,9 @@ def _reset_state(monkeypatch):
     monkeypatch.setenv("KOMODO_API_SECRET", "s")
     _reset_settings()
     helpers_mod._client = None
-    WAIT_REGISTRY.clear()
+    clear_all()
     yield
-    WAIT_REGISTRY.clear()
+    clear_all()
     helpers_mod._client = None
     _reset_settings()
 
@@ -199,7 +199,7 @@ class TestUpdatesWait:
 class TestWaitStartPoll:
     def test_terminal_on_first_poll(self):
         scripts = {"GetUpdate": [(200, _update("Complete", success=True))]}
-        _seed(_make_handler(scripts))
+        client = _seed(_make_handler(scripts))
         snap = asyncio.run(tools_mod.updates_wait_start(
             update_id=UPDATE_ID, interval=0.01,
         ))
@@ -208,7 +208,7 @@ class TestWaitStartPoll:
         assert snap["success"] is True
         assert snap["wait_id"].startswith("wu-")
         assert snap["update_id"] == UPDATE_ID
-        assert WAIT_REGISTRY.get(snap["wait_id"]).task is None
+        assert registry_for(client).get(snap["wait_id"]).task is None
 
     def test_max_block_waits_for_terminal(self):
         scripts = {"GetUpdate": [
@@ -266,6 +266,34 @@ class TestWaitStartPoll:
         assert in_flight == []
         with pytest.raises(ValueError, match="Unknown wait_id"):
             asyncio.run(tools_mod.updates_wait_poll("wu-nope"))
+
+    def test_waits_are_scoped_to_the_bound_client(self):
+        # mcps-host binds one client per instance into client_var; one
+        # process, several instances. Another instance must not see or
+        # cancel this wait.
+        scripts = {"GetUpdate": [(200, _update("InProgress"))]}
+        handler = _make_handler(scripts)
+        _seed(handler)
+        other = KomodoClient(transport=httpx.MockTransport(handler))
+
+        async def flow():
+            start = await tools_mod.updates_wait_start(update_id=UPDATE_ID, interval=0.01)
+            token = helpers_mod.client_var.set(other)
+            try:
+                assert await tools_mod.waits_list() == []
+                with pytest.raises(ValueError, match="Unknown wait_id"):
+                    await tools_mod.updates_wait_cancel(start["wait_id"])
+                with pytest.raises(ValueError, match="Unknown wait_id"):
+                    await tools_mod.updates_wait_poll(start["wait_id"])
+            finally:
+                helpers_mod.client_var.reset(token)
+            own = await tools_mod.waits_list()
+            await tools_mod.updates_wait_cancel(start["wait_id"])
+            return start, own
+
+        start, own = asyncio.run(flow())
+        assert [w["wait_id"] for w in own] == [start["wait_id"]]
+        assert own[0]["terminated"] is False
 
 
 @pytest.mark.parametrize("surface", ["blocking", "terminal_start", "background_poll"])

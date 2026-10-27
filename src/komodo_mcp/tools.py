@@ -20,8 +20,9 @@ from .overrides import REQUEST_OVERRIDES, RESPONSE_OVERRIDES
 from .registry import ROOT, Group, _op
 from .wait_registry import (
     TERMINAL_STATUSES as _WAIT_TERMINAL,
-    WAIT_REGISTRY as _WAIT_REGISTRY,
     WaitHandle as _WaitHandle,
+    WaitRegistry as _WaitRegistry,
+    registry_for as _registry_for,
 )
 
 # ── Groups ──────────────────────────────────────────────────────────────────
@@ -745,8 +746,12 @@ async def _cancel_handle(handle: _WaitHandle) -> None:
         handle.mark_terminated(error="cancelled")
 
 
+def _waits() -> _WaitRegistry:
+    return _registry_for(_get_client())
+
+
 def _require_handle(wait_id: str) -> _WaitHandle:
-    handle = _WAIT_REGISTRY.get(wait_id)
+    handle = _waits().get(wait_id)
     if handle is None:
         raise ValueError(
             f"Unknown wait_id: {wait_id!r}. Use WaitsList to enumerate "
@@ -775,7 +780,7 @@ async def updates_wait_start(
     if log_tail < 0:
         raise ValueError(f"log_tail must be >= 0, got {log_tail}")
 
-    _WAIT_REGISTRY.reap_old()
+    _waits().reap_old()
 
     options = {
         "interval": interval,
@@ -785,7 +790,7 @@ async def updates_wait_start(
         "failed_only": failed_only,
         "log_tail": log_tail,
     }
-    handle = _WAIT_REGISTRY.new_handle(update_id, options)
+    handle = _waits().new_handle(update_id, options)
 
     try:
         terminal = await _do_update_poll(handle)
@@ -845,7 +850,7 @@ _op(komodo_read)(updates_wait_cancel)
 async def waits_list(terminated: bool | None = None):
     """List active and recently-terminal update waits (compact, 1h TTL)."""
     out = []
-    for handle in _WAIT_REGISTRY.all_handles():
+    for handle in _waits().all_handles():
         if terminated is not None and handle.terminated != terminated:
             continue
         out.append({
