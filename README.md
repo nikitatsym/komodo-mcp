@@ -84,7 +84,7 @@ If you have many MCP servers and want to reduce total tool count, set `KOMODO_CO
 }
 ```
 
-The LLM calls any tool with `operation="help"` to discover available operations, then calls with the specific operation name and params JSON. Users can selectively allow safe tools (read) while blocking destructive ones (delete, admin).
+The LLM calls any tool with `operation="help"` to discover available operations, then calls with the specific operation name and params JSON. `params={"search": "log"}` narrows help to operations whose name or description contains the substring (case-insensitive) and names matches in other tools. Users can selectively allow safe tools (read) while blocking destructive ones (delete, admin).
 
 ## Tools Overview
 

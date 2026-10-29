@@ -84,6 +84,14 @@ def test_deferred_waiter_cancellation_propagates(monkeypatch):
         asyncio.run(flow())
 
 
+def test_help_rejects_non_string_search():
+    result = _data_result(
+        asyncio.run(_registered("komodo_read")(operation="help", params={"search": 1}))
+    )
+
+    assert result == {"error": "help parameter 'search' must be a string"}
+
+
 def test_registered_root_returns_contextual_api_error(monkeypatch):
     class BrokenClient:
         def check(self, *_args, **_kwargs):

@@ -110,6 +110,22 @@ def test_registered_help_marks_optional_params_and_defaults(group_name, operatio
     assert "ctx" not in line
 
 
+def test_registered_help_filters_by_search():
+    result = asyncio.run(
+        server.mcp.call_tool("komodo_read", {"operation": "help", "params": {"search": "log"}})
+    )
+    content = result.content[0]
+    assert isinstance(content, TextContent)
+    header, *lines = content.text.splitlines()
+    matched, total = (int(n) for n in header.split(" operations")[0].split(" of "))
+    assert header.endswith(" operations in komodo_read matching 'log'.")
+    assert 0 < matched < total == len(server._group_ops["komodo_read"])
+    listed = [line.strip().split("(")[0] for line in lines if line.startswith("  ")]
+    assert "GetContainerLog" in listed
+    assert "GetServer" not in listed
+    assert len(listed) == matched
+
+
 @pytest.mark.parametrize(
     ("default", "expected"),
     [

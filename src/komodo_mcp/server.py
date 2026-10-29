@@ -278,8 +278,8 @@ _group_ops: dict[str, dict] = {}    # {group_name: {PascalName: fn}}
 _all_grouped: dict[str, str] = {}   # {PascalName: group_name}
 
 
-def _build_help(group_name: str) -> str:
-    ops = _group_ops[group_name]
+def _render_ops_block(ops: dict) -> str:
+    """Render one signature line per op, described by its ANNOTATIONS entry."""
     lines = []
     for pascal_name, fn in ops.items():
         sig = inspect.signature(fn)
@@ -290,7 +290,67 @@ def _build_help(group_name: str) -> str:
         ]
         desc = ANNOTATIONS.get(pascal_name, f"{pascal_name}.")
         lines.append(f"  {pascal_name}({', '.join(parts)}) — {desc}")
-    return f"{len(lines)} operations available:\n" + "\n".join(lines)
+    return "\n".join(lines)
+
+
+def _build_help(group_name: str, search: str | None = None) -> str:
+    """Per-op signature with types and description.
+
+    Without args: lists every op in the group. With `search='foo'`: restricts
+    to ops whose name, docstring or ANNOTATIONS description contains `foo`
+    (case-insensitive); matches in OTHER groups are named in a cross-group
+    hint so the agent learns where to look.
+    """
+    ops = _group_ops[group_name]
+
+    if search:
+        s = search.lower()
+
+        def _hit(name: str, fn) -> bool:
+            # Match op name AND description, so intent words (e.g. "mask",
+            # "secret") find ops named differently. Help shows the ANNOTATIONS
+            # entry, so it is searched next to the docstring.
+            return (
+                s in name.lower()
+                or s in fn.__name__.lower()
+                or s in (inspect.getdoc(fn) or "").lower()
+                or s in ANNOTATIONS.get(name, "").lower()
+            )
+
+        matched = {pn: fn for pn, fn in ops.items() if _hit(pn, fn)}
+        elsewhere: dict[str, list[str]] = {}
+        for op_name, other_group in _all_grouped.items():
+            if other_group == group_name:
+                continue
+            if _hit(op_name, _group_ops[other_group][op_name]):
+                elsewhere.setdefault(other_group, []).append(op_name)
+        if not matched:
+            msg = f"No ops in {group_name} matching {search!r}."
+            if elsewhere:
+                msg += " Found in other groups: " + "; ".join(
+                    f"{g}: {', '.join(sorted(names))}"
+                    for g, names in sorted(elsewhere.items())
+                )
+            else:
+                msg += " Call operation='help' (no params) to list all ops."
+            return msg
+        header = f"{len(matched)} of {len(ops)} operations in {group_name} matching {search!r}."
+        body = _render_ops_block(matched)
+        if elsewhere:
+            body += "\n\nAlso matching in other groups: " + "; ".join(
+                f"{g}: {', '.join(sorted(names))}"
+                for g, names in sorted(elsewhere.items())
+            )
+        return f"{header}\n{body}"
+
+    return f"{len(ops)} operations available:\n{_render_ops_block(ops)}"
+
+
+def _validate_help_params(search: object | None) -> str | None:
+    """Reject malformed meta-operation input before help rendering."""
+    if search is not None and not isinstance(search, str):
+        raise ValueError("help parameter 'search' must be a string")
+    return search
 
 
 async def _run_op(fn: Callable[..., Any], call: Callable[[], Any]) -> Any:
@@ -309,7 +369,7 @@ async def _dispatch(operation: str, group_name: str, params: dict, ctx: Context 
     """Dispatch an operation call and serialize expected service failures."""
     try:
         if operation == "help":
-            return _build_help(group_name)
+            return _build_help(group_name, search=_validate_help_params(params.get("search")))
         ops = _group_ops[group_name]
         if operation not in ops:
             if operation in _all_grouped:

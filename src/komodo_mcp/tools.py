@@ -30,6 +30,7 @@ komodo_read = Group(
     "komodo_read",
     "Query Komodo resources (safe, read-only; secret values masked).\n\n"
     "Call with operation=\"$help\" to list all available read operations.\n"
+    "Add params={\"search\": \"X\"} to list only operations matching X.\n"
     "Otherwise pass the operation name and a JSON object with parameters.\n\n"
     "Example: komodo_read(operation=\"$GetServer\", "
     "params={\"server\": \"my-server\"})",
@@ -39,6 +40,7 @@ komodo_write = Group(
     "komodo_write",
     "Create, update, rename, or copy Komodo resources.\n\n"
     "Call with operation=\"$help\" to list all available write operations.\n"
+    "Add params={\"search\": \"X\"} to list only operations matching X.\n"
     "Otherwise pass the operation name and a JSON object with parameters.\n\n"
     "Example: komodo_write(operation=\"$CreateServer\", "
     "params={\"name\": \"my-server\"})",
@@ -48,6 +50,7 @@ komodo_execute = Group(
     "komodo_execute",
     "Trigger actions: deploy, start/stop, build, run procedures.\n\n"
     "Call with operation=\"$help\" to list all available execute operations.\n"
+    "Add params={\"search\": \"X\"} to list only operations matching X.\n"
     "Otherwise pass the operation name and a JSON object with parameters.\n\n"
     "Example: komodo_execute(operation=\"$Deploy\", "
     "params={\"deployment\": \"my-app\"})",
@@ -57,6 +60,7 @@ komodo_delete = Group(
     "komodo_delete",
     "Delete, destroy, or prune resources (destructive, irreversible).\n\n"
     "Call with operation=\"$help\" to list all available delete operations.\n"
+    "Add params={\"search\": \"X\"} to list only operations matching X.\n"
     "Otherwise pass the operation name and a JSON object with parameters.\n\n"
     "Example: komodo_delete(operation=\"$DeleteServer\", "
     "params={\"id\": \"server-id\"})",
@@ -66,6 +70,7 @@ komodo_admin_read = Group(
     "komodo_admin_read",
     "Query users, permissions, groups, API keys, provider accounts, and secret values.\n\n"
     "Call with operation=\"$help\" to list all available admin read operations.\n"
+    "Add params={\"search\": \"X\"} to list only operations matching X.\n"
     "Otherwise pass the operation name and a JSON object with parameters.\n\n"
     "Example: komodo_admin_read(operation=\"$ListUsers\")",
 )
@@ -74,6 +79,7 @@ komodo_admin_write = Group(
     "komodo_admin_write",
     "Manage users, groups, permissions, and admin-only actions.\n\n"
     "Call with operation=\"$help\" to list all available admin write operations.\n"
+    "Add params={\"search\": \"X\"} to list only operations matching X.\n"
     "Otherwise pass the operation name and a JSON object with parameters.\n\n"
     "Example: komodo_admin_write(operation=\"$CreateServiceUser\", "
     "params={\"username\": \"bot\", \"description\": \"CI bot\"})",
