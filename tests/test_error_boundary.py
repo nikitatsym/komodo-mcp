@@ -31,7 +31,7 @@ def test_dispatch_returns_contextual_api_error(monkeypatch):
         lambda *_args: _raise(KomodoError(404, "read", "ListServers", {"detail": "missing"})),
     )
 
-    result = server._dispatch("ListServers", "komodo_read", {})
+    result = asyncio.run(server._dispatch("ListServers", "komodo_read", {}))
 
     assert result == {"error": "Komodo API 404 read ListServers: {'detail': 'missing'}"}
 
@@ -52,7 +52,7 @@ def test_dispatch_redacts_async_waiter_transport_query_values(monkeypatch):
 
 
 def test_dispatch_returns_missing_parameter_error():
-    result = server._dispatch("UpdatesWait", "komodo_read", {})
+    result = asyncio.run(server._dispatch("UpdatesWait", "komodo_read", {}))
 
     assert result["error"] == "Missing required parameters: ['update_id']"
 
@@ -63,7 +63,7 @@ def test_dispatch_propagates_programming_error(monkeypatch):
     )
 
     with pytest.raises(AttributeError):
-        server._dispatch("ListServers", "komodo_read", {})
+        asyncio.run(server._dispatch("ListServers", "komodo_read", {}))
 
 
 def test_deferred_waiter_cancellation_propagates(monkeypatch):

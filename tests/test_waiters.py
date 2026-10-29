@@ -16,6 +16,7 @@ import pytest
 
 import komodo_mcp._helpers as helpers_mod
 import komodo_mcp.tools as tools_mod
+from komodo_mcp import server
 from komodo_mcp.client import KomodoClient, KomodoError
 from komodo_mcp.config import _reset_settings
 from komodo_mcp.wait_registry import WAIT_REGISTRY
@@ -257,7 +258,7 @@ class TestWaitStartPoll:
 
         async def flow():
             await tools_mod.updates_wait_start(update_id=UPDATE_ID, interval=0.01)
-            return tools_mod.waits_list(), tools_mod.waits_list(terminated=False)
+            return await tools_mod.waits_list(), await tools_mod.waits_list(terminated=False)
 
         all_waits, in_flight = asyncio.run(flow())
         assert len(all_waits) == 1
@@ -323,29 +324,22 @@ class TestDispatch:
     def test_async_op_through_dispatch_and_ctx_rejected(self):
         scripts = {"GetUpdate": [(200, _update("Complete", success=True))]}
         _seed(_make_handler(scripts))
-        from komodo_mcp import server
 
-        async def flow():
-            coro = server._dispatch(
-                "UpdatesWaitStart", "komodo_read",
-                {"update_id": UPDATE_ID, "interval": 0.01},
-            )
-            assert asyncio.iscoroutine(coro)
-            return await coro
-
-        snap = asyncio.run(flow())
+        snap = asyncio.run(server._dispatch(
+            "UpdatesWaitStart", "komodo_read",
+            {"update_id": UPDATE_ID, "interval": 0.01},
+        ))
         assert snap["status"] == "Complete"
 
-        result = server._dispatch(
+        result = asyncio.run(server._dispatch(
             "UpdatesWait", "komodo_read",
             {"update_id": UPDATE_ID, "ctx": "evil"},
-        )
+        ))
         assert "Unknown parameters" in result["error"]
         assert "ctx" in result["error"]
 
     def test_help_hides_ctx(self):
         _seed(_make_handler({}))
-        from komodo_mcp import server
         help_text = server._build_help("komodo_read")
         line = next(
             ln for ln in help_text.splitlines() if ln.strip().startswith("UpdatesWait(")

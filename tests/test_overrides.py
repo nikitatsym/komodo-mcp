@@ -7,6 +7,7 @@ per operation type and records what Komodo was sent.
 
 from __future__ import annotations
 
+import asyncio
 import json
 import tomllib
 from pathlib import Path
@@ -65,7 +66,7 @@ def test_hand_written_operation_is_served_by_tools(operation):
 def test_list_variables_masks_only_secret_values():
     _seed({"ListVariables": [SECRET, PLAIN]})
 
-    assert server._dispatch("ListVariables", "komodo_read", {}) == [MASKED, PLAIN]
+    assert asyncio.run(server._dispatch("ListVariables", "komodo_read", {})) == [MASKED, PLAIN]
 
 
 @pytest.mark.parametrize(
@@ -82,7 +83,7 @@ def test_list_variables_masks_only_secret_values():
 def test_variable_responses_mask_secret_value(group, operation, params):
     _seed({operation: SECRET})
 
-    assert server._dispatch(operation, group, params) == MASKED
+    assert asyncio.run(server._dispatch(operation, group, params)) == MASKED
 
 
 @pytest.mark.parametrize(
@@ -99,7 +100,7 @@ def test_variable_responses_mask_secret_value(group, operation, params):
 def test_account_write_responses_mask_token(group, operation, params):
     _seed({operation: ACCOUNT})
 
-    assert server._dispatch(operation, group, params) == ACCOUNT | {"token": "#######"}
+    assert asyncio.run(server._dispatch(operation, group, params)) == ACCOUNT | {"token": "#######"}
 
 
 @pytest.mark.parametrize(
@@ -113,7 +114,7 @@ def test_account_write_responses_mask_token(group, operation, params):
     ],
 )
 def test_unmasked_reads_live_in_admin_read(operation):
-    assert server._dispatch(operation, "komodo_read", {}) == {
+    assert asyncio.run(server._dispatch(operation, "komodo_read", {})) == {
         "error": f"{operation} belongs to komodo_admin_read. Use komodo_admin_read() instead."
     }
 
@@ -121,8 +122,12 @@ def test_unmasked_reads_live_in_admin_read(operation):
 def test_admin_reads_return_secrets_unmasked():
     _seed({"GetVariable": SECRET, "ListGitProviderAccounts": [ACCOUNT]})
 
-    assert server._dispatch("RevealVariable", "komodo_admin_read", {"name": "DB_PASSWORD"}) == SECRET
-    assert server._dispatch("ListGitProviderAccounts", "komodo_admin_read", {}) == [ACCOUNT]
+    assert asyncio.run(
+        server._dispatch("RevealVariable", "komodo_admin_read", {"name": "DB_PASSWORD"})
+    ) == SECRET
+    assert asyncio.run(
+        server._dispatch("ListGitProviderAccounts", "komodo_admin_read", {})
+    ) == [ACCOUNT]
 
 
 def test_export_appends_masked_variables_that_komodo_was_not_asked_for():
@@ -131,11 +136,11 @@ def test_export_appends_masked_variables_that_komodo_was_not_asked_for():
         "ListVariables": [SECRET, PLAIN],
     })
 
-    result = server._dispatch(
+    result = asyncio.run(server._dispatch(
         "ExportAllResourcesToToml",
         "komodo_read",
         {"include_resources": True, "include_variables": True},
-    )
+    ))
 
     assert calls[0] == ("ExportAllResourcesToToml", {"include_resources": True})
     assert tomllib.loads(result["toml"]) == {
@@ -150,7 +155,9 @@ def test_export_appends_masked_variables_that_komodo_was_not_asked_for():
 def test_export_of_variables_only_starts_with_the_first_block():
     _seed({"ExportResourcesToToml": {"toml": ""}, "ListVariables": [PLAIN]})
 
-    result = server._dispatch("ExportResourcesToToml", "komodo_read", {"include_variables": True})
+    result = asyncio.run(
+        server._dispatch("ExportResourcesToToml", "komodo_read", {"include_variables": True})
+    )
 
     assert result["toml"].startswith("[[variable]]\n")
 
@@ -158,7 +165,9 @@ def test_export_of_variables_only_starts_with_the_first_block():
 def test_export_without_variables_passes_komodo_toml_through():
     calls = _seed({"ExportResourcesToToml": {"toml": "[[stack]]\nname = \"web\""}})
 
-    result = server._dispatch("ExportResourcesToToml", "komodo_read", {"user_groups": ["ops"]})
+    result = asyncio.run(
+        server._dispatch("ExportResourcesToToml", "komodo_read", {"user_groups": ["ops"]})
+    )
 
     assert calls == [("ExportResourcesToToml", {"user_groups": ["ops"]})]
     assert result == {"toml": "[[stack]]\nname = \"web\""}
@@ -171,7 +180,9 @@ def test_exported_variable_strings_round_trip_through_toml():
         "ListVariables": [PLAIN | {"value": awkward, "description": awkward}],
     })
 
-    result = server._dispatch("ExportResourcesToToml", "komodo_read", {"include_variables": True})
+    result = asyncio.run(
+        server._dispatch("ExportResourcesToToml", "komodo_read", {"include_variables": True})
+    )
 
     variable = tomllib.loads(result["toml"])["variable"][0]
     assert (variable["value"], variable["description"]) == (awkward, awkward)

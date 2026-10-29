@@ -1,11 +1,14 @@
 """Komodo MCP server — auto-discovery, grouping, and dispatch."""
 
+import asyncio
 import functools
 import inspect
 import re
 import string
 import types
 import typing
+from collections.abc import Callable
+from typing import Any
 from urllib.parse import urlsplit, urlunsplit
 
 import httpx
@@ -210,7 +213,7 @@ def _coerce_call(fn, params: dict, ctx: Context | None = None):
     When the target function declares a `ctx` parameter, the live MCP
     Context (when present) is injected after validation; `ctx` is never a
     valid caller-supplied param. Async functions return their coroutine
-    as-is - the meta-tool awaits it.
+    as-is - `_run_op` awaits it.
     """
     sig = inspect.signature(fn)
     parameters = tuple(sig.parameters.items())
@@ -269,15 +272,6 @@ def _coerce_call(fn, params: dict, ctx: Context | None = None):
     return fn(**kwargs)
 
 
-async def _await_result(result):
-    try:
-        return await result
-    except (ValueError, KomodoError) as exc:
-        return _error_result(exc)
-    except httpx.RequestError as exc:
-        return _error_result(exc)
-
-
 # ── Module-level state (populated by _register_tools) ────────────────────────
 
 _group_ops: dict[str, dict] = {}    # {group_name: {PascalName: fn}}
@@ -299,13 +293,23 @@ def _build_help(group_name: str) -> str:
     return f"{len(lines)} operations available:\n" + "\n".join(lines)
 
 
-def _dispatch(operation: str, group_name: str, params: dict, ctx: Context | None = None):
-    """Dispatch an operation call and serialize expected service failures.
+async def _run_op(fn: Callable[..., Any], call: Callable[[], Any]) -> Any:
+    """Invoke an op: a sync op in a worker thread, an async op on the event loop.
 
-    Async waiter operations remain coroutines for direct callers; their
-    execution errors are converted when the registered meta-tool awaits them.
+    Sync ops block on HTTP; on the loop they would stall every request the
+    process serves. `asyncio.to_thread` copies the context, so the bound
+    `client_var` follows the call into the thread.
     """
+    if inspect.iscoroutinefunction(fn):
+        return await call()
+    return await asyncio.to_thread(call)
+
+
+async def _dispatch(operation: str, group_name: str, params: dict, ctx: Context | None = None):
+    """Dispatch an operation call and serialize expected service failures."""
     try:
+        if operation == "help":
+            return _build_help(group_name)
         ops = _group_ops[group_name]
         if operation not in ops:
             if operation in _all_grouped:
@@ -318,13 +322,12 @@ def _dispatch(operation: str, group_name: str, params: dict, ctx: Context | None
                 "error": f"Unknown operation: {operation}. "
                 "Use operation=\"help\" to list available operations."
             }
-        result = _coerce_call(ops[operation], params, ctx)
+        fn = ops[operation]
+        result = await _run_op(fn, functools.partial(_coerce_call, fn, params, ctx))
     except (ValueError, KomodoError) as exc:
         return _error_result(exc)
     except httpx.RequestError as exc:
         return _error_result(exc)
-    if inspect.iscoroutine(result):
-        return _await_result(result)
     return result
 
 
@@ -385,7 +388,7 @@ def _register_tools():
         def _make_tool(gname, gdoc):
             # Async by design so tools that need the MCP Context (progress /
             # log) can `await ctx.report_progress(...)` inside their dispatch
-            # path; sync ops still work - we only await actual coroutines.
+            # path. Sync ops run in a worker thread via `_run_op`.
             # `params` defaults to None (NOT `{}`): a mutable default would
             # be shared across every call of the meta-tool.
             async def tool_fn(
@@ -394,12 +397,7 @@ def _register_tools():
                 ctx: Context | None = None,
             ):
                 params = params or {}
-                if operation == "help":
-                    return _build_help(gname)
-                result = _dispatch(operation, gname, params, ctx)
-                if inspect.iscoroutine(result):
-                    result = await result
-                return result
+                return await _dispatch(operation, gname, params, ctx)
             tool_fn.__name__ = gname
             tool_fn.__qualname__ = gname
             tool_fn.__doc__ = gdoc

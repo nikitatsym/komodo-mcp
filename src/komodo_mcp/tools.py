@@ -834,7 +834,9 @@ async def updates_wait_cancel(wait_id: str):
 _op(komodo_read)(updates_wait_cancel)
 
 
-def waits_list(terminated: bool | None = None):
+# Async with no await: handles are mutated on the loop, so reading them from a
+# worker thread could see one half-way through mark_terminated.
+async def waits_list(terminated: bool | None = None):
     """List active and recently-terminal update waits (compact, 1h TTL)."""
     out = []
     for handle in _WAIT_REGISTRY.all_handles():
