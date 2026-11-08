@@ -12,6 +12,18 @@ ANNOTATIONS: dict[str, str] = {
     "GetDeploymentLog": "Get deployment log tail, split by stdout/stderr.",
     "GetStackLog": "Get stack log tail, split by stdout/stderr.",
     "GetUpdate": "Get update by id. failed_only: only failed stages. tail: limit lines.",
+    "InspectStackContainer": (
+        "InspectStackContainer. Returns docker inspect as Komodo does, including the "
+        "container environment with resolved secrets."
+    ),
+    "InspectDeploymentContainer": (
+        "InspectDeploymentContainer. Returns docker inspect as Komodo does, including the "
+        "container environment with resolved secrets."
+    ),
+    "InspectDockerContainer": (
+        "InspectDockerContainer. Returns docker inspect as Komodo does, including the "
+        "container environment with resolved secrets."
+    ),
     "UpdatesWait": (
         "Block until an update (returned by any execute op) reaches status=Complete; "
         "result carries success + stage logs (failed_only/log_tail trim). Polls GetUpdate "

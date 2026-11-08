@@ -28,7 +28,7 @@ from .wait_registry import (
 
 komodo_read = Group(
     "komodo_read",
-    "Query Komodo resources (safe, read-only; secret values masked).\n\n"
+    "Query Komodo resources (read-only).\n\n"
     "Call with operation=\"$help\" to list all available read operations.\n"
     "Add params={\"search\": \"X\"} to list only operations matching X.\n"
     "Otherwise pass the operation name and a JSON object with parameters.\n\n"

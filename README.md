@@ -58,7 +58,7 @@ If you have many MCP servers and want to reduce total tool count, set `KOMODO_CO
 
 | Tool | Scope |
 |------|-------|
-| `komodo_read` | Safe resource queries; secret values masked |
+| `komodo_read` | Read-only resource queries |
 | `komodo_write` | Create/update/rename/copy (non-destructive) |
 | `komodo_execute` | Deploy, start/stop, build (actions) |
 | `komodo_delete` | Delete, destroy, prune (destructive) |
