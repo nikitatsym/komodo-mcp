@@ -24,6 +24,12 @@ def _id(result: dict) -> str:
     return raw.get("$oid", raw) if isinstance(raw, dict) else raw
 
 
+def _finish(agent, update: dict) -> None:
+    """Wait for an execute op's Update: Komodo answers "busy" to the next action until it ends."""
+    result = agent.call("updates_wait", update_id=_id(update), timeout=180.0, interval=1.0)
+    assert result["terminated"] and result["success"], result
+
+
 @pytest.mark.usefixtures("configure_env")
 class TestAgentWorkflow:
     """Sequential test simulating a full agent workflow."""
@@ -123,8 +129,7 @@ class TestAgentWorkflow:
         assert "total" in result
 
     def test_24_deploy(self, agent):
-        result = agent.call("deploy", deployment="test-deploy")
-        assert result is not None
+        _finish(agent, agent.call("deploy", deployment="test-deploy"))
 
     def test_25_get_deployment_log(self, agent):
         import time
@@ -139,19 +144,12 @@ class TestAgentWorkflow:
         assert result is not None
 
     def test_26_stop_deployment(self, agent):
-        agent.call("stop_deployment", deployment="test-deploy")
+        _finish(agent, agent.call("stop_deployment", deployment="test-deploy"))
 
     def test_27_destroy_deployment(self, agent):
-        agent.call("destroy_deployment", deployment="test-deploy")
+        _finish(agent, agent.call("destroy_deployment", deployment="test-deploy"))
 
     def test_28_delete_deployment(self, agent):
-        import time
-        for _ in range(5):
-            try:
-                agent.call("delete_deployment", id=TestAgentWorkflow.deployment_id)
-                return
-            except Exception:  # noqa: BLE001 - may race a still-stopping deployment; retry, then let the final call fail loud
-                time.sleep(2)
         agent.call("delete_deployment", id=TestAgentWorkflow.deployment_id)
 
     # ── 4. Stacks ─────────────────────────────────────────────
